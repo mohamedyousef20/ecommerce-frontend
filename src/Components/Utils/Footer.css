@@ -1,0 +1,18 @@
+.MuiListItem-root:hover {
+    color: #0295db;
+    transition: .4s;
+    transform: scale(1.10);
+
+}
+
+.MuiSvgIcon-root {
+    cursor: pointer;
+    color: #fff;
+}
+
+.MuiSvgIcon-root:hover {
+    color: #0295db;
+    transition: .4s;
+    transform: scale(1.12);
+    margin: 5px;
+}

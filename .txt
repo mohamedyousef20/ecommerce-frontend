@@ -1,0 +1,245 @@
+خلى عدد الصور بتاعة المنتج ف الباك ايند 4
+
+vid 6.6 not completed 
+
+#1976d2
+
+auto complet for inputs
+
+phon on register api
+
+
+
+export default ProductGrid;
+<Typography variant="h4" sx={{ fontWeight: 'bold', mb: 2 }}>
+AZARM.
+</Typography>
+
+TODO ANNOUNCEMNTS
+    {
+        id: 1,
+        title: "Big Sale is Here!",
+        description: "Don't miss out on discounts up to 70% on all categories.",
+        image: "https://via.placeholder.com/150x100", // Replace with actual image URL
+        buttonText: "Shop Now",
+    },
+
+
+
+6/to do 
+HOW TO GET RESPONSE.STATUS CODE -- MAKE THE INPUT ALYWES OPEN 
+
+
+TODO IN THE BACK  HANDLE UPLOAD IMG TO CLOUDINARY
+TODO if user deactivate cant add comment or reviews
+
+TODO solve UPLOAD catgeoy image
+TODO solve update user profile
+
+///////////////////////
+
+//////
+
+
+Arrangement
+
+1-Home Component 
+
+
+Primary: Navy Blue (#1E3A8A) – Represents trust and reliability.
+Secondary: Light Gray (#F5F5F5) – Clean and modern, great for backgrounds.
+Accent: Bright Orange (#F97316) – Adds energy and draws attention to CTAs.
+
+
+
+Here are three cohesive color schemes suitable for an e-commerce website:
+
+1. Classic and Trustworthy
+Primary: Navy Blue (#1E3A8A) – Represents trust and reliability.
+Secondary: Light Gray (#F5F5F5) – Clean and modern, great for backgrounds.
+Accent: Bright Orange (#F97316) – Adds energy and draws attention to CTAs.
+2. Modern and Minimalist
+Primary: Charcoal Gray (#374151) – Sophisticated and neutral.
+Secondary: Soft White (#FAFAFA) – Light and minimal, keeps the focus on the products.
+Accent: Aqua Blue (#3B82F6) – Vibrant for buttons and highlights.
+3. Playful and Vibrant
+Primary: Deep Purple (#6D28D9) – Unique and bold.
+Secondary: Pastel Pink (#F9A8D4) – Adds warmth and a friendly vibe.
+Accent: Lime Green (#84CC16) – Eye-catching for promotions and key elements.
+
+
+
+Replace all alert with notification
+
+
+                        color: '#374151', for header
+
+
+
+// address  
+
+
+
+import React, { useEffect, useState } from 'react';
+import {
+  AppBar,
+  Toolbar,
+  IconButton,
+  Typography,
+  InputBase,
+  Box,
+  Avatar,
+  Menu,
+  MenuItem,
+  Button,
+  Badge,
+} from '@mui/material';
+import {
+  Menu as MenuIcon,
+  Search as SearchIcon,
+  ShoppingCart as ShoppingCartIcon,
+  FavoriteBorder as FavoriteBorderIcon,
+} from '@mui/icons-material';
+import { useNavigate } from 'react-router-dom';
+import { alpha, styled } from '@mui/system';
+import GetUserCartHook from '../../customHooks/Cart/get-user-cart-hook';
+import WarningModal from './WarningModal';
+
+// Styled Search bar
+const Search = styled('div')(({ theme }) => ({
+  position: 'relative',
+  borderRadius: theme.shape.borderRadius,
+  backgroundColor: alpha(theme.palette.common.white, 0.15),
+  '&:hover': {
+    backgroundColor: alpha(theme.palette.common.white, 0.25),
+  },
+  marginLeft: 0,
+  width: '100%',
+  [theme.breakpoints.up('sm')]: {
+    marginLeft: theme.spacing(2),
+    width: 'auto',
+  },
+}));
+
+const SearchIconWrapper = styled('div')({
+  position: 'absolute',
+  left: '10px',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+});
+
+const StyledInputBase = styled(InputBase)(({ theme }) => ({
+  color: 'inherit',
+  paddingLeft: '35px',
+  width: '100%',
+  '& .MuiInputBase-input': {
+    padding: theme.spacing(1),
+    transition: theme.transitions.create('width'),
+    [theme.breakpoints.up('sm')]: {
+      width: '20ch',
+    },
+  },
+}));
+
+const NavbarLogged = () => {
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [user, setUser] = useState('');
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const navigate = useNavigate();
+  const [itemsNum] = GetUserCartHook();
+
+  // Handle Logout Confirmation
+  const handleConfirmLogout = () => {
+    localStorage.removeItem('user');
+    localStorage.removeItem('userToken');
+    setUser('');
+    window.location.href = '/';
+  };
+
+  // User Menu Handlers
+  const handleMenuClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleNavigate = (path) => {
+    navigate(path);
+    handleMenuClose();
+  };
+
+  useEffect(() => {
+    if (localStorage.getItem('user')) {
+      setUser(JSON.parse(localStorage.getItem('user')));
+    }
+  }, []);
+
+  return (
+    <AppBar position="sticky" sx={{ zIndex: 1201 }}>
+      <Toolbar sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        {/* Logo */}
+        <Typography
+          variant="h5"
+          sx={{ flexGrow: 1, fontWeight: 'bold', cursor: 'pointer' }}
+          onClick={() => handleNavigate('/')}
+        >
+          AZARM.
+        </Typography>
+
+        {/* Search Bar */}
+        <Search>
+          <SearchIconWrapper>
+            <SearchIcon />
+          </SearchIconWrapper>
+          <StyledInputBase placeholder="Search…" inputProps={{ 'aria-label': 'search' }} />
+        </Search>
+
+        {/* Icons Section */}
+        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+          {/* Wishlist Icon */}
+          <IconButton color="inherit" onClick={() => handleNavigate('/wishlist')}>
+            <Badge badgeContent={3} color="error"> {/* Replace `3` with dynamic wishlist count */}
+              <FavoriteBorderIcon />
+            </Badge>
+          </IconButton>
+
+          {/* Cart Icon */}
+          <IconButton color="inherit" onClick={() => handleNavigate('/cart')}>
+            <Badge badgeContent={itemsNum} color="error">
+              <ShoppingCartIcon />
+            </Badge>
+          </IconButton>
+
+          {/* Avatar */}
+          <IconButton edge="end" color="inherit" onClick={handleMenuClick}>
+            <Avatar src={user.profileImage || ''} />
+          </IconButton>
+
+          {/* User Menu */}
+          <Menu
+            anchorEl={anchorEl}
+            open={Boolean(anchorEl)}
+            onClose={handleMenuClose}
+          >
+            <MenuItem onClick={() => handleNavigate('/profile')}>Profile</MenuItem>
+            <MenuItem onClick={() => handleNavigate('/orders')}>Orders</MenuItem>
+            <MenuItem onClick={handleConfirmLogout}>Logout</MenuItem>
+          </Menu>
+        </Box>
+      </Toolbar>
+
+      {/* Logout Confirmation Modal */}
+      <WarningModal
+        isOpen={isModalOpen}
+        onConfirm={handleConfirmLogout}
+        onCancel={() => setIsModalOpen(false)}
+        message="Are you sure you want to logout?"
+      />
+    </AppBar>
+  );
+};
+
+export default NavbarLogged;
+  

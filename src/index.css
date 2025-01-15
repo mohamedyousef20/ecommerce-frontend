@@ -1,0 +1,27 @@
+@import url('https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Poppins:wght@400;500;600&display=swap');
+body {
+  margin: 0;
+  background-color: #d0d0d238;
+  font-Family: '"Fit One", sans-serif',;
+}
+
+
+.d-flex {
+  display: flex;
+  justify-content: space-between;
+}
+
+.btn {
+  background-Color: #0295db;
+    border:'none';
+    padding:'.7rem 1.2rem';
+}
+
+.primary-color{
+  color: #e0e5e9;
+}
+
+.f-color{
+  color: #262626;
+}
+

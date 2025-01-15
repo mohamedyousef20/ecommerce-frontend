@@ -1,0 +1,54 @@
+.App {
+  text-align: center;
+  color: '#262626',
+
+}
+
+.btn-custom {
+  background-Color: 'red';
+  border: 'none';
+  padding: '.7rem 1.2rem';
+}
+
+.br {
+  border: 2px solid green;
+}
+
+/* Target the specific class if necessary */
+.css-rik6tc-MuiContainer-root {
+  width: "0%" !important;
+  margin-left: auto;
+  box-sizing: border-box;
+  margin-right: auto;
+  padding-left: 16px;
+  padding-right: 16px;
+  padding-top: 32px;
+  border-radius: "50%";
+}
+
+
+
+@keyframes myname-animation {
+  0% {
+
+    opacity: 1;
+  }
+
+  25% {
+    opacity: .8;
+  }
+
+  50% {
+    opacity: .6;
+  }
+
+  75% {
+    opacity: .4;
+    color: #151515;
+  }
+
+  100% {
+    opacity: .2;
+    color: #151515;
+  }
+}
