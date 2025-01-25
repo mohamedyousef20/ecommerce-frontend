@@ -122,7 +122,7 @@ const SidebarFilters = ({ categories, handleFilterChange }) => {
                 flexDirection: 'column',
                 justifyContent: 'flex-start',
                 alignItems: 'stretch',
-                width: { xs: '100%', md: '300px' }, // Full width on small screens, fixed width on large
+                width: { xs: '100%', md: '300px' }, 
                 padding: 3,
                 backgroundColor: '#f9f9f9',
             }}

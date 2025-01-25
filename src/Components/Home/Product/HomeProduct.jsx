@@ -6,37 +6,69 @@ import GetMostPopularProductHook from '../../../customHooks/Product/GetMostPopul
 import GetMostOfferedProductHook from '../../../customHooks/Product/GetMostOfferedProductHook';
 
 const HomeProduct = () => {
-    // Assuming GetHomeProdHook fetches products
     const [products] = GetHomeProdHook();
     const [popularProduct] = GetMostPopularProductHook();
     const [mostOfferedProduct] = GetMostOfferedProductHook();
 
-    // const recentLunch = products.slice(0, 4); // First 4 products
-    // const popularProducts = products.slice(4, 8); // Next 4 products
-    // const specialOffers = products.slice(8, 12); // Another set of 4 products
-
     return (
-        <Box sx={{ padding: 4 }}>
-            {/* Recent Lunch Section */}
-            <Box sx={{ marginBottom: 6 }}>
-                <Typography variant='h5' fontWeight={'bold'} sx={{ textAlign: 'left', marginBottom: 2 }}>
-                    Recent Lunch
+        <Box sx={{ padding: 4, backgroundColor: "#F5F5F5"}}>
+            {/* Recent Launch Section */}
+            <Box sx={{ marginBottom: 4 }}>
+                <Typography
+                    variant="h4"
+                    sx={{
+                        fontFamily: 'Poppins, sans-serif',
+                        fontWeight: 600,
+                        textAlign: 'left',
+                        marginBottom: 1,
+                        color: "#FF5722", // Orange
+                        display: "inline-block",
+                        paddingBottom: "4px",
+                        letterSpacing: 1.5,
+                    }}
+                >
+                    Recent Launch
                 </Typography>
                 <ProductGrid products={products} />
             </Box>
 
             {/* Popular Product Section */}
             <Box sx={{ marginBottom: 6 }}>
-                <Typography variant='h5' fontWeight={'bold'} sx={{ textAlign: 'left', marginBottom: 2 }}>
-                    Popular Product
+                <Typography
+                    variant="h4"
+                    sx={{
+                        fontFamily: 'Poppins, sans-serif',
+                        fontWeight: 600,
+                        textAlign: 'left',
+                        marginBottom: 1,
+                        color: "#1976D2", // Blue
+                        display: "inline-block",
+                        paddingBottom: "4px",
+                        letterSpacing: 1.5,
+                    }}
+                >
+                   Popular Products
                 </Typography>
                 <ProductGrid products={popularProduct} />
             </Box>
 
             {/* Special Offer Section */}
             <Box>
-                <Typography variant='h5' fontWeight={'bold'} sx={{ textAlign: 'left', marginBottom: 2 }}>
-                    Special Offer
+                <Typography
+                    variant="h4"
+                    sx={{
+                        fontFamily: 'Poppins, sans-serif',
+                        fontWeight: 600,
+                        textAlign: 'left',
+                        marginBottom: 1,
+                        color: "#FF5722", // Orange
+                        display: "inline-block",
+                        paddingBottom: "4px",
+                        letterSpacing: 1.5,
+                        
+                    }}
+                >
+                   Special Offers
                 </Typography>
                 <ProductGrid products={mostOfferedProduct} />
             </Box>
@@ -45,4 +77,5 @@ const HomeProduct = () => {
 };
 
 export default HomeProduct;
- 
+// 1- done
+// 2-responsive 

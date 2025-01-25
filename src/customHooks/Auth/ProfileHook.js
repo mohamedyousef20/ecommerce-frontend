@@ -12,6 +12,7 @@ import {
 } from '../../redux/action/userAction';
 
 const ProfileHook = () => {
+
     const dispatch = useDispatch();
     const navigate = useNavigate()
     // Profile data
@@ -22,11 +23,13 @@ const ProfileHook = () => {
         isActive: true, // Profile image URL
     });
 
+    // New state for the deactivation dialog
     const [isUpdateNameModalOpen, setIsUpdateNameModalOpen] = useState(false);
     const [isUpdateEmailModalOpen, setIsUpdateEmailModalOpen] = useState(false);
     const [isUpdateImageModalOpen, setIsUpdateImageModalOpen] = useState(false);
-    const [isDeactivateDialogOpen, setIsDeactivateDialogOpen] = useState(false); // New state for the deactivation dialog
-
+    const [isDeactivateDialogOpen, setIsDeactivateDialogOpen] = useState(false);
+    const [isDeleteAccountModalOpen, setIsDeleteAccountModalOpen] = useState(false);
+    // New state for user info
     const [newName, setNewName] = useState('');
     const [newEmail, setNewEmail] = useState('');
     const [newProfileImage, setNewProfileImage] = useState(null);
@@ -37,16 +40,29 @@ const ProfileHook = () => {
     const [newPassword, setNewPassword] = useState('');
     const [isChangePasswordModalOpen, setIsChangePasswordModalOpen] = useState(false);
     const [confirmNewPassword, setConfirmNewPassword] = useState('');
-
+    // state for loading progress
     const [loading, setLoading] = useState(true);
+
+    // handle functions
     const handleOpenChangePasswordModal = () => setIsChangePasswordModalOpen(true);
     const handleCloseChangePasswordModal = () => setIsChangePasswordModalOpen(false);
-    // State for modal control
-    const [isDeleteAccountModalOpen, setIsDeleteAccountModalOpen] = useState(false);
 
     const handleOpenDeleteAccountModal = () => setIsDeleteAccountModalOpen(true);
     const handleCloseDeleteAccountModal = () => setIsDeleteAccountModalOpen(false);
 
+    const handleOpenUpdateNameModal = () => setIsUpdateNameModalOpen(true);
+    const handleCloseUpdateNameModal = () => setIsUpdateNameModalOpen(false);
+
+    const handleOpenUpdateEmailModal = () => setIsUpdateEmailModalOpen(true);
+    const handleCloseUpdateEmailModal = () => setIsUpdateEmailModalOpen(false);
+
+    const handleOpenUpdateImageModal = () => setIsUpdateImageModalOpen(true);
+    const handleCloseUpdateImageModal = () => setIsUpdateImageModalOpen(false);
+
+    const handleOpenDeactivateDialog = () => setIsDeactivateDialogOpen(true);
+    const handleCloseDeactivateDialog = () => setIsDeactivateDialogOpen(false);
+
+    // get user when loading the page 
     useEffect(() => {
         const getUser = async () => {
             setLoading(true)
@@ -65,22 +81,12 @@ const ProfileHook = () => {
                 email: user.email,
                 image: user.profileImage,
                 isActive: user.active,
+                // phon:user.phon
             })
         }
-        setLoading(true)
-    }, [loading]);
+        // setLoading(true)
+    }, [user]);
 
-    const handleOpenUpdateNameModal = () => setIsUpdateNameModalOpen(true);
-    const handleCloseUpdateNameModal = () => setIsUpdateNameModalOpen(false);
-
-    const handleOpenUpdateEmailModal = () => setIsUpdateEmailModalOpen(true);
-    const handleCloseUpdateEmailModal = () => setIsUpdateEmailModalOpen(false);
-
-    const handleOpenUpdateImageModal = () => setIsUpdateImageModalOpen(true);
-    const handleCloseUpdateImageModal = () => setIsUpdateImageModalOpen(false);
-
-    const handleOpenDeactivateDialog = () => setIsDeactivateDialogOpen(true); // Open Deactivate Dialog
-    const handleCloseDeactivateDialog = () => setIsDeactivateDialogOpen(false); // Close Deactivate Dialog
 
     const handleProfileImageChange = (event) => {
         if (event.target.files && event.target.files[0]) {
@@ -105,8 +111,9 @@ const ProfileHook = () => {
         }
 
         // Dispatch the action to update the user profile
+        setLoading(true)
         await dispatch(updateUserProfile(formData));
-
+        setLoading(false)
         // Preserve the existing profile fields that were not changed
         setProfile((prevProfile) => ({
             ...prevProfile,
@@ -130,13 +137,13 @@ const ProfileHook = () => {
 
     // Deactivate Account handler
     const handleDeactivateAccount = async () => {
-        await dispatch(deactivateMyAccount()); //  action in your redux actions
+        await dispatch(deactivateMyAccount()); // 
         handleCloseDeactivateDialog();
         Notification('Your account has been deactivated.', 'info');
-        // dispatch(logoutUser()); // Logout the user by clearing the session (Redux or localStorage)
-        // history.push('/login'); // Redirect the user to the login page after logout
+        localStorage.clear('user')
+        localStorage.clear('userToken')
+        navigate('/'); // Redirect the user to the Home page 
 
-        // You can handle the redirection or logging out after deactivation here
     };
 
     // Deactivate Account handler
@@ -144,11 +151,9 @@ const ProfileHook = () => {
         await dispatch(deleteMyAccount()); //  action in your redux actions
         handleCloseDeactivateDialog();
         Notification('Your account has been deleted.', 'info');
-        // dispatch(logoutUser()); // Logout the user by clearing the session (Redux or localStorage)
-        navigate('/')
-
-
-        // You can handle the redirection or logging out after deactivation here
+        localStorage.clear('user');
+        localStorage.clear('userToken');
+        navigate('/');
     };
 
 
@@ -158,9 +163,11 @@ const ProfileHook = () => {
             alert("Passwords don't match!");
             return;
         }
+        setLoading(true)
         await dispatch(changeLoggedUserPassword({
             password: newPassword
-        })); //  action in your redux actions
+        }));
+        setLoading(true)
 
         Notification('Password changed successfully!', 'success')
         setOldPassword('');

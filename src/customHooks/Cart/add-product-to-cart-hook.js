@@ -1,8 +1,8 @@
 
 // import React from 'react'
 
-// const AddProductToCart = () => {
+const AddProductToCart = () => {
 
-// }
+}
 
-// export default AddProductToCart
+export default AddProductToCart

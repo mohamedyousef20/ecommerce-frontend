@@ -1,180 +1,206 @@
-import React, { useState } from 'react';
-import { useEffect } from "react";
-import { Box, TextField, Button, Typography, Container } from '@mui/material';
-import { Link, useNavigate } from 'react-router-dom';  // This is used for routing (optional if you have routing)
-import Navbar from '../../Components/Utils/NavbarLogged';
-import Footer from '../../Components/Utils/Footer';
-import { loginUser } from '../../redux/action/authAction';
-import { useDispatch, useSelector } from "react-redux/lib/exports"
-import { Password } from "@mui/icons-material";
+import React, { useState, useEffect } from 'react';
+import { Box, TextField, Button, Typography, Container, FormControlLabel, Checkbox, IconButton, InputAdornment } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
+import { Visibility, VisibilityOff } from '@mui/icons-material';
+import Joi from 'joi';  // Import Joi for validation
 import Notification from '../../customHooks/useNotification';
-
+import { loginUser } from '../../redux/action/authAction';
+import { useDispatch, useSelector } from 'react-redux/lib/exports';
+import LoadingProgress from '../../Components/LoadingProgress';
 
 const LoginPage = () => {
-
-
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [error, setError] = useState('');
+    const [errors, setErrors] = useState({});
     const [loading, setLoading] = useState(true);
+    const [showPassword, setShowPassword] = useState(false);
+    const [rememberMe, setRememberMe] = useState(true);
     const dispatch = useDispatch();
-    const navigate = useNavigate()
+    const navigate = useNavigate();
+
+    // Joi Validation Schema
+    const schema = Joi.object({
+        email: Joi.string().email({ tlds: { allow: false } }).required().messages({
+            "string.empty": "Email is required",
+            "string.email": "Invalid email format",
+        }),
+        password: Joi.string().min(6).required().messages({
+            "string.empty": "Password is required",
+            "string.min": "Password must be at least 6 characters long",
+        })
+    });
+
+    // Handle Login
     const handleLogin = async (e) => {
         e.preventDefault();
-        if (email === '' || password === '') {
 
-            setError('Both fields are required');
-
-            setError('');
+        // Validate Inputs
+        const validation = schema.validate({ email, password }, { abortEarly: false });
+        if (validation.error) {
+            const validationErrors = {};
+            validation.error.details.forEach((detail) => {
+                validationErrors[detail.path[0]] = detail.message;
+            });
+            setErrors(validationErrors);
+            return;
         }
-        // Add login logic 
-        setLoading(true)
+
+
+
+        setErrors({});
+
+        setLoading(true);
         await dispatch(loginUser({ email, password }));
-        setLoading(false)
-    }
-
-
-    const handleForgotPassword = () => {
-        // Handle password reset (navigate to a reset password page )
-        navigate('/user/forgetPassword')
+        setLoading(false);
     };
 
+    // Handle Forgot Password
+    const handleForgotPassword = () => navigate('/user/forgetPassword');
 
-    const handleCreateNewAccount = () => {
-        // Handle password reset (navigate to a reset password page or show a modal)
-        console.log('Forgot password clicked!');
-    };
+    // Handle Create New Account
+    const handleCreateNewAccount = () =>navigate('/register');
 
-    const handlePassword = (e) => {
-        setPassword(e.target.value)
-    }
-
-
-    const handleEmail = (e) => {
-        setEmail(e.target.value)
-    }
-
-    // get response form server
-    const response = useSelector((state) => state.authReducer.login)
-
-
+    // Get response from server
+    const response = useSelector((state) => state.authReducer.login);
+  
     useEffect(() => {
-
-
         if (!loading) {
+            if (response.message === 'success' && response.userToken) {
+                localStorage.setItem("userToken", response.userToken);
+                localStorage.setItem("user", JSON.stringify(response.data));
 
-            if (response.message === 'success') {
-                if (response.userToken) {
-                    localStorage.setItem("userToken", response.userToken);
-                    localStorage.setItem("user", JSON.stringify(response.data));
-                    console.log(localStorage.getItem("user"))
-
-                    Notification('You Logged In Successfully', 'success')
-
-                    window.location.href = '/'
-                }
-                else {
-                    localStorage.removeItem("userToken")
-                    localStorage.removeItem("user")
-
-                }
-
-                setLoading(true)
+                Notification('You Logged In Successfully', 'success');
+                window.location.href = '/';
+            } else {
+                Notification(response.message, 'error');
             }
-
-
-            else {
-                Notification(response.message, 'error')
-
-            }
-            //   ##TODO SEND NOTE IF NOT PASSWORD OR USER IS WORNG
-            // if (response.message === 'wrong password or email') {
-            //     console.log('fail')
-            // }
-
-
         }
     }, [loading]);
     return (
-        <>
-            <Container component="main" maxWidth="xs">
-                <Box
+        <Container component="main" maxWidth="xs">
+            <LoadingProgress loading={loading} />
+            <Box
+                sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    my: 4,
+                    padding: 3,
+                    backgroundColor: '#F5F5F5',
+                    borderRadius: 3,
+                    boxShadow: 3,
+                }}
+            >
+                <Typography variant="h5" sx={{ color: '#1976D2', fontWeight: 'bold', mb: 1 }}>
+                    Login
+                </Typography>
+
+                <form onSubmit={handleLogin} style={{ width: '100%' }}>
+                    {/* Email Field */}
+                    <TextField
+                        label="Email"
+                        type="email"
+                        variant="outlined"
+                        fullWidth
+                        margin="normal"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        error={!!errors.email}
+                        helperText={errors.email}
+                        sx={{
+                            '& .MuiOutlinedInput-root': {
+                                '& fieldset': { borderColor: '#1976D2' },
+                                '&:hover fieldset': { borderColor: '#FF5722' },
+                                '&.Mui-focused fieldset': { borderColor: '#1976D2' }
+                            }
+                        }}
+                    />
+
+                    {/* Password Field with Visibility Toggle */}
+                    <TextField
+                        label="Password"
+                        type={showPassword ? "text" : "password"}
+                        variant="outlined"
+                        fullWidth
+                        margin="normal"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        error={!!errors.password}
+                        helperText={errors.password}
+                        InputProps={{
+                            endAdornment: (
+                                <InputAdornment position="end">
+                                    <IconButton onClick={() => setShowPassword(!showPassword)}>
+                                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                                    </IconButton>
+                                </InputAdornment>
+                            )
+                        }}
+                        sx={{
+                            '& .MuiOutlinedInput-root': {
+                                '& fieldset': { borderColor: '#1976D2' },
+                                '&:hover fieldset': { borderColor: '#FF5722' },
+                                '&.Mui-focused fieldset': { borderColor: '#1976D2' }
+                            }
+                        }}
+                    />
+
+                    {/* Remember Me Checkbox */}
+                    <FormControlLabel
+                        control={
+                            <Checkbox
+                                checked={rememberMe}
+                                onChange={() => setRememberMe(!rememberMe)}
+                                sx={{
+                                    color: '#1976D2',
+                                    '&.Mui-checked': { color: '#FF5722' }
+                                }}
+                            />
+                        }
+                        label="Remember Me"
+                        sx={{ mt: 1 }}
+                    />
+
+                    {/* Login Button */}
+                    <Button
+                        type="submit"
+                        variant="contained"
+                        fullWidth
+                        sx={{ mt: 2, bgcolor: '#1976D2', '&:hover': { bgcolor: '#FF5722' } }}
+                    >
+                        Login
+                    </Button>
+                </form>
+
+                {/* Forgot Password Link */}
+                <Typography
+                    variant="body2"
                     sx={{
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                        my: 4,
-                        padding: 2,
-                        backgroundColor: 'white',
-                        borderRadius: 2,
-                        boxShadow: 3,
+                        mt: 2, textAlign: 'center',
+                        cursor: 'pointer', color: '#1976D2',
+                        textDecoration: 'underline',
+                        '&:hover': { color: '#FF5722' }
                     }}
+                    onClick={handleForgotPassword}
                 >
-                    <Password />
-                    <Typography variant="h5">Login</Typography>
-                    {error && (
-                        <Typography color="error" variant="body2" sx={{ mb: 2 }}>
-                            {error}
-                        </Typography>
-                    )}
-                    <form onSubmit={handleLogin} style={{ width: '100%' }}>
-                        <TextField
-                            label="Email"
-                            type="email"
-                            variant="outlined"
-                            fullWidth
-                            margin="normal"
-                            value={email}
-                            onChange={handleEmail}
-                        />
-                        <TextField
-                            label="Password"
-                            type="password"
-                            variant="outlined"
-                            fullWidth
-                            margin="normal"
-                            value={password}
-                            onChange={handlePassword}
-                        />
-                        <Button
-                            type="submit"
-                            variant="contained"
-                            fullWidth
-                            sx={{ mt: 2, bgcolor: '#0295db' }}
-                        >
-                            Login
-                        </Button>
-                    </form>
+                    Forgot Password?
+                </Typography>
 
-                    {/* Forgot Password Link */}
-                    <Typography
-                        variant="body2"
-                        sx={{
-                            mt: 2, textAlign: 'center',
-                            cursor: 'pointer', color: 'primary.main', textDecoration: 'underline'
-                        }}
-                        onClick={handleForgotPassword}
-                    >
-                        Forgot Password?
-                    </Typography>
-
-                    {/* Create New Account */}
-                    <Typography
-                        variant="body2"
-                        sx={{
-                            mt: 2, textAlign: 'center',
-                            cursor: 'pointer', color: 'primary.main', textDecoration: 'underline'
-                        }}
-                        onClick={handleCreateNewAccount}
-                    >
-                        Create New Account?
-                    </Typography>
-
-
-                </Box>
-            </Container>
-            <Footer />
-        </>
+                {/* Create New Account */}
+                <Typography
+                    variant="body2"
+                    sx={{
+                        mt: 2, textAlign: 'center',
+                        cursor: 'pointer', color: '#1976D2',
+                        textDecoration: 'underline',
+                        '&:hover': { color: '#FF5722' }
+                    }}
+                    onClick={handleCreateNewAccount}
+                >
+                    Create New Account?
+                </Typography>
+            </Box>
+        </Container>
     );
 };
 

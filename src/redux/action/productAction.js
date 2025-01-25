@@ -12,6 +12,7 @@ import {
     GET_ALL_PRODUCT_IN_CATEGORY,
     GET_MOST_POPULAR_PRODUCT,
     GET_MOST_OFFERED_PRODUCT,
+    GET_ALL_PRODUCT_SEARCH,
     GET_ERROR
 } from "../type"
 import { useUpdateDataWithImage } from "../../Hooks/useUpdateData";
@@ -133,11 +134,11 @@ export const deleteProduct = (id) => async (dispatch) => {
 
 // ------------------------ Update Product ------------------------------
 export const updateProduct = (id, formData) => async (dispatch) => {
-
-
+console.log('///////////////////',id)
 
     try {
         const response = await useUpdateDataWithImage(`/api/vi/product/${id}`, formData);
+        console.log('the response', response)
         dispatch({
             type: UPDATE_PRODUCT,
             payload: response,
@@ -214,3 +215,21 @@ export const getMostOfferedProduct = () => async (dispatch) => {
     }
 }
 
+//get all products with query string
+export const getAllProductSearch = (queryString) => async (dispatch) => {
+    try {
+        const response = await useGetData(`/api/vi/product?${queryString}`);
+        console.log('data ', response)
+        dispatch({
+            type: GET_ALL_PRODUCT_SEARCH,
+            payload: response,
+            loading: true
+        })
+
+    } catch (e) {
+        dispatch({
+            type: GET_ERROR,
+            payload: "Error " + e,
+        })
+    }
+}

@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import { getAllCategory, getAllCategoryWithPagination } from '../../redux/action/categoryAction';
 import { useDispatch, useSelector } from 'react-redux/lib/exports';
-const AllCatePageHook = () => {
+const AdminGetAllCategoryHook = () => {
 
     const dispatch = useDispatch();
 
@@ -29,4 +29,4 @@ const AllCatePageHook = () => {
     return [category, loading, pagination, page];
 }
 
-export default AllCatePageHook
+export default AdminGetAllCategoryHook

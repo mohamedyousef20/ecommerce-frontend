@@ -2,7 +2,7 @@
 // import { useGetDataToken, useGetData } from "../../Hooks/useGetData";
 // import useDeleteData from "../../Hooks/useDeleteData";
 import { useGetDataToken } from "../../Hooks/useGetData";
-import { useInsertData, useInsertDataWithImage } from "../../Hooks/useInsertData";
+import { InsertData, useInsertDataWithImage } from "../../Hooks/useInsertData";
 
 import {
     LOGIN_USER,
@@ -20,7 +20,7 @@ import {
 export const registerUser = (data) => async (dispatch) => {
 
     try {
-        const response = await useInsertData(`/api/vi/auth/register`, data);
+        const response = await InsertData(`/api/vi/auth/register`, data);
         dispatch({
             type: REGISTER_USER,
             payload: response,
@@ -42,7 +42,7 @@ export const loginUser = (data) => async (dispatch) => {
 
     console.log(data)
     try {
-        const response = await useInsertData("/api/vi/auth/login", data);
+        const response = await InsertData("/api/vi/auth/login", data);
         console.log(response)
         dispatch({
             type: LOGIN_USER,
@@ -66,7 +66,7 @@ export const sendPasswordResetCode = (data) => async (dispatch) => {
 
 
     try {
-        const response = await useInsertData("/api/vi/auth/forgetPassword", data);
+        const response = await InsertData("/api/vi/auth/forgetPassword", data);
         console.log(response)
         dispatch({
             type: FORGET_PASSWORD,
@@ -91,7 +91,7 @@ export const verifyResetCode = (data) => async (dispatch) => {
 
 
     try {
-        const response = await useInsertData("/api/vi/auth/verifyResetCode", data);
+        const response = await InsertData("/api/vi/auth/verifyResetCode", data);
         console.log(response)
         dispatch({
             type: VERIFY_RESET_PASSWORD_CODE,
@@ -114,7 +114,7 @@ export const resetPassword = (data) => async (dispatch) => {
 
 
     try {
-        const response = await useInsertData("/api/vi/auth/resetPassword", data);
+        const response = await InsertData("/api/vi/auth/resetPassword", data);
         console.log(response)
         dispatch({
             type: RESET_PASSWORD,

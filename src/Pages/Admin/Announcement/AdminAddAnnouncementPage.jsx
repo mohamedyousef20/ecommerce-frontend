@@ -1,24 +1,26 @@
 import React from 'react';
 import AddAnnouncementHook from '../../../customHooks/Admin/Announcement/AddAnnouncementHook';
 import { Box, Stack, TextField, Typography, Grid, Button } from '@mui/material';
-import MultipleImageInput from '../../../Components/Admin/AdminAllProduct/MultipleImageInput';
-import AdminSideBar from '../../../Components/Admin/AdminSideBar';
+import SingleImageInput from '../../../Components/Admin/AdminAllProduct/SingleImageInput';
+import LoadingProgress from '../../../Components/LoadingProgress';
 
 const AdminAddAnnouncementPage = () => {
     const [
+        loading,
         announcementImage,
         setAnnouncementImage,
         announcementTitle,
         handelTitle,
         handelDesc,
         announcementDesc,
-        handleSubmit
+        handleSubmit,
+        errors,
     ] = AddAnnouncementHook();
 
     return (
         <>
-            <AdminSideBar />
 
+            <LoadingProgress loading={loading} />
             <Box sx={{ flex: 2, padding: { xs: 2, sm: 3, md: 5 }, minHeight: '100vh' }}>
                 {/* Announcement Header */}
                 <Box mb={3}>
@@ -28,10 +30,10 @@ const AdminAddAnnouncementPage = () => {
                 </Box>
 
                 {/* Image Input */}
-                <MultipleImageInput
-                    images={announcementImage}
-                    setImages={setAnnouncementImage}
-                    max={5}
+                <SingleImageInput
+                    image={announcementImage}
+                    setImage={setAnnouncementImage}
+
                 />
 
                 {/* Form Fields */}

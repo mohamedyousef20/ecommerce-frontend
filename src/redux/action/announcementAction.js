@@ -65,6 +65,7 @@ export const createAnnouncement = (formData) => async (dispatch) => {
     console.log(formData)
     try {
         const response = await useInsertDataWithImage('/api/vi/announcement', formData)
+        console.log(response)
         dispatch({
             type: CREATE_ANNOUNCEMENT,
             payload: response,
@@ -169,6 +170,26 @@ export const editAnnouncement = (id, formData) => async (dispatch) => {
     }
 }
 
+
+// active announcement
+export const activeAnnouncement = (id) => async (dispatch) => {
+    try {
+        const response = await useUpdateData(`/api/vi/announcement/active/${id}`)
+
+        dispatch({
+            type: UPDATE_ANNOUNCEMENT,
+            payload: response,
+            loading: true
+        })
+    }
+
+    catch (err) {
+        dispatch({
+            type: GET_ERROR,
+            payload: err.response ? err.response.data : { message: 'An error occurred' },
+        })
+    }
+}
 
 // get one ann 
 

@@ -8,6 +8,7 @@ import { ChromePicker } from 'react-color';
 import AddProdHook from '../../../customHooks/Admin/AddProdHook'
 import AdminSideBar from '../../../Components/Admin/AdminSideBar';
 import MultipleImageInput from '../../../Components/Admin/AdminAllProduct/MultipleImageInput'
+import LoadingProgress from '../../../Components/LoadingProgress';
 
 
 const AdminAddProductPage = () => {
@@ -15,8 +16,10 @@ const AdminAddProductPage = () => {
 
 
     const [
-        productImages, setProductImages,
+        productImages,
+        setProductImages,
         crop,
+        setCateID,
         handelName, prodName,
         handelDesc, desc,
         handelProductPriceBeforeDiscount,
@@ -33,23 +36,21 @@ const AdminAddProductPage = () => {
         showColor,
         handelChangeComplete,
         handleSubmit,
-        handelShowHidePicker
-
+        handelShowHidePicker,
+        errors,
+        handleChange,
+        loading
 
     ] = AddProdHook();
 
 
-
-    // Example category, brand, and subcategory options
-    const categories = ['Electronics', 'Fashion', 'Home Appliances'];
-    const brands = ['Apple', 'Samsung', 'Nike'];
-    const subcategories = ['Smartphones', 'Laptops', 'Headphones', 'Shoes', 'Washing Machines'];
 
 
 
     return (
         <div>
 
+            <LoadingProgress loading={loading} />
             <Stack direction={'row'} justifyContent={'space-between'} gap={1}>
 
                 <AdminSideBar />
@@ -65,10 +66,10 @@ const AdminAddProductPage = () => {
                     {productImages ? <MultipleImageInput
                         images={productImages}
                         setImages={setProductImages}
+                        error={!!errors.productImages}
+                        helperText={errors.productImages}
                         max={4}
-                    /> : <LocalDiningOutlined />}
-
-
+                    /> : null}
 
                     <Stack direction={'row'} justifyContent={'space-around'}
                         alignItems={'flex-start'}>
@@ -81,6 +82,9 @@ const AdminAddProductPage = () => {
                                 variant="outlined"
                                 value={prodName}
                                 onChange={handelName}
+                                error={!!errors.prodName}
+                                helperText={errors.prodName}
+
                                 sx={{
                                     mb: 3,
                                     '& .MuiInputBase-root': {
@@ -97,6 +101,9 @@ const AdminAddProductPage = () => {
                                 variant="outlined"
                                 value={desc}
                                 onChange={handelDesc}
+                                error={!!errors.desc}
+                                helperText={errors.desc}
+
                                 sx={{
                                     mb: 3,
                                     '& .MuiInputBase-root': {
@@ -119,6 +126,8 @@ const AdminAddProductPage = () => {
                                 type="number"
                                 value={Qty}
                                 onChange={handelQuantityInStock}
+                                error={!!errors.Qty}
+                                helperText={errors.Qty}
                                 sx={{
                                     mb: 3,
                                     '& .MuiInputBase-root': {
@@ -133,12 +142,14 @@ const AdminAddProductPage = () => {
                             <FormControl fullWidth sx={{ mb: 3 }}>
                                 <InputLabel>Category</InputLabel>
                                 <Select value={cateID} onChange={handelSelectCate} label="Category">
-                                    {categories.map((cat) => (
-                                        <MenuItem key={cat} value={cat}>
-                                            {cat}
+                                    {category && category.data ? category.data.map((cat) => (
+                                        <MenuItem key={cat._id} value={cat._id} onChange={(e) => setCateID(e.target.value)}>
+                                            {cat.name}
                                         </MenuItem>
-                                    ))}
+                                    )) : null}
                                 </Select>
+                                <Typography color="error">{errors.cateID}</Typography>
+
                             </FormControl>
                             {/* Subcategory Multi-select Input  */}
 
@@ -164,6 +175,8 @@ const AdminAddProductPage = () => {
                                         type="number"
                                         value={priceBeforeDiscount}
                                         onChange={handelProductPriceBeforeDiscount}
+                                        error={!!errors.priceBeforeDiscount}
+                                        helperText={errors.priceBeforeDiscount}
                                         sx={{
                                             '& .MuiInputBase-root': {
                                                 borderRadius: 2,
@@ -182,6 +195,8 @@ const AdminAddProductPage = () => {
                                         type="number"
                                         value={priceAfterDiscount}
                                         onChange={handelProductPriceAfterDiscount}
+                                        error={!!errors.priceAfterDiscount}
+                                        helperText={errors.priceAfterDiscount}
                                         sx={{
                                             '& .MuiInputBase-root': {
                                                 borderRadius: 2,
@@ -228,7 +243,7 @@ const AdminAddProductPage = () => {
                                 <Typography variant='h6' fontWeight={'600'} mr={1}>Color:</Typography>
 
 
-                                {colors.length >= 1 ? (
+                                {colors && colors.length >= 1 ? (
                                     colors.map((color) => {
                                         return (<Box height={20}
                                             onClick={() => removeColor(color)}
@@ -237,10 +252,15 @@ const AdminAddProductPage = () => {
                                             bgcolor={color}
                                             sx={{ cursor: 'pointer' }}>
 
+
                                         </Box>)
                                     }
                                     )
-                                ) : null}
+                                ) :
+                                    <Typography color="error" variant="caption">
+                                        Please select at least one color.
+                                    </Typography>
+                                }
 
 
                                 <IconButton onClick={handelShowHidePicker}>
@@ -289,4 +309,4 @@ const AdminAddProductPage = () => {
 
     )
 }
-export default AdminAddProductPage
+export default AdminAddProductPage;

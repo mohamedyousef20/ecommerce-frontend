@@ -1,7 +1,7 @@
 
 import { useGetData, useGetDataToken } from "../../Hooks/useGetData";
 import useDeleteData from "../../Hooks/useDeleteData";
-import { useInsertData, useInsertDataWithImage } from "../../Hooks/useInsertData"
+import { InsertData, useInsertDataWithImage } from "../../Hooks/useInsertData"
 import {
     GET_ERROR,
     GET_ALL_USER,
@@ -11,7 +11,8 @@ import {
     UPDATE_USER_PROFILE,
     DEACTIVATE_MY_ACCOUNT,
     CHANGE_MY_PASSWORD,
-    DELETE_MY_ACCOUNT
+    DELETE_MY_ACCOUNT,
+    DELETE_USER
 } from "../type"
 
 
@@ -22,7 +23,7 @@ import { useUpdateData, useUpdateDataWithImage } from "../../Hooks/useUpdateData
 export const createUser = (data) => async (dispatch) => {
 
     try {
-        const response = await useInsertData("/api/vi/user", data);
+        const response = await InsertData("/api/vi/user", data);
         dispatch({
             type: CREATE_USER,
             payload: response,
@@ -43,6 +44,7 @@ export const getAllUser = () => async (dispatch) => {
 
     try {
         const response = await useGetDataToken("/api/vi/user");
+        console.log(response)
         dispatch({
             type: GET_ALL_USER,
             payload: response,
@@ -216,27 +218,24 @@ export const deleteMyAccount = () => async (dispatch) => {
 // }
 
 
-// // ------------------------ Delete Product ------------------------------
-// export const deleteProduct = (id) => async (dispatch) => {
+// ------------------------ Delete Product ------------------------------
+export const deleteUser = (id) => async (dispatch) => {
+    try {
+        const response = await useDeleteData(`/api/vi/user/${id}`);
+        dispatch({
+            type: DELETE_USER,
+            payload: response,
+            loading: true
+        })
+    }
 
-
-
-//     try {
-//         const response = await useDeleteData(`/api/vi/product/${id}`);
-//         dispatch({
-//             type: DELETE_PRODUCT,
-//             payload: response,
-//             loading: true
-//         })
-//     }
-
-//     catch (err) {
-//         dispatch({
-//             type: GET_ERROR,
-//             payload: err.response ? err.response.data : { message: 'An error occurred' },
-//         })
-//     }
-// }
+    catch (err) {
+        dispatch({
+            type: DELETE_USER,
+            payload: err.response ? err.response.data : { message: 'An error occurred' },
+        })
+    }
+}
 
 
 // // ------------------------ Update Product ------------------------------

@@ -2,31 +2,40 @@ import { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux/lib/exports';
 import {
     Grid, Box, Checkbox, Button, IconButton, Typography, Divider,
-    Paper, CircularProgress, useMediaQuery
+    Paper, CircularProgress, useMediaQuery,
+    Switch
 } from '@mui/material';
 import { Add, Delete, Edit, Visibility } from "@mui/icons-material";
 import { Link } from 'react-router-dom';
-import { deleteAnnouncement, getAllAnnouncement } from '../../../redux/action/announcementAction';
+import { activeAnnouncement, deleteAnnouncement, getAllAnnouncement } from '../../../redux/action/announcementAction';
 import WarningModal from '../../Utils/WarningModal';
+import GetAllAnnouncementHook from '../../../customHooks/Admin/Announcement/GetAllAnnouncementHook';
+import DeleteAnnouncementHook from '../../../customHooks/Admin/Announcement/DeleteAnnouncementHook';
 
 const Announcement = () => {
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const [itemId, setItemId] = useState(null);
 
-    const dispatch = useDispatch();
-    const announcements = useSelector((state) => state.announcementReducer.getAllAnnouncement);
+    const [announcements] = GetAllAnnouncementHook();
+    const [
+        isModalOpen,
+        setIsModalOpen,
+        itemId,
+        setItemId,
+        handleCancelDelete,
+        handleConfirmDelete] = DeleteAnnouncementHook();
+
     const isSmallScreen = useMediaQuery((theme) => theme.breakpoints.down('sm'));
 
-    useEffect(() => {
-        dispatch(getAllAnnouncement());
-    }, [dispatch]);
 
-    const handleCancelDelete = () => setIsModalOpen(false);
 
-    const handleConfirmDelete = async () => {
-        setIsModalOpen(false);
-        await dispatch(deleteAnnouncement(itemId));
-        window.location.reload(true);
+    const dispatch = useDispatch();
+
+
+    const handleToggleActive = async (announcement) => {
+
+
+        await dispatch(activeAnnouncement(announcement._id));
+
+
     };
 
     return (
@@ -139,13 +148,21 @@ const Announcement = () => {
                                     </Grid>
                                     {!isSmallScreen && (
                                         <Grid item xs={2}>
-                                            <Typography>{announcement.isActive ? 'Yes' : 'No'}</Typography>
+                                            <Switch
+                                                checked={announcement.isActive}
+                                                onChange={() => handleToggleActive(announcement)}
+                                            // announcement.isActive == true;TODO}
+                                            color="success"
+                                            />
                                         </Grid>
                                     )}
                                     <Grid item xs={isSmallScreen ? 3 : 2} sx={{ textAlign: 'center' }}>
-                                        <IconButton>
-                                            <Visibility />
-                                        </IconButton>
+                                        <Link to="/#announcement-section">
+
+                                            <IconButton>
+                                                <Visibility />
+                                            </IconButton>
+                                        </Link>
                                         <Link to={`/dashboard/update/announcement/${announcement._id}`}>
                                             <IconButton>
                                                 <Edit sx={{ color: 'blue' }} />

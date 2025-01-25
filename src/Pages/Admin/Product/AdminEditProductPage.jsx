@@ -1,18 +1,14 @@
-import { Box, Button, CircularProgress, FormControl, Grid2, IconButton, InputLabel, MenuItem, Paper, Select, Stack, TextField, Typography } from '@mui/material'
-import MultiImageInput from 'react-multiple-image-input'
-import { AddOutlined, LocalDiningOutlined } from '@mui/icons-material'
-import { CompactPicker } from 'react-color'
-import React, { useState } from 'react';
-import AddProdHook from '../../../customHooks/Admin/AddProdHook';
-import { ChromePicker } from 'react-color';
-import AdminSideBar from '../../../Components/Admin/AdminSideBar';
-import MultipleImageInput from '../../../Components/Admin/AdminAllProduct/MultipleImageInput'
+import { Alert, Box, Button, FormControl, Grid, IconButton, InputLabel, MenuItem, Select, Stack, TextField, Typography } from '@mui/material';
+import { AddOutlined } from '@mui/icons-material';
+import { CompactPicker } from 'react-color';
+import React, { useEffect, useState } from 'react';
 import EditProdHook from '../../../customHooks/Admin/EditProdHook';
 import { useParams } from 'react-router-dom';
-
+import AdminSideBar from '../../../Components/Admin/AdminSideBar';
+import MultipleImageInput from '../../../Components/Admin/AdminAllProduct/MultipleImageInput';
 
 const AdminEditProductPage = () => {
-    const { id } = useParams()
+    const { id } = useParams();
 
     const [
         productImages,
@@ -29,6 +25,11 @@ const AdminEditProductPage = () => {
         removeColor,
         colors,
         cateID,
+        setCateID,
+        brand,
+        brandID,
+        setBrandID,
+        handleBrandChange,
         handelQuantityInStock,
         priceBeforeDiscount,
         category,
@@ -36,82 +37,45 @@ const AdminEditProductPage = () => {
         handelChangeComplete,
         handleSubmit,
         handelShowHidePicker
-
-
-
     ] = EditProdHook(id);
 
-
-    // Example category, brand, and subcategory options
-    const categories = ['Electronics', 'Fashion', 'Home Appliances'];
-    const brands = ['Apple', 'Samsung', 'Nike'];
-    const subcategories = ['Smartphones', 'Laptops', 'Headphones', 'Shoes', 'Washing Machines'];
-
-
+ 
     return (
         <div>
-
             <Stack direction={'row'} justifyContent={'space-between'} gap={1}>
-
                 <AdminSideBar />
-
                 <Box flex={2}>
+                    <Typography fontSize={'1.5rem'} fontWeight={600} color='#1976d2'>
+                        Edit Product
+                    </Typography>
 
-                    <Box>
-                        <Typography fontSize={'1.5rem'} fontWeight={600} color='#1976d2'>
-                            Edit Product
-                        </Typography>
-                    </Box>
+                    {productImages?.length ? (
+                        <MultipleImageInput images={productImages} setImages={setProductImages} max={4} />
+                    ) : (
+                        <Alert severity='info'>No Images Found</Alert>
+                    )}
 
-                    {productImages ? <MultipleImageInput
-                        images={productImages}
-                        setImages={setProductImages}
-                        max={5}
-                    /> : <CircularProgress />}
-
-
-
-
-
-                    <Stack direction={'row'} justifyContent={'space-around'}
-                        alignItems={'flex-start'}>
-
+                    <Stack direction={'row'} justifyContent={'space-around'} alignItems={'flex-start'}>
                         <Box>
-                            {/* Product Name Input Field */}
+                            {/* Product Name Input */}
                             <TextField
                                 fullWidth
                                 label="Enter Product Name"
                                 variant="outlined"
                                 value={prodName}
                                 onChange={handelName}
-                                sx={{
-                                    mb: 3,
-                                    '& .MuiInputBase-root': {
-                                        borderRadius: 2,
-                                        backgroundColor: '#fafafa',
-                                    },
-                                }}
+                                sx={{ mb: 3, backgroundColor: '#fafafa' }}
                             />
 
-                            {/* Product desc Input Field */}
+                            {/* Product Description Input */}
                             <TextField
                                 fullWidth
                                 label="Add Product Description"
                                 variant="outlined"
                                 value={desc}
                                 onChange={handelDesc}
-                                sx={{
-                                    mb: 3,
-                                    '& .MuiInputBase-root': {
-                                        borderRadius: 2,
-                                        backgroundColor: '#fafafa',
-                                    },
-                                }}
+                                sx={{ mb: 3, backgroundColor: '#fafafa' }}
                             />
-
-
-
-
                         </Box>
 
                         <Box>
@@ -122,44 +86,38 @@ const AdminEditProductPage = () => {
                                 type="number"
                                 value={Qty}
                                 onChange={handelQuantityInStock}
-                                sx={{
-                                    mb: 3,
-                                    '& .MuiInputBase-root': {
-                                        borderRadius: 2,
-                                        backgroundColor: '#fafafa',
-                                    },
-                                }}
+                                sx={{ mb: 3, backgroundColor: '#fafafa' }}
                             />
 
                             {/* Category Select Input */}
-
                             <FormControl fullWidth sx={{ mb: 3 }}>
                                 <InputLabel>Category</InputLabel>
                                 <Select value={cateID} onChange={handelSelectCate} label="Category">
-                                    {categories.map((cat) => (
-                                        <MenuItem key={cat} value={cat}>
-                                            {cat}
+                                    {category?.data?.map((cat) => (
+                                        <MenuItem key={cat._id} value={cat._id}>
+                                            {cat.name}
                                         </MenuItem>
                                     ))}
                                 </Select>
                             </FormControl>
-                            {/* Subcategory Multi-select Input  */}
 
-
-                            {/* 
                             {/* Brand Select Input */}
-                            <Typography variant="h5" sx={{ mb: 1 }}>
-                                Brand
-                            </Typography>
-
-
+                            <FormControl fullWidth sx={{ mb: 3 }}>
+                                <InputLabel>Brand</InputLabel>
+                                <Select value={brandID} onChange={handleBrandChange} label="Brand">
+                                    {brand?.data?.map((brand) => (
+                                        <MenuItem key={brand._id} value={brand._id}>
+                                            {brand.name}
+                                        </MenuItem>
+                                    ))}
+                                </Select>
+                            </FormControl>
                         </Box>
+
                         <Box>
-
                             {/* Price Inputs */}
-                            <Grid2 container spacing={3} sx={{ mb: 3 }}>
-                                <Grid2 item xs={6}>
-
+                            <Grid container spacing={3} sx={{ mb: 3 }}>
+                                <Grid item xs={6}>
                                     <TextField
                                         fullWidth
                                         label="Price Before Discount"
@@ -167,17 +125,10 @@ const AdminEditProductPage = () => {
                                         type="number"
                                         value={priceBeforeDiscount}
                                         onChange={handelProductPriceBeforeDiscount}
-                                        sx={{
-                                            '& .MuiInputBase-root': {
-                                                borderRadius: 2,
-                                                backgroundColor: '#fafafa',
-                                            },
-                                        }}
+                                        sx={{ backgroundColor: '#fafafa' }}
                                     />
-                                </Grid2>
-
-                                <Grid2 item xs={6}>
-
+                                </Grid>
+                                <Grid item xs={6}>
                                     <TextField
                                         fullWidth
                                         label="Price After Discount"
@@ -185,113 +136,51 @@ const AdminEditProductPage = () => {
                                         type="number"
                                         value={priceAfterDiscount}
                                         onChange={handelProductPriceAfterDiscount}
-                                        sx={{
-                                            '& .MuiInputBase-root': {
-                                                borderRadius: 2,
-                                                backgroundColor: '#fafafa',
-                                            },
-                                        }}
+                                        sx={{ backgroundColor: '#fafafa' }}
                                     />
-                                </Grid2>
-                            </Grid2>
+                                </Grid>
+                            </Grid>
 
-                            <FormControl fullWidth sx={{ mb: 3 }}>
-                                <InputLabel>Subcategory</InputLabel>
-                                <Select
-                                    multiple
-                                    // value={subcategory}
-                                    // onChange={handleSubcategoryChange}
-                                    label="Subcategory"
-                                    renderValue={(selected) => selected.join(', ')}
-                                >
-                                    {/* {subcategories.map((sub) => (
-                                        <MenuItem key={sub} value={sub}>
-                                            <Checkbox checked={subcategory.indexOf(sub) > -1} />
-                                            <ListItemText primary={sub} />
-                                        </MenuItem>
-                                    ))} */}
-                                </Select>
-                            </FormControl>
-                            <FormControl fullWidth sx={{ mb: 3 }}>
-                                <InputLabel>Brand</InputLabel>
-                                {/* <Select 
-                                // value={brand}
-                                //  onChange={handleBrandChange} label="Brand">
-                                    {brands.map((b) => (
-                                        <MenuItem key={b} value={b}>
-                                            {b}
-                                        </MenuItem>
-                                    ))}
-                                </Select> */}
-                            </FormControl>
-
+                            {/* Color Selection */}
                             <Stack direction={'row'} alignItems={'center'} justifyContent={'left'} gap={1}>
-
-
-                                <Typography variant='h6' fontWeight={'600'} mr={1}>Color:</Typography>
-
-
-                                {colors && colors.length >= 1 ? (
-                                    colors.map((color) => {
-                                        return (<Box height={20}
-                                            onClick={() => removeColor(color)}
+                                <Typography variant='h6' fontWeight={'600'}>Color:</Typography>
+                                {Array.isArray(colors) && colors.length > 0 ? (
+                                    colors.map((color, index) => (
+                                        <Box
+                                            key={index}
+                                            height={20}
                                             width={20}
                                             borderRadius={'50%'}
                                             bgcolor={color}
-                                            sx={{ cursor: 'pointer' }}>
-
-                                        </Box>)
-                                    }
-                                    )
+                                            sx={{ cursor: 'pointer' }}
+                                            onClick={() => removeColor(color)}
+                                        />
+                                    ))
                                 ) : null}
 
 
                                 <IconButton onClick={handelShowHidePicker}>
-                                    <AddOutlined sx={{
-                                        color: '#151515',
-                                        border: '1px solid #151515',
-                                        borderRadius: '50%',
-                                        // ':hover': { scale: 1.13 }
-                                    }} />
+                                    <AddOutlined sx={{ color: '#151515', border: '1px solid #151515', borderRadius: '50%' }} />
                                 </IconButton>
-                                {showColor ? <CompactPicker onChangeComplete={handelChangeComplete} /> : null}
+                                {showColor && <CompactPicker onChangeComplete={handelChangeComplete} />}
                             </Stack>
                         </Box>
                     </Stack>
 
-
-
                     <Button
                         variant="contained"
                         onClick={handleSubmit}
-
                         sx={{
-                            px: 2,
-                            py: 1.5,
-                            mt: 2,
-                            backgroundColor: "#1976d2",
-                            fontWeight: '600',
-
-                            // boxShadow: "0px 4px 16px rgba(43, 52, 69, 0.1)",
-                            color: "#fff",
-                            borderRadius: "1px",
-                            "&:hover": {
-                                color: '#fff',
-                                bgcolor: "#151515",
-                                boxShadow: "0px 4px 16px rgba(43, 52, 69, 0.1)",
-                            }
-                        }
-                        } >
-                        ADD PRODUCT
-
-
+                            px: 2, py: 1.5, mt: 2, backgroundColor: "#1976d2", fontWeight: '600',
+                            color: "#fff", borderRadius: "1px",
+                            "&:hover": { color: '#fff', bgcolor: "#151515" }
+                        }}>
+                        EDIT PRODUCT
                     </Button>
                 </Box>
             </Stack>
-        </div >
-    )
-}
+        </div>
+    );
+};
 
-export default AdminEditProductPage
-
-// orig
+export default AdminEditProductPage;

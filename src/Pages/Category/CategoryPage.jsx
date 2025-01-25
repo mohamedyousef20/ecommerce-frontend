@@ -2,7 +2,7 @@ import React, { useEffect } from 'react'
 import CategoryContainer from '../../Components/Category/CategoryContainer'
 import PaginationTabs from '../../Components/Utils/Pagination'
 import CategoryPageTitle from '../../Components/Category/CategoryPageTitle'
-import AllCatePageHook from '../../customHooks/Category/AllCatePageHook'
+import AllCatePageHook from '../../customHooks/Category/AdminGetAllCategoryHook'
 
 const CategoryPage = () => {
 
@@ -19,3 +19,5 @@ const CategoryPage = () => {
 }
 
 export default CategoryPage
+// 1- done
+// 2-responsive 

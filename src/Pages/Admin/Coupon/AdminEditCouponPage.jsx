@@ -5,13 +5,14 @@ import { useDispatch, useSelector } from 'react-redux/lib/exports';
 import { useParams } from 'react-router-dom';
 import { getOneCoupon, updateCoupon } from '../../../redux/action/couponAction';
 import AdminEditProductPage from '../Product/AdminEditProductPage';
+import AdminSideBar from '../../../Components/Admin/AdminSideBar';
 // Helper function to format the date
 const formatDate = (dateString) => {
     const date = new Date(dateString);
     const day = date.getDate().toString().padStart(2, '0');  // Pad single digit day with leading zero
     const month = (date.getMonth() + 1).toString().padStart(2, '0');  // Pad month with leading zero
     const year = date.getFullYear().toString().slice(-2);  // Get the last two digits of the year
-    return `${day}/${month}/${year}`;
+    return `${day}-${month}-${year}`;
 };
 const AdminEditCouponPage = () => {
 
@@ -94,6 +95,7 @@ const AdminEditCouponPage = () => {
                 boxShadow: 3,
             }}
         >
+            <AdminSideBar />
             {/* Title Section */}
             <Box mb={3}>
                 <Typography fontSize={'1.5rem'} fontWeight={600} color="red" textAlign="center">

@@ -31,10 +31,18 @@ const ReviewSection = () => {
     const [editMode, setEditMode] = useState(null); // Track which review is being edited
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false); // Track dialog visibility
     const [reviewToDelete, setReviewToDelete] = useState(null); // Track which review to delete
+    const [user, setUser] = useState(""); // Track which review to delete
 
     const review = useSelector((state) => state.reviewReducer.getALLReview);
-    console.log('review',review)
+    console.log('review', review)
     const [loading, setLoading] = useState(true);
+
+   useEffect(()=>{
+
+       if (localStorage.getItem("user") != null) {
+           setUser(JSON.parse(localStorage.getItem("user")))
+       }
+   },[])
 
     useEffect(() => {
         const get = async () => {
@@ -64,21 +72,31 @@ const ReviewSection = () => {
     const handleReviewSubmit = (e) => {
         e.preventDefault();
 
-        if (!comment || rating === 0) {
-            setSnackbarMessage('Please provide a rating and comment');
+        if (!user || user.active === false) {
+            setSnackbarMessage('You are not allowed to add a review.');
             setOpenSnackbar(true);
             return;
         }
 
-        const newReview = { rating: rating, title: comment, product: id };
+        if (review?.data?.some((rev) => rev.user._id === user._id)) {
+            setSnackbarMessage('You have already submitted a review.');
+            setOpenSnackbar(true);
+            return;
+        }
+
+        if (!comment || rating === 0) {
+            setSnackbarMessage('Please provide a rating and comment.');
+            setOpenSnackbar(true);
+            return;
+        }
+
+        const newReview = { rating, title: comment, product: id };
         dispatch(createReview(newReview));
         setComment('');
         setRating(0);
         setSnackbarMessage('Review submitted successfully!');
         setOpenSnackbar(true);
-        window.location.reload(true)
     };
-
     // Handle delete functionality
     const handleDeleteClick = (reviewId) => {
         setReviewToDelete(reviewId);

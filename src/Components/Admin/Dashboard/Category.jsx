@@ -6,24 +6,28 @@ import {
 import { Add, Delete, Edit, Visibility } from "@mui/icons-material";
 import { Link } from 'react-router-dom';
 import PaginationTabs from '../../Utils/Pagination';
-import AdminGetAllCategoryHook from '../../../customHooks/Admin/Category/AdminGetAllCategoryHook';
+import AdminDeleteCategoryHook from '../../../customHooks/Admin/Category/AdminDeleteCategoryHook';
+import AdminGetAllCategoryHook from '../../../customHooks/Category/AdminGetAllCategoryHook';
 
 const Categories = () => {
 
+  const
+    [
+      category,
+      loading,
+      pagination,
+      page
+    ] = AdminGetAllCategoryHook();
+  console.log(category)
+
   const [
-    categories,
-    loading,
-    selectedCategories,
-    setSelectedCategories,
     open,
     setOpen,
     categoryIdToDelete,
     setCategoryIdToDelete,
-    handleSelectCategory,
     handleOpenModal,
     handleCloseModal,
-    handleDelete
-  ] = AdminGetAllCategoryHook()
+    handleDelete] = AdminDeleteCategoryHook()
 
   return (
     <Box sx={{ padding: 2, flex: 1, bgcolor: '#f4f4f4' }}>
@@ -81,10 +85,9 @@ const Categories = () => {
           </Grid>
 
           {/* Category Rows */}
-          {loading && !categories.data ? (
-            <CircularProgress />
-          ) : (
-            categories.data.map((category) => (
+          {category && category.data ?
+
+            category.data.map((category) => (
               <Grid container item xs={12} key={category._id}
                 sx={{
                   display: 'flex',
@@ -98,12 +101,12 @@ const Categories = () => {
               >
                 <Grid item xs={1}>
                   <Checkbox
-                    checked={selectedCategories.includes(category._id)}
-                    onChange={() => handleSelectCategory(category._id)}
+                  // checked={selectedCategories.includes(category._id)}
+                  // onChange={() => handleSelectCategory(category._id)}
                   />
                 </Grid>
                 <Grid item xs={2}>
-                  <img src={category.image} alt={category.name} style={{
+                  <img src={category.image} alt={category} style={{
                     width: '50px',
                     height: '50px',
                     borderRadius: '10px',
@@ -111,12 +114,14 @@ const Categories = () => {
                   }} />
                 </Grid>
                 <Grid item xs={4}>
-                  <Typography>{category.name}</Typography>
+                  {/* <Typography>{category.name}</Typography> */}
                 </Grid>
                 <Grid item xs={3} sx={{ textAlign: 'center' }}>
-                  <IconButton sx={{ color: 'black' }}>
-                    <Visibility sx={{ color: 'black' }} />
-                  </IconButton>
+                <Link to={`/category`}>
+                    <IconButton sx={{ color: 'black' }}>
+                      <Visibility sx={{ color: 'black' }} />
+                    </IconButton>
+                </Link>
                   <Link to={`/dashboard/category/update/${category._id}`}>
                     <IconButton sx={{ color: 'blue' }}>
                       <Edit sx={{ color: 'blue' }} />
@@ -128,10 +133,13 @@ const Categories = () => {
                 </Grid>
               </Grid>
             ))
-          )}
+
+            :
+            <CircularProgress />
+          }
         </Grid>
       </Paper>
-      <PaginationTabs paginationResult={categories.paginationResult} />
+      {/* <PaginationTabs paginationResult={category.paginationResult} /> */}TODO
 
       {/* Delete Category Modal */}
       <Modal

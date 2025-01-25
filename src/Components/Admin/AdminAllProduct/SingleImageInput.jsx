@@ -74,9 +74,16 @@ const SingleImageInput = ({ image, setImage }) => {
                         }}
                     />
                 ) : (
-                    <Typography variant="body2" color="textSecondary">
-                        Drag and drop an image here or click to select
-                    </Typography>
+                    <>
+                        <Typography variant="body2" color="textSecondary">
+                            Drag and drop an image here or click to select
+                        </Typography>
+
+                        <Typography color="error" variant="caption">
+                            Please select at least one image.
+                        </Typography>
+                    </>
+
                 )}
                 <input
                     type="file"

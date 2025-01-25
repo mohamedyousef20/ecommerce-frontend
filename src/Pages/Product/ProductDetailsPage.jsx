@@ -33,7 +33,7 @@ const ProductDetailsPage = () => {
     const [item] = GetProdDetails(id); // Fetch product details using custom hook
     const [color, setColor] = useState("");
     const [quantity, setQuantity] = useState(1);
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState();
 
     const dispatch = useDispatch();
 
@@ -55,6 +55,7 @@ const ProductDetailsPage = () => {
             color: color,
             quantity: quantity
         }))
+
         setLoading(false); // Stop loading animation
 
         Notification("Product added to cart", "success");
@@ -67,6 +68,7 @@ const ProductDetailsPage = () => {
     const handleDecrease = () => {
         setQuantity((prevQuantity) => (prevQuantity > 1 ? prevQuantity - 1 : 1));
     };
+
     const sliderSettings = {
         dots: true,
         infinite: true,
@@ -80,10 +82,9 @@ const ProductDetailsPage = () => {
 
     return (
         <>
-            <Navbar />
             <Container maxWidth="lg" sx={{ paddingY: 3 }}>
                 <Stack
-                    direction={{ xs: "column", md: "row" }}
+                    direction={{ xs: "column", md: "row" }} // Make it column on small screens
                     spacing={3}
                     justifyContent="space-between"
                 >
@@ -92,17 +93,16 @@ const ProductDetailsPage = () => {
                         bgcolor="#f5f5f5"
                         p={2}
                         flex={2}
-                        width="20%"
+                        width="100%" // Make it full width on small screens
                         display="flex"
                         justifyContent="center"
                         alignItems="center"
-                        sx={{ height: { xs: 300, md: 400 }, overflow: 'hidden' }} // Adjust height as needed
+                        sx={{ height: { xs: 300, md: 400 }, overflow: 'hidden' }} // Adjust height
                     >
                         {item.images && item.images.length > 1 ? (
                             <Slider {...sliderSettings}>
                                 {item && item.images ? item.images.map((image, index) => (
                                     <Box key={index} sx={{ px: 2 }}>
-
                                         <CardMedia
                                             key={index}
                                             component="img"
@@ -237,9 +237,10 @@ const ProductDetailsPage = () => {
                         </Button>
                     </Box>
                 </Stack>
-                <slider />
+
                 <ReviewSection />
             </Container>
+
             <Footer />
         </>
     );

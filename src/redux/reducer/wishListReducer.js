@@ -6,7 +6,7 @@ import {
 const initial = {
     allProductInWishList: [],
     addProductTOWishList: [],
-    deleteProductFromWishList: [],
+    updateProductWishListStatus: [],
 
     loading: true,
 };
@@ -30,7 +30,7 @@ const wishListReducer = (state = initial, action) => {
         case DELETE_PRODUCT_FROM_WISHLIST:
             return {
                 ...state,
-                deleteProductFromWishList: action.payload,
+                updateProductWishListStatus: action.payload,
                 loading: false,
             }
         case GET_ERROR:

@@ -1,13 +1,17 @@
-import { GET_ERROR, UPDATE_PRODUCT,CREATE_PRODUCT, GET_ALL_PRODUCT, 
-    GET_PRODUCT_USER_LIKE, GET_PRODUCT, DELETE_PRODUCT, 
+import {
+    GET_ERROR, UPDATE_PRODUCT, CREATE_PRODUCT, GET_ALL_PRODUCT,
+    GET_PRODUCT_USER_LIKE, GET_PRODUCT, DELETE_PRODUCT,
     GET_ALL_PRODUCT_IN_CATEGORY,
     GET_MOST_POPULAR_PRODUCT,
-    GET_MOST_OFFERED_PRODUCT} from "../type"
+    GET_ALL_PRODUCT_SEARCH,
+    GET_MOST_OFFERED_PRODUCT
+} from "../type"
 
 const initial = {
     product: [],
     oneProduct: [],
     allProduct: [],
+    allProductSearch: [],
     allProductInCate: [],
     mostPopularProduct: [],
     mostOfferedProduct: [],
@@ -51,7 +55,12 @@ const productReducer = (state = initial, action) => {
                 mostOfferedProduct: action.payload,
                 loading: false,
             }
-
+        case GET_ALL_PRODUCT_SEARCH:
+            return {
+                ...state,
+                allProductSearch: action.payload,
+                loading: false,
+            }
         case GET_PRODUCT:
             return {
                 oneProduct: action.payload,

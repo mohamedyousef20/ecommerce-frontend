@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import AdminSideBar from '../../../Components/Admin/AdminSideBar';
 import AdminAddBrandHook from '../../../customHooks/Admin/Brand/AdminAddBradnHook';
 import SingleImageInput from '../../../Components/Admin/AdminAllProduct/SingleImageInput';
+import LoadingProgress from '../../../Components/LoadingProgress';
 
 const AdminAddBrandPage = () => {
     const [
@@ -12,10 +13,12 @@ const AdminAddBrandPage = () => {
         brandName,
         setBrandName,
         handelName,
-        handleSubmit
+        handleSubmit,
+        loading
     ] = AdminAddBrandHook()
     return (
         <>
+            <LoadingProgress loading={loading} />
 
 
             <AdminSideBar />
@@ -24,7 +27,7 @@ const AdminAddBrandPage = () => {
 
                 <Box>
                     <Typography fontSize={'1.5rem'} fontWeight={600} color='red'>
-                        Add New Category
+                        Add New Brand
                     </Typography>
                 </Box>
 

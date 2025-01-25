@@ -5,18 +5,27 @@ import React, { useState } from 'react';
 import AdminSideBar from '../../../Components/Admin/AdminSideBar';
 import MultipleImageInput from '../../../Components/Admin/AdminAllProduct/MultipleImageInput'
 import AddCateHook from '../../../customHooks/Category/AddCateHook';
+import SingleImageInput from '../../../Components/Admin/AdminAllProduct/SingleImageInput';
+import LoadingProgress from '../../../Components/LoadingProgress';
 
 
 const AdminAddCategoryPage = () => {
 
-    const [categoryImage, setCategoryImage,
-        handelName, categoryName,
-        handleSubmit] = AddCateHook();
+    const [
+        categoryImage,
+        setCategoryImage,
+        handleName,
+        categoryName,
+        handleSubmit,
+        loading,
+        setLoading,
+        errors
+    ] = AddCateHook();
 
     return (
         <>
 
-
+<LoadingProgress loading={loading}/>
             <AdminSideBar />
 
             <Box flex={2}>
@@ -27,11 +36,11 @@ const AdminAddCategoryPage = () => {
                     </Typography>
                 </Box>
 
-                <MultipleImageInput
-                    images={categoryImage}
-                    setImages={setCategoryImage}
-                    max={5}
-                />
+
+                <SingleImageInput
+                    image={categoryImage}
+                    setImage={setCategoryImage} />
+
 
 
 
@@ -45,7 +54,7 @@ const AdminAddCategoryPage = () => {
                             label="Enter Category Name"
                             variant="outlined"
                             value={categoryName}
-                            onChange={handelName}
+                            onChange={handleName}
                             sx={{
                                 mb: 3,
                                 '& .MuiInputBase-root': {

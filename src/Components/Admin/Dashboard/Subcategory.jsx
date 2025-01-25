@@ -4,104 +4,103 @@ import { useSelector, useDispatch } from 'react-redux/lib/exports';
 // src/components/categorys.js
 import React, { useState } from 'react';
 import {
-    Grid, Box, Checkbox, Button, Modal,
-    IconButton, Typography, Divider, Paper, CircularProgress
+  Grid, Box, Checkbox, Button, Modal,
+  IconButton, Typography, Divider, Paper, CircularProgress
 } from '@mui/material';
 import { Add, Delete, Edit, Visibility } from "@mui/icons-material";
 import { Link } from 'react-router-dom';
-import AllCatePageHook from '../../../customHooks/Category/AllCatePageHook';
 
 
 const Subcategory = () => {
 
-    const [category, loading, pagination, page] = AllCatePageHook();
-    console.log(category)
-
-    return (
-        <Box sx={{ padding: 2, flex: 1, bgcolor: '#d0d0d238' }}>
-            <Typography variant="h4">category</Typography>
-            <Divider sx={{ marginBottom: 2 }} />
-
-            {/* Add New Category Button */}
-            <Button variant="contained"
-                startIcon={<Add />}
-                color="primary" sx={{
-                    display: 'flex',
-                    justifyContent: 'flex-start', mb: 5
-                }}>
-                Add New Category
-            </Button>
-            {/* Category Grid: This mimics the "table" layout */}
-            <Paper>
-
-                <Grid container spacing={3} sx={{ marginBottom: 2 }}>
-                    {/* Header row */}
-                    <Grid container item xs={12}
-                        sx={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            color: '#161616',
-                            justifyContent: 'flex-start',
-                            bgcolor: '#d0d0d238'
-                        }}>
+  const 
 
 
-                        <Grid item xs={2}>
-                            <Typography fontWeight="bold">Name</Typography>
-                        </Grid>
-                        <Divider orientation="vertical" flexItem sx={{ height: 'auto' }} />
+  return (
+    <Box sx={{ padding: 2, flex: 1, bgcolor: '#d0d0d238' }}>
+      <Typography variant="h4">category</Typography>
+      <Divider sx={{ marginBottom: 2 }} />
 
-                        <Grid item xs={2} >
-                            <Typography fontWeight="bold">Image</Typography>
-                        </Grid>
-                        <Divider orientation="vertical" flexItem sx={{ height: 'auto' }} />
+      {/* Add New Category Button */}
+      <Button variant="contained"
+        startIcon={<Add />}
+        color="primary" sx={{
+          display: 'flex',
+          justifyContent: 'flex-start', mb: 5
+        }}>
+        Add New Subcategory
+      </Button>
+      {/* Category Grid: This mimics the "table" layout */}
+      <Paper>
 
-                        <Grid item xs={2}>
-                            <Typography fontWeight="bold">Actions</Typography>
-                        </Grid>
-                    </Grid>
+        <Grid container spacing={3} sx={{ marginBottom: 2 }}>
+          {/* Header row */}
+          <Grid container item xs={12}
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              color: '#161616',
+              justifyContent: 'flex-start',
+              bgcolor: '#d0d0d238'
+            }}>
 
 
-                    {/* Category Rows */}
-                    {category.data ? category.data.map((category, index) => (
-                        <Grid container item xs={12} key={category._id}
+            <Grid item xs={2}>
+              <Typography fontWeight="bold">Name</Typography>
+            </Grid>
+            <Divider orientation="vertical" flexItem sx={{ height: 'auto' }} />
 
-                            sx={{
-                                display: 'flex', alignItems: 'center',
-                                padding: 1, borderRadius: 1,
-                                justifyContent: 'flex-start',
-                                maxWidth:"10px",
-                                overflow:'hidden'
-                            }}>
+            <Grid item xs={2} >
+              <Typography fontWeight="bold">Category</Typography>
+            </Grid>
+            <Divider orientation="vertical" flexItem sx={{ height: 'auto' }} />
 
-                            <Grid item xs={2}>
-                                <Typography>{category.name}</Typography>
-                            </Grid>
+            <Grid item xs={2}>
+              <Typography fontWeight="bold">Actions</Typography>
+            </Grid>
+          </Grid>
 
-                            <Grid item xs={1}>
-                                <Typography>{category.image}</Typography>
-                            </Grid>
 
-                            <Grid item xs={2} sx={{ textAlign: 'center' }}>
-                                <IconButton sx={{ color: 'black' }}>
-                                    <Visibility sx={{ color: 'black' }} />
-                                </IconButton >
-                                <Link to={`/admin/update-category/${category._id}}`}>
-                                    <IconButton sx={{ color: 'blue' }} >
-                                        <Edit sx={{ color: 'blue' }} />
-                                    </IconButton>
-                                </Link>
-                                {/* <IconButton sx={{ color: 'red' }} key={category._id} onClick={() => handleOpenModal(category._id)} >
+          {/* Category Rows */}
+          {category.data ? category.data.map((category, index) => (
+            <Grid container item xs={12} key={category._id}
+
+              sx={{
+                display: 'flex', alignItems: 'center',
+                padding: 1, borderRadius: 1,
+                justifyContent: 'flex-start',
+                maxWidth: "10px",
+                overflow: 'hidden'
+              }}>
+
+              <Grid item xs={2}>
+                {/* <Typography>{category.name}</Typography> */}
+              </Grid>
+
+              <Grid item xs={1}>
+                <Typography>{category.image}</Typography>
+              </Grid>
+
+              <Grid item xs={2} sx={{ textAlign: 'center' }}>
+                <IconButton sx={{ color: 'black' }}>
+                  <Visibility sx={{ color: 'black' }} />
+                </IconButton >
+                <Link to={`/admin/update-category/${category._id}}`}>
+                  <IconButton sx={{ color: 'blue' }} >
+                    <Edit sx={{ color: 'blue' }} />
+                  </IconButton>
+                </Link>
+                {/* <IconButton sx={{ color: 'red' }} key={category._id} onClick={() => handleOpenModal(category._id)} >
                   <Delete sx={{ color: 'red' }} />
                 </IconButton> */}
-                            </Grid>
-                        </Grid>
-                    )) : <CircularProgress />}
-                </Grid>
+              </Grid>
+            </Grid>
+          )) : <CircularProgress />}
+        </Grid>
 
-            </Paper>
+      </Paper>
 
-            {/* <Modal
+      {/* <Modal
         open={open}
         // onClose={onClose}
         aria-labelledby="delete-modal-title"
@@ -155,8 +154,8 @@ const Subcategory = () => {
           </Box>
         </Box>
       </Modal> */}
-        </Box>
-    )
+    </Box>
+  )
 }
 
 export default Subcategory

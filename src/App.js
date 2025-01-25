@@ -54,7 +54,18 @@ import Brand from './Components/Admin/Dashboard/Brand';
 import AdminAddBrandPage from './Pages/Admin/Brand/AdminAddBrandPage';
 import PaymentPage from './Pages/Payment/PaymentPage';
 import UserOrdersPage from './Pages/Order/OrderPage';
-
+import WishListPage from './Pages/Wishlist/WhishListPage';
+import BrandPage from './Pages/Brand/BrandPage';
+import AdminAllBrandPage from './Pages/Admin/Brand/AdminAllBrandPage';
+import { useEffect, useState } from 'react';
+import NavbarUnLogged from './Components/Utils/NavbarUnLogged';
+import ProductSearchContainer from './Components/Product/ProductSearchContainer';
+import AdminAddSubcategoryPage from './Pages/Admin/Subcategory/AdminAddSubcategoryPage';
+import CheckSession from './Components/Utils/CheckSession';
+import AdminEditBrand from './Pages/Admin/Brand/AdminEditBrand';
+import AdminSubcategoryPage from './Pages/Admin/Subcategory/AdminSubcategoryPage';
+import AdminEditSubcategoryPage from './Pages/Admin/Subcategory/AdminEditSubcategoryPage';
+import AdminOrderDetailsPage from './Pages/Admin/Order/AdminOrderDetailsPage';
 const theme = createTheme({
   components: {
     // Override the default styles for all Material-UI icons
@@ -78,13 +89,29 @@ const theme = createTheme({
 
 
 function App() {
+
+  const [user, setUser] = useState('')
+  useEffect(() => {
+
+    if (localStorage.getItem("user") != null) {
+      
+      setUser(JSON.parse(localStorage.getItem("user")))
+    }
+
+  }, [])
+
+  CheckSession();
+
   return (
     <div className="App">
       <ToastContainer />
       <ThemeProvider theme={theme}>
         <CssBaseline />
+
+
         <Router>
 
+          {user !== '' ? <NavbarLogged /> : <NavbarUnLogged />}
           <Routes>
 
 
@@ -93,29 +120,29 @@ function App() {
             {/* <Route exact path='/navbar' element={<Navbar />} /> */}
             <Route exact path='/profile' element={<ProfilePage />} />
 
-            {/* <Route exact path='/category' element={<CategoryPage />} /> */}
+            <Route exact path='/category' element={<CategoryPage />} />
+            <Route exact path='/brand' element={<BrandPage />} />
             <Route exact path='/product' element={<ProductPage />} />
             <Route exact path='/register' element={<RegisterPage />} />
             <Route exact path='/login' element={<LoginPage />} />
-            <Route exact path='/AddUserPage' element={<AddUserPage />} />
             <Route exact path='/ReviewSection' element={<ReviewSection />} />
             <Route exact path='/cart' element={<CartPage />} />
             <Route exact path='/product/:id' element={<ProductDetailsPage />} />
-            <Route exact path='/whish-list' element={<WhishListPage />} />
+            <Route exact path='/wishlist' element={<WishListPage />} />
             <Route exact path='/category/:id/product' element={<ProductInCategoryPage />} />
             {/* <Route exact path='/product/:id' element={< ReviewSection />} /> */}
-            {/* <Route exact path='/admin/add-coupon' element={<AdminAddCouponsPage />} /> */}
             {/* <Route exact path='/admin/update-Coupon/:id' element={<AdminEditCouponPage />} /> */}
 
             {/* test page */}
-            {/* <Route exact path='/user/forgetPassword' element={<ForgotPasswordPage />} /> */}
-            {/* <Route exact path='/verifyResetCode' element={<VerifyResetCode />} /> */}
-            {/* <Route exact path='/user/resetPassword' element={<ResetPasswordPage />} /> */}
+            <Route exact path='/user/forgetPassword' element={<ForgotPasswordPage />} />
+            <Route exact path='/verifyResetCode' element={<VerifyResetCode />} />
+            <Route exact path='/user/resetPassword' element={<ResetPasswordPage />} />
 
             {/* <Route exact path='/AdminAddCategoryPage' element={<AdminAddCategoryPage />} /> */}
 
             <Route exact path='/order' element={<UserOrdersPage />} />
             <Route exact path='/cart/:cartId/payment' element={<PaymentPage />} />
+            {/* <Route exact path='/product/search' element={<ProductSearchContainer />} /> */}
 
 
             {/* Protected Route :Only Admins */}
@@ -127,6 +154,7 @@ function App() {
             <Route exact path='/dashboard/category/create' element={<AdminAddCategoryPage />} />
             <Route exact path='/dashboard/products' element={<AdminProductPage />} />
             <Route exact path='/dashboard/orders' element={<AdminOrderPage />} />
+            TODO<Route exact path='/dashboard/subcategory' element={<AdminSubcategoryPage />} />
             <Route exact path='/dashboard/users' element={<AdminUserPage />} />
             <Route exact path='/dashboard/categories' element={<AdminCategoryPage />} />
             <Route exact path='/dashboard/coupon' element={<AdminCouponPage />} />
@@ -136,6 +164,14 @@ function App() {
             <Route exact path='/dashboard/product/create' element={<AdminAddProductPage />} />
             <Route exact path='/dashboard/category/update/:id' element={<AdminEditCategoryPage />} />
             <Route exact path='/dashboard/brand/create' element={<AdminAddBrandPage />} />
+            <Route exact path='/dashboard/brand/update/:id' element={<AdminEditBrand />} />
+            <Route exact path='/dashboard/brands' element={<AdminAllBrandPage />} />
+            <Route exact path='/dashboard/subcategory/create' element={<AdminAddSubcategoryPage />} />
+            <Route exact path='/dashboard/coupon/create' element={<AdminAddCouponsPage />} />
+            <Route exact path='/admin/coupon/update/:id' element={<AdminEditCouponPage />} />
+            <Route exact path='/dashboard/subcategory/update/:id' element={<AdminEditSubcategoryPage />} />
+            <Route exact path='/dashboard/user/create' element={<AddUserPage />} />
+            <Route exact path='/dashboard/order/:id/details' element={<AdminOrderDetailsPage />} />
 
 
           </Routes>

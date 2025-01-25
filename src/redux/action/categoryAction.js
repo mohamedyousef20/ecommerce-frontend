@@ -18,7 +18,7 @@ export const getAllCategory = () => async (dispatch) => {
 
     try {
         const response = await useGetData('/api/vi/category')
-
+console.log('the response of category',response)
         dispatch({
             type: GET_ALL_CATEGORY,
             payload: response,

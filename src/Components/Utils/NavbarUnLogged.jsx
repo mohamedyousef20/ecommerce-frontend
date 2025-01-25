@@ -1,99 +1,81 @@
-// src/components/ResponsiveNavbarUnlogged.js
-import React, { useState } from 'react';
-import { AppBar, Toolbar, IconButton, Typography, InputBase, Box, Button, Badge } from '@mui/material';
-import { Menu as MenuIcon, Search as SearchIcon, ShoppingCart as ShoppingCartIcon } from '@mui/icons-material';
+import React from 'react';
+import { AppBar, Toolbar, IconButton, Typography, InputBase, Box, Button } from '@mui/material';
+import { Menu as MenuIcon, Search as SearchIcon } from '@mui/icons-material';
 import { alpha, styled } from '@mui/system';
 import { useNavigate } from 'react-router-dom';
 
-// Styled Search Bar
-const Search = styled('div')(({ theme }) => ({
+// Colors
+const primaryColor = '#1976D2';
+const accentColor = '#FF5722';
+const backgroundColor = '#F5F5F5';
+
+
+// Styled Search bar
+const Search = styled('div')({
     position: 'relative',
-    borderRadius: theme.shape.borderRadius,
-    backgroundColor: alpha(theme.palette.common.white, 0.15),
-    '&:hover': {
-        backgroundColor: alpha(theme.palette.common.white, 0.25),
-    },
+    borderRadius: '4px',
+    backgroundColor: alpha(backgroundColor, 0.15),
+    '&:hover': { backgroundColor: alpha(backgroundColor, 0.25) },
     marginLeft: 0,
     width: '100%',
-    [theme.breakpoints.up('sm')]: {
-        marginLeft: theme.spacing(2),
-        width: 'auto',
-    },
-}));
-
-const SearchIconWrapper = styled('div')({
-    position: 'absolute',
-    left: '10px',
     display: 'flex',
     alignItems: 'center',
-    justifyContent: 'center',
+    padding: '5px 10px',
+    maxWidth: '300px',
 });
 
-const StyledInputBase = styled(InputBase)(({ theme }) => ({
-    color: 'inherit',
-    paddingLeft: '35px',
-    width: '100%',
-    '& .MuiInputBase-input': {
-        padding: theme.spacing(1),
-        transition: theme.transitions.create('width'),
-        [theme.breakpoints.up('sm')]: {
-            width: '20ch',
-        },
-    },
-}));
+const SearchIconWrapper = styled('div')({
+    marginRight: '10px',
+});
 
+const StyledInputBase = styled(InputBase)({
+    color: '#fff',
+    width: '100%',
+});
 const NavbarUnLogged = () => {
     const navigate = useNavigate();
 
-    // Handle navigation to different routes
-    const handleNavigate = (path) => {
-        navigate(path);
-    };
-
-    const handleSearch = (event) => {
-        // You can implement search logic here
-        console.log('Searching:', event.target.value);
-    };
+    const handleNavigate = (path) => { navigate(path); };
+    const handleSearch = (event) => { console.log('Searching:', event.target.value); };
 
     return (
-        <AppBar position="sticky" sx={{ zIndex: 1201 }}>
+        <AppBar position="sticky" sx={{ backgroundColor: primaryColor }}>
             <Toolbar sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+
                 {/* Logo Section */}
-                <Typography variant="h5" sx={{ flexGrow: 1, fontWeight: 'bold', cursor: 'pointer' }} onClick={() => handleNavigate('/')}>
+                <Typography
+                    variant="h5"
+                    sx={{ fontWeight: 'bold', cursor: 'pointer', color: '#fff' }}
+                    onClick={() => handleNavigate('/')}
+                >
                     AZARM.
                 </Typography>
-
-
 
                 {/* Search Bar */}
                 <Search>
                     <SearchIconWrapper>
-                        <SearchIcon />
+                        <SearchIcon sx={{ color: primaryColor }} />
                     </SearchIconWrapper>
-                    <StyledInputBase
-                        placeholder="Search…"
-                        inputProps={{ 'aria-label': 'search' }}
-                        onChange={handleSearch}
-                    />
+                    <StyledInputBase placeholder="Search…" onChange={handleSearch} />
                 </Search>
 
-                {/* Navigation Links (for larger screens) */}
-                <Box sx={{ display: { xs: 'none', sm: 'flex' }, flexGrow: 1, justifyContent: 'center' }}>
-                    <Button color="inherit" onClick={() => handleNavigate('/home')}>Home</Button>
-                    <Button color="inherit" onClick={() => handleNavigate('/product')}>Products</Button>
-                    <Button color="inherit" onClick={() => handleNavigate('/login')}>Login</Button>
-                    <Button color="inherit" onClick={() => handleNavigate('/register')}>Sign Up</Button>
+                {/* Navigation Links */}
+                <Box sx={{ display: { xs: 'none', sm: 'flex' }, gap: 2 }}>
+                    <Button sx={{ color: '#fff' }} onClick={() => handleNavigate('/')}>Home</Button>
+                    <Button sx={{ color: '#fff' }} onClick={() => handleNavigate('/product')}>Products</Button>
+                    <Button sx={{ color: '#fff' }} onClick={() => handleNavigate('/brand')}>Brands</Button>
+                    <Button sx={{ color: '#fff' }} onClick={() => handleNavigate('/category')}>Categories</Button>
+                    <Button sx={{ color: '#fff' }} onClick={() => handleNavigate('/login')}>Login</Button>
+                    <Button sx={{ backgroundColor: accentColor, color: '#fff', '&:hover': { backgroundColor: '#D84315' } }} onClick={() => handleNavigate('/register')}>
+                        Sign Up
+                    </Button>
                 </Box>
 
-                {/* Icons Section (Cart and Mobile Menu) */}
-                <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                 
+                {/* Mobile Menu Icon */}
+                <IconButton sx={{ display: { sm: 'none' }, color: '#fff' }}>
+                    <MenuIcon />
+                </IconButton>
 
-                    {/* Mobile Menu Icon */}
-                    <IconButton color="inherit" sx={{ display: { sm: 'none' } }}>
-                        <MenuIcon />
-                    </IconButton>
-                </Box>
             </Toolbar>
         </AppBar>
     );

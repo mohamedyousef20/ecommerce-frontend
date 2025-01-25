@@ -1,25 +1,50 @@
-import { GET_SUB_CATEGORY } from "../type"
+import { GET_ALL_SUB_CATEGORY, GET_ONE_SUB_CATEGORY, UPDATE_SUB_CATEGORY, DELETE_SUB_CATEGORY, CREATE_SUB_CATEGORY } from "../type"
 
 const initial = {
-    category: [],
+    subcategory: [],
+    allSubcategory: [],
+    deleteSubcategory: [],
+    getOneSubcategory: [],
+    updateSubcategory: [],
     loading: true,
 };
 
 const subcategoryReducer = (state = initial, action) => {
 
     switch (action.type) {
-        case GET_SUB_CATEGORY:
+        case CREATE_SUB_CATEGORY:
             return {
                 ...state,
                 subcategory: action.payload,
                 loading: false,
             }
-        // case CREATE_CATEGORY:
-        //     return {
-        //         ...state,
-        //         category: action.payload,
-        //         loading: false,
-        //     }
+        case GET_ALL_SUB_CATEGORY:
+            return {
+                ...state,
+                allSubcategory: action.payload,
+                loading: false,
+            }
+        case DELETE_SUB_CATEGORY:
+            return {
+                ...state,
+                deleteSubcategory: action.payload,
+                loading: false,
+            }
+
+        case GET_ONE_SUB_CATEGORY:
+            return {
+                ...state,
+                getOneSubcategory: action.payload,
+                loading: false,
+            }
+
+
+        case UPDATE_SUB_CATEGORY:
+            return {
+                ...state,
+                updateSubcategory: action.payload,
+                loading: false,
+            }
 
         // case GET_ERROR:
         //     return {

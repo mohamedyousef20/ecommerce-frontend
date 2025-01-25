@@ -2,7 +2,7 @@
 
 import useDeleteData from "../../Hooks/useDeleteData";
 import { useGetData, useGetDataToken } from "../../Hooks/useGetData";
-import { useInsertData } from "../../Hooks/useInsertData"
+import { InsertData } from "../../Hooks/useInsertData"
 import { useUpdateData } from "../../Hooks/useUpdateData";
 import {
     Add_Product_TO_CART, GET_ERROR, DELETE_PRODUCT_FROM_CART,
@@ -12,26 +12,6 @@ import {
 } from "../type";
 
 
-
-// // Add Product To Cart Action
-export const AddProductToCart = (body) =>async (dispatch) => {
-
-
-    try {
-        const response = await useInsertData(`/api/vi/cart`, body);
-        console.log(response)
-        dispatch({
-            type: Add_Product_TO_CART,
-            payload: response,
-        })
-
-    } catch (e) {
-        dispatch({
-            type: GET_ERROR,
-            payload: e.response,
-        })
-    }
-}
 
 
 // get user cart
@@ -54,6 +34,26 @@ export const getUserCart = () => async (dispatch) => {
 
 
 
+
+// // // Add Product To Cart Action
+export const AddProductToCart = (data) => async (dispatch) => {
+
+
+    try {
+        const response = await InsertData (`/api/vi/cart`, data);
+        console.log(response)
+        dispatch({
+            type: Add_Product_TO_CART,
+            payload: response,
+        })
+
+    } catch (e) {
+        dispatch({
+            type: GET_ERROR,
+            payload: e.response,
+        })
+    }
+}
 
 // delete product from user cart
 export const removeProductFromCart = (itemId) => async (dispatch) => {

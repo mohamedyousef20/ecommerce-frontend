@@ -1,4 +1,4 @@
-import { CREATE_ORDER_CASH, CREATE_ORDER_VISA } from '../type'
+import { CREATE_ORDER_CASH, CREATE_ORDER_CARD } from '../type'
 
 const initial = {
     createOrderCash: [],
@@ -11,7 +11,8 @@ const checkoutReducer = (state = initial, action) => {
                 ...state,
                 createOrderCash: action.payload,
             }
-        case CREATE_ORDER_VISA:
+
+        case CREATE_ORDER_CARD:
             return {
                 ...state,
                 createOrderCard: action.payload,

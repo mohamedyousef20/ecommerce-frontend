@@ -7,7 +7,6 @@ import NavbarLogged from '../../../Components/Utils/NavbarLogged'
 const AdminProductPage = () => {
     return (
         <>
-            <NavbarLogged />
             <Box sx={{ display: 'flex', background: '#d0d0d238', gap: 1 }}>
                 {/* Sidebar */}
                 <AdminSideBar />

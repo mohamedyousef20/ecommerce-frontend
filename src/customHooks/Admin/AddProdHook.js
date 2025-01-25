@@ -4,6 +4,7 @@ import { getAllCategory } from '../../redux/action/categoryAction'
 import { getSubcateOnCategory } from '../../redux/action/subCategoryAction'
 import { createProduct } from '../../redux/action/productAction'
 import Notification from '../useNotification'
+import Joi from 'joi'
 
 const AddProdHook = () => {
 
@@ -16,10 +17,11 @@ const AddProdHook = () => {
 
 
     // get all category
-    const category = useSelector(state => state.categoryReducer.category);
-
+    const category = useSelector(state => state.categoryReducer.allCategory);
+    console.log('category', category)
     // get all category
     const product = useSelector(state => state.allProduct.product);
+    console.log(product)
     // get all brands
     // const brand = useSelector(state => state.categoryReducer.category);
     const crop = {
@@ -29,7 +31,7 @@ const AddProdHook = () => {
     }
 
     // set loading
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState();
 
 
     const [productImages, setProductImages] = useState([]);
@@ -43,12 +45,80 @@ const AddProdHook = () => {
     const [selectedSubCat, setSelectedSubCat] = useState([]);
     const [brandID, setBrandID] = useState('');
     // hide show color picker state 
-    const [showColor, setShowColor] = useState(false)
+    const [showColor, setShowColor] = useState(false);
+    const [errors, setErrors] = useState({});
+
 
     // to store color selected 
     const [colors, setColors] = useState([])
-    const [error, setError] = useState(""); // State to store the error message
 
+    // Joi Schema for Validation
+    const schema = Joi.object({
+        prodName: Joi.string().min(2).max(50).required().messages({
+            'string.empty': 'Product name is required',
+            'string.min': 'Product name must be at least 2 characters',
+            'string.max': 'Product name must be less than 50 characters',
+        }),
+        desc: Joi.string().min(10).required().messages({
+            'string.empty': 'Description is required',
+            'string.min': 'Description must be at least 10 characters',
+        }),
+        priceBeforeDiscount: Joi.number().positive().required().messages({
+            'number.base': 'Price must be a valid number',
+            'number.positive': 'Price must be greater than 0',
+            'any.required': 'Price before discount is required',
+        }),
+        priceAfterDiscount: Joi.number().min(0).allow('').messages({
+            'number.base': 'Discounted price must be a valid number',
+            'number.min': 'Discounted price cannot be negative',
+        }),
+        Qty: Joi.number().integer().min(1).required().messages({
+            'number.base': 'Quantity must be a number',
+            'number.integer': 'Quantity must be an integer',
+            'number.min': 'Quantity must be at least 1',
+            'any.required': 'Quantity is required',
+        }),
+        cateID: Joi.string().invalid('Category').required().messages({
+            'any.invalid': 'Please select a valid category',
+            'any.required': 'Category is required',
+        }),
+        colors: Joi.array().min(1).messages({
+            'array.min': 'At least one color must be selected',
+        }),
+        productImages: Joi.array().min(1).messages({
+            'array.min': 'At least one image is required',
+        }),
+    });
+
+    // Handle field changes and validate live
+    const handleChange = (field, value) => {
+        if (field === 'colors') {
+            setColors([...colors, value]);
+        } else {
+            switch (field) {
+                case 'prodName': setProdName(value); break;
+                case 'desc': setDesc(value); break;
+                case 'priceBeforeDiscount': setPriceBeforeDiscount(value); break;
+                case 'priceAfterDiscount': setPriceAfterDiscount(value); break;
+                case 'Qty': setQty(value); break;
+                case 'cateID': setCateID(value); break;
+                default: break;
+            }
+        }
+
+
+        // Validate live
+        const obj = { prodName, desc, priceBeforeDiscount, priceAfterDiscount, Qty, cateID, colors, productImages, [field]: value };
+        const { error } = schema.validate(obj, { abortEarly: false });
+
+        if (error) {
+            const errorMessages = {};
+            error.details.forEach(err => errorMessages[err.path[0]] = err.message);
+            setErrors(errorMessages);
+        } else {
+            setErrors({});
+        }
+    };
     // Handle Product Name
     const handelName = (e) => {
         setProdName(e.target.value);
@@ -125,8 +195,20 @@ const AddProdHook = () => {
     // handle submit data sending to DB
     const handleSubmit = async (e) => {
         e.preventDefault(); // Prevent form submission
+        setErrors({})
 
-        setError(""); // Reset the error before making a new request
+        // Final validation before submission
+        const obj = { prodName, desc, priceBeforeDiscount, priceAfterDiscount, Qty, cateID, colors, productImages };
+        const { error } = schema.validate(obj, { abortEarly: false });
+
+        if (error) {
+            const errorMessages = {};
+            error.details.forEach(err => errorMessages[err.path[0]] = err.message);
+            setErrors(errorMessages);
+            Notification('Validation failed. Please check the form.', 'error');
+            setLoading(false);
+            return;
+        }
 
         //  image convert it to base file
         const imgBase64ToFile = dataURLtoFile(productImages[0], Math.random() + '.jpeg');
@@ -143,51 +225,48 @@ const AddProdHook = () => {
         formData.append("quantity", Qty);
         formData.append("priceAfterDiscount", priceAfterDiscount);
         formData.append("price", priceBeforeDiscount);
+        formData.append("category", cateID);
         colors.map((item) => formData.append("colors", item));
         imagesItems.map((img) => formData.append("images", img));
         formData.append("imageCover", imgBase64ToFile);
 
-
         setLoading(true);
         await dispatch(createProduct(formData));
+        setLoading(false);
 
-        console.log([product])
-        if (product.msg === "success") {
-            setLoading(false);
-            Notification('Add Product Is Done Successfully..', 'success')
-
-        }
-        else {
-            Notification(product.message, 'error');
-
-        }
     }
     useEffect(() => {
         if (loading === false) {
-            setProdName('');
-            setDesc('');
-            setPriceAfterDiscount();
-            setPriceBeforeDiscount();
-            setProductImages([])
-            setColors([])
-            setCateID('category')
-            setQty(1)
-            setTimeout(() => {
-                setLoading(true)
-            }, 1000);
 
+            if (product && product.status === 201) {
+                Notification('Add Product Is Done Successfully..', 'success')
+                setProdName('');
+                setDesc('');
+                setPriceAfterDiscount();
+                setPriceBeforeDiscount();
+                setProductImages([])
+                setColors([])
+                setCateID('category')
+                setQty(1)
 
+            }
+            else {
+                Notification(product?.message || 'Error adding product', 'error');
 
+            }
 
-
+            setLoading(false)
         }
     }, [loading]
     )
 
-
+    console.log(errors)
     return [
-        productImages, setProductImages,
+
+        productImages,
+        setProductImages,
         crop,
+        setCateID,
         handelName, prodName,
         handelDesc, desc,
         handelProductPriceBeforeDiscount,
@@ -204,9 +283,10 @@ const AddProdHook = () => {
         showColor,
         handelChangeComplete,
         handleSubmit,
-        handelShowHidePicker
-
-
+        handelShowHidePicker,
+        errors,
+        handleChange,
+        loading
 
     ];
 

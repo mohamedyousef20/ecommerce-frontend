@@ -1,115 +1,161 @@
-import { useEffect, useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux/lib/exports'
+import { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux/lib/exports';
 import Notification from '../../useNotification';
 import { createAnnouncement } from '../../../redux/action/announcementAction';
+import Joi from 'joi'; // Import Joi for validation
 
 const AddAnnouncementHook = () => {
-
-    // get loading state
-
     const dispatch = useDispatch();
 
-    //get response from server
-
-
-    // states
-
-    // image state
+    // States
     const [announcementImage, setAnnouncementImage] = useState([]);
-    // selected image state
     const [announcementTitle, setAnnouncementTitle] = useState('');
     const [announcementDesc, setAnnouncementDesc] = useState('');
-    // is loading state
-    const [loading, setLoading] = useState(true);
-    console.log('announcementImage', announcementImage)
-    // handle name
+    const [loading, setLoading] = useState();
+
+    // Validation Errors
+    const [errors, setErrors] = useState({});
+
+    // Joi Schema for Validation
+    const schema = Joi.object({
+        announcementTitle: Joi.string().min(5).max(50).required().messages({
+            "string.empty": "Title is required",
+            "string.min": "Title must be at least 5 characters",
+            "string.max": "Title must be at most 50 characters",
+        }),
+        announcementDesc: Joi.string().min(10).required().messages({
+            "string.empty": "Description is required",
+            "string.min": "Description must be at least 10 characters",
+        }),
+        announcementImage: Joi.string().min(1).required().messages({
+            "string.empty": "At least one image is required",
+            'any.required': 'Please upload a Announcement image'
+
+        }),
+    });
+    const dataURLtoFile = (dataurl, filename = 'image.jpg') => {
+        try {
+            if (!dataurl) throw new Error('Invalid Data URL');
+
+            const [header, base64] = dataurl.split(',');
+            if (!header || !base64) throw new Error('Malformed Data URL');
+
+            const mimeMatch = header.match(/:(.*?);/);
+            if (!mimeMatch) throw new Error('MIME type not found in Data URL');
+            const mimeType = mimeMatch[1];
+
+            const binaryStr = atob(base64);
+            const len = binaryStr.length;
+            const uint8Array = new Uint8Array(len);
+
+            for (let i = 0; i < len; i++) {
+                uint8Array[i] = binaryStr.charCodeAt(i);
+            }
+
+            return new File([uint8Array], filename, { type: mimeType });
+        } catch (error) {
+            console.error('Error converting Data URL to File:', error.message);
+            return null;
+        }
+    };
+
+    const announcement = useSelector((state) => state.announcementReducer.createAnnouncement);
+    // Handle Input Changes
     const handelTitle = (e) => {
         setAnnouncementTitle(e.target.value);
-
     };
+
     const handelDesc = (e) => {
         setAnnouncementDesc(e.target.value);
+    };
 
-    }
-    // to convert base 64 to file
-    function dataURLtoFile(dataurl, filename) {
 
-        var arr = dataurl.split(','),
-            mime = arr[0].match(/:(.*?);/)[1],
-            bstr = atob(arr[1]),
-            n = bstr.length,
-            u8arr = new Uint8Array(n);
+    // Handle Submit
+    console.log('errors', errors)
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+     
+        setErrors({})
 
-        while (n--) {
-            u8arr[n] = bstr.charCodeAt(n);
+        // Reset previous errors before validating
+        setErrors({});
+
+        // Validate the form
+        const validateForm = () => {
+            const { error } = schema.validate(
+                {
+                    announcementTitle,
+                    announcementDesc,
+                    announcementImage,
+                },
+                { abortEarly: false }
+            );
+
+            if (error) {
+                // If validation fails, create an error object and set it to errors state
+                const errorMessages = {};
+                error.details.forEach((err) => {
+                    errorMessages[err.context.key] = err.message; // Set the specific error for each field
+                    Notification(err.message, 'error'); // Show notification
+                });
+                setErrors(errorMessages); // Set error messages to state
+                return false;
+            }
+            return true;
+        };
+
+        if (!validateForm()) {
+            return;  // Stop form submission if validation fails
         }
 
-        return new File([u8arr], filename, { type: mime });
-    }
-
-    //handle submit
-    const handleSubmit = async (e) => {
-
-        //  image convert it to base file
-        const imgBase64ToFile = dataURLtoFile(announcementImage[0], Math.random() + '.jpeg');
-        // make array of images and convert it to base file
-        const imagesItems = Array.from(Array(Object.keys(announcementImage).length).keys()).map(
-            (item, index) => {
-                return dataURLtoFile(announcementImage[index], Math.random() + '.jpeg');
-
-            }
-        )
-        // validation on the form
-
-        // if (announcementImage === '' || selectedFile === null) {
-
-        //     Notification('All fields required', 'error')
-        //     return;
-        // }
-
-        // formData to insert images
+        // Convert Image to File
+        const imageFile = dataURLtoFile(announcementImage, 'announcementImage.jpeg');
 
 
-
+        // Create FormData
         const formData = new FormData();
-
         formData.append('title', announcementTitle);
         formData.append('desc', announcementDesc);
-        formData.append('image', imgBase64ToFile);
-     
+        formData.append('image', imageFile);
+
         setLoading(true);
         await dispatch(createAnnouncement(formData));
         setLoading(false);
+    };
 
-
-    }
-
-    // use effect dependency on loading
-
+    // Reset Form on Success
     useEffect(() => {
-        if (loading === false) {
-            setAnnouncementTitle('');
-            setAnnouncementDesc('');
-            setAnnouncementImage([]);
-            setLoading(true);
+        if (!loading && announcement) {
 
+            if (announcement.status === 201) {
+                console.log('object')
+                setAnnouncementTitle('');
+                setAnnouncementDesc('');
+                setAnnouncementImage([]);
+                setLoading(true);
+                setErrors({});
+                Notification('Announcement added successfully!', 'success');
+            }
+            else {
+                console.log(announcement)
+                // Notification()
 
-            Notification('Add annoucment ', 'success')
-
+            }
 
         }
-    }, [loading]
-    )
+    }, [loading]);
 
     return [
+        loading,
         announcementImage,
         setAnnouncementImage,
         announcementTitle,
         handelTitle,
         handelDesc,
         announcementDesc,
-        handleSubmit
+        handleSubmit,
+        errors,
     ];
-}
+};
 
-export default AddAnnouncementHook
+export default AddAnnouncementHook;

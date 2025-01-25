@@ -8,15 +8,17 @@ import { Link } from 'react-router-dom';
 import AdminDeleteProdHook from '../../../customHooks/Admin/AdminDeleteProdHook';
 import AdminGetAllProd from '../../../customHooks/Admin/AdminGetAllProd';
 import PaginationTabs from '../../Utils/Pagination';
+import WarningModal from '../../Utils/WarningModal';
 
 const Products = ({ item }) => {
     const [
         productIdToDelete,
         setProductIdToDelete,
-        open, setOpen,
-        handleDelete,
+        isModalOpen,
+        setIsModalOpen,
+        handleConfirmDelete,
         handleOpenModal,
-        handleCloseModal
+        handleCancelDelete
     ] = AdminDeleteProdHook();
 
     const [products] = AdminGetAllProd();
@@ -139,9 +141,9 @@ const Products = ({ item }) => {
                             </Grid>
                             <Grid item xs={2} sx={{ textAlign: 'center' }}>
 
-                                {/* <IconButton sx={{ color: 'black' }} onClick={() => handleOpenModal(product)}>
+                                <IconButton sx={{ color: 'black' }} onClick={() => handleOpenModal(product)}> 
                                     <Visibility sx={{ color: 'black' }} />
-                                </IconButton> */}
+                                </IconButton>
 
 
                                 <Link to={`/admin/product/update/${product._id}`}>
@@ -160,93 +162,15 @@ const Products = ({ item }) => {
             <PaginationTabs paginationResult={products.paginationResult} />
 
             {/* Delete Product Modal */}
-            <Modal
-                open={open}
-                aria-labelledby="delete-modal-title"
-                aria-describedby="delete-modal-description"
-            >
-                <Box
-                    sx={{
-                        position: 'absolute',
-                        top: '50%',
-                        left: '50%',
-                        transform: 'translate(-50%, -50%)',
-                        width: 400,
-                        bgcolor: 'background.paper',
-                        boxShadow: 18,
-                        p: 4,
-                        outline: 'none',
-                    }}
-                >
-                    <Typography id="delete-modal-title" variant="h6" component="h2">
-                        Are you sure you want to delete this product?
-                    </Typography>
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 2 }}>
-                        <Button
-                            onClick={handleDelete}
-                            sx={{
-                                fontWeight: 600,
-                                boxShadow: "0px 4px 16px rgba(43, 52, 69, 0.1)",
-                                '&:hover': {
-                                    backgroundColor: '#ff0000',
-                                    color: '#fff',
-                                },
-                            }}
-                        >
-                            Delete
-                        </Button>
-                        <Button
-                            onClick={handleCloseModal}
-                            sx={{
-                                fontWeight: 600,
-                                boxShadow: "0px 4px 16px rgba(43, 52, 69, 0.1)",
-                                color: '#000',
-                                '&:hover': {
-                                    backgroundColor: 'green',
-                                    color: '#fff',
-                                },
-                            }}
-                        >
-                            Cancel
-                        </Button>
-                    </Box>
-                </Box>
-            </Modal>
 
-            <Modal
-                open={openModal}
-                onClose={handleCloseModal}
-                aria-labelledby="order-details-modal"
-                aria-describedby="order-details-description"
-            >
-                <Box
-                    sx={{
-                        position: 'absolute',
-                        top: '50%',
-                        left: '50%',
-                        transform: 'translate(-50%, -50%)',
-                        width: 400,
-                        bgcolor: 'background.paper',
-                        boxShadow: 18,
-                        p: 4,
-                        outline: 'none'
-                    }}
-                >
-                    {selectedProduct ? (
-                        <>
-                            <Typography variant="h6" gutterBottom>Order Details</Typography>
-                            <Typography variant="body1"><strong>Order ID:</strong> {selectedProduct.id}</Typography>
-                            <Typography variant="body1"><strong>Customer:</strong> {selectedProduct.customerName}</Typography>
-                            <Typography variant="body1"><strong>Total:</strong> ${selectedProduct.total}</Typography>
-                            <Typography variant="body1"><strong>Date:</strong> {selectedProduct.date}</Typography>
-                            <Typography variant="body1"><strong>Status:</strong> {selectedProduct.status}</Typography>
-                            <Typography variant="body1"><strong>Shipping Address:</strong> {selectedProduct.shippingAddress}</Typography>
-                        </>
-                    ) : (
-                        <CircularProgress />
-                    )}
-                </Box>
-            </Modal>
+            {/* Delete Confirmation Modal */}
+            <WarningModal
+                isOpen={isModalOpen}
+                onConfirm={handleConfirmDelete}
+                onCancel={handleCancelDelete}
+                message="Are you sure you want to delete this Announcement?"
+            />
+
         </Box>
     );
 };

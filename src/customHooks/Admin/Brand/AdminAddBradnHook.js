@@ -1,34 +1,37 @@
-import { useEffect, useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux/lib/exports'
+import { useEffect, useState } from 'react';
 import Notification from '../../useNotification';
 import { createBrand } from '../../../redux/action/brandAction';
+import Joi from 'joi';
+import { useDispatch } from 'react-redux/lib/exports';
 
 const AdminAddBrandHook = () => {
-
-    // get loading state
-
     const dispatch = useDispatch();
 
-    //get response from server
-
-
-    // states
-
-    // image state
+    // State variables
     const [brandImage, setBrandImage] = useState([]);
     const [brandName, setBrandName] = useState('');
-
-    // selected image state
-
-    // is loading state
     const [loading, setLoading] = useState(true);
 
+    // Validation schema using Joi
+    const schema = Joi.object({
+        brandName: Joi.string().min(2).max(50).required().messages({
+            'string.empty': 'Brand name is required',
+            'string.min': 'Brand name must be at least 2 characters',
+            'string.max': 'Brand name must be less than 50 characters'
+        }),
+        brandImage: Joi.string().required().messages({
+            'string.empty': 'Please upload a brand image',
+            'any.required': 'Please upload a brand image'
+        })
 
-    const handelName = (e) => {
+    });
+
+    // Handle name change
+    const handleName = (e) => {
         setBrandName(e.target.value);
-
     };
-    // to convert base 64 to file
+
+    // Convert base64 to file
     const dataURLtoFile = (dataurl, filename = 'image.jpg') => {
         try {
             if (!dataurl) throw new Error('Invalid Data URL');
@@ -55,68 +58,47 @@ const AdminAddBrandHook = () => {
         }
     };
 
+    // Validate the form
+    const validateForm = () => {
+        const { error } = schema.validate({ brandName, brandImage }, { abortEarly: false });
 
+        if (error) {
+            error.details.forEach((err) => Notification(err.message, 'error'));
+            return false;
+        }
+        return true;
+    };
 
-    //handle submit
+    // Handle form submission
     const handleSubmit = async (e) => {
+        e.preventDefault();
 
-        //  image convert it to base file
-        const imgBase64ToFile = dataURLtoFile(brandImage[0], Math.random() + '.jpeg');
-        // make array of images and convert it to base file
-        // const imagesItems = Array.from(Array(Object.keys(brandImage).length).keys()).map(
-        //     (item, index) => {
-        //         return dataURLtoFile(brandImage[index], Math.random() + '.jpeg');
+        if (!validateForm()) return;
 
-        //     }
-        // )
-        // validation on the form
-
-        // if (announcementImage === '' || selectedFile === null) {
-
-        //     Notification('All fields required', 'error')
-        //     return;
-        // }
-
-        // formData to insert images
-
-
+        const imageFile = dataURLtoFile(brandImage, 'brandImage.jpeg');
 
         const formData = new FormData();
-
-
         formData.append('name', brandName);
-        formData.append('image', imgBase64ToFile);
+        formData.append('image', imageFile);
+        console.log(imageFile)
 
         setLoading(true);
         await dispatch(createBrand(formData));
         setLoading(false);
+    };
+useEffect(()=>{setLoading(false)},[])
+    // Reset form after submission
+    // useEffect(() => {
+    //     if (!loading) {
+    //         setBrandName('');
+    //         setBrandImage([]);
+    //         setLoading(true);
+    //         Notification('Brand added successfully', 'success');
+    //     }
+    // }, [loading]);
 
-    }
+    return [brandImage, setBrandImage, brandName, setBrandName, 
+        handleName, handleSubmit, loading];
+};
 
-    // use effect dependency on loading
-
-    useEffect(() => {
-        if (loading === false) {
-            setBrandName('');
-            setBrandImage([]);
-            setLoading(true);
-
-
-            Notification('Add Brand ', 'success')
-
-
-        }
-    }, [loading]
-    )
-
-    return [
-        brandImage,
-        setBrandImage,
-        brandName,
-        setBrandName,
-        handelName,
-        handleSubmit
-    ];
-}
-
-export default AdminAddBrandHook
+export default AdminAddBrandHook;

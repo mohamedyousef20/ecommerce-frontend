@@ -117,3 +117,5 @@ const Footer = () => {
 };
 
 export default Footer;
+// 1- done
+// 2-responsive 

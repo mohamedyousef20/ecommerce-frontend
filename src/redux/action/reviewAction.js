@@ -1,6 +1,6 @@
 import useDeleteData from "../../Hooks/useDeleteData"
 import { useGetDataToken } from "../../Hooks/useGetData"
-import { useInsertData } from "../../Hooks/useInsertData"
+import { InsertData } from "../../Hooks/useInsertData"
 import { useUpdateData } from "../../Hooks/useUpdateData"
 import { CREATE_REVIEW, GET_ALL_REVIEW, UPDATE_USER_REVIEW } from "../type"
 
@@ -11,7 +11,7 @@ import { CREATE_REVIEW, GET_ALL_REVIEW, UPDATE_USER_REVIEW } from "../type"
 // create review action
 export const createReview = (data) => async (dispatch) => {
     try {
-        const response = await useInsertData(`/api/vi/review`, data)
+        const response = await InsertData(`/api/vi/review`, data)
         console.log(response)
         dispatch({
             type: CREATE_REVIEW,

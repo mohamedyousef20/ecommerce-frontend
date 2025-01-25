@@ -1,6 +1,4 @@
-خلى عدد الصور بتاعة المنتج ف الباك ايند 4
 
-vid 6.6 not completed 
 
 #1976d2
 
@@ -15,13 +13,12 @@ export default ProductGrid;
 AZARM.
 </Typography>
 
-TODO ANNOUNCEMNTS
+TODO# ANNOUNCEMNTS
     {
         id: 1,
         title: "Big Sale is Here!",
         description: "Don't miss out on discounts up to 70% on all categories.",
         image: "https://via.placeholder.com/150x100", // Replace with actual image URL
-        buttonText: "Shop Now",
     },
 
 
@@ -29,16 +26,15 @@ TODO ANNOUNCEMNTS
 6/to do 
 HOW TO GET RESPONSE.STATUS CODE -- MAKE THE INPUT ALYWES OPEN 
 
+alert TODO change it to notification
 
-TODO IN THE BACK  HANDLE UPLOAD IMG TO CLOUDINARY
-TODO if user deactivate cant add comment or reviews
 
-TODO solve UPLOAD catgeoy image
-TODO solve update user profile
 
 ///////////////////////
 
 //////
+
+
 
 
 Arrangement
@@ -46,26 +42,7 @@ Arrangement
 1-Home Component 
 
 
-Primary: Navy Blue (#1E3A8A) – Represents trust and reliability.
-Secondary: Light Gray (#F5F5F5) – Clean and modern, great for backgrounds.
-Accent: Bright Orange (#F97316) – Adds energy and draws attention to CTAs.
-
-
-
 Here are three cohesive color schemes suitable for an e-commerce website:
-
-1. Classic and Trustworthy
-Primary: Navy Blue (#1E3A8A) – Represents trust and reliability.
-Secondary: Light Gray (#F5F5F5) – Clean and modern, great for backgrounds.
-Accent: Bright Orange (#F97316) – Adds energy and draws attention to CTAs.
-2. Modern and Minimalist
-Primary: Charcoal Gray (#374151) – Sophisticated and neutral.
-Secondary: Soft White (#FAFAFA) – Light and minimal, keeps the focus on the products.
-Accent: Aqua Blue (#3B82F6) – Vibrant for buttons and highlights.
-3. Playful and Vibrant
-Primary: Deep Purple (#6D28D9) – Unique and bold.
-Secondary: Pastel Pink (#F9A8D4) – Adds warmth and a friendly vibe.
-Accent: Lime Green (#84CC16) – Eye-catching for promotions and key elements.
 
 
 
@@ -243,3 +220,41 @@ const NavbarLogged = () => {
 
 export default NavbarLogged;
   
+wt expired"TODO
+  [eslint] 
+src/redux/action/cartAction.js
+  Line 21:32:  React Hook "useInsertData" cannot be called inside a callback. React Hooks must be called in a React function component or a custom React Hook function  react-hooks/rules-of-hooks
+
+
+// profile
+1️⃣ Primary Color - Royal Blue (#1976D2) → Trust & Professionalism
+
+Great for buttons, navigation bars, and call-to-action elements.
+2️⃣ Secondary Color - Warm Orange (#FF5722) → Energy & Excitement
+
+Perfect for highlights, discounts, and promotional banners.
+3️⃣ Neutral Color - Light Gray (#F5F5F5) → Clean & Minimalist Look
+
+
+F5F5F5
+FF5722
+1976D2
+
+     notTODO           Notification(subcategory.errors[0].msg,'error')
+
+
+
+
+   if (category.status !== 'fail') {
+                Notification('Category added successfully', 'success');
+            } else {
+                Notification('Error adding category', 'error');
+            }
+
+
+
+git status
+git add .
+git commit -m "Updated"
+git push origin main
+

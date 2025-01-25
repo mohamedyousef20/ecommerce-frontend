@@ -1,11 +1,11 @@
 import React from 'react';
 import { Box, Button, IconButton, Typography } from '@mui/material';
 import { Delete as DeleteIcon } from '@mui/icons-material';
+import Notification from '../../../customHooks/useNotification';
 
 const MultipleImageInput = ({ images, setImages, max }) => {
 
-    console.log("imagessssssssssssssssssssssssssssssssssss", images)
-    console.log(setImages)
+    
     // Updated handleImageChange function
     const handleImageChange = (event) => {
         const newImages = Array.isArray(images) ? [...images] : [];
@@ -22,7 +22,7 @@ const MultipleImageInput = ({ images, setImages, max }) => {
                 reader.readAsDataURL(file);
             });
         } else {
-            alert(`You can only upload up to ${max} images.`);
+            Notification(`You can only upload up to ${max} images.`);
         }
     };
 
@@ -42,7 +42,7 @@ const MultipleImageInput = ({ images, setImages, max }) => {
                 reader.readAsDataURL(file);
             });
         } else {
-            alert(`You can only upload up to ${max} images.`);
+            Notification(`You can only upload up to ${max} images.`);
         }
     };
 
@@ -108,7 +108,11 @@ const MultipleImageInput = ({ images, setImages, max }) => {
             </Box>
 
             {/* Image Previews */}
-
+            {images.length === 0 && (
+                <Typography color="error" variant="caption">
+                    Please select at least one image.
+                </Typography>
+            )}
             <Box
                 sx={{
                     display: 'flex',

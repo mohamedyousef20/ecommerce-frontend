@@ -6,29 +6,24 @@ import {
 } from '@mui/material';
 import { Add, Delete, Edit, Visibility } from "@mui/icons-material";
 import { Link } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux/lib/exports';
-import { getAllUser } from '../../../redux/action/userAction';
 import PaginationTabs from '../../Utils/Pagination';
+import AdminGetAllUserHook from '../../../customHooks/Admin/User/AdminGetAllUserHook';
+import AdminDeleteUserHook from '../../../customHooks/Admin/User/AdminDeleteUser';
+import WarningModal from '../../Utils/WarningModal';
 
 const User = () => {
     const [selectedUsers, setSelectedUsers] = useState([]);
-    const dispatch = useDispatch();
 
-    useEffect(() => {
-        dispatch(getAllUser());
-    }, [dispatch]);
-
-    const response = useSelector((state) => state.userReducer.user);
-
-    const handleSelectUser = (id) => {
-        setSelectedUsers((prev) => {
-            if (prev.includes(id)) {
-                return prev.filter((userId) => userId !== id);
-            }
-            return [...prev, id];
-        });
-    };
-
+    const [users] = AdminGetAllUserHook();
+const [
+    userIdToDelete,
+    setUserIdToDelete,
+    isModalOpen,
+    setIsModalOpen,
+    handleConfirmDelete,
+    handleOpenModal,
+    handleCancelDelete
+] = AdminDeleteUserHook();
     return (
         <Box sx={{ padding: 2, flex: 1, bgcolor: '#f4f4f4' }}>
             <Typography variant="h4" sx={{ fontSize: { xs: '1.5rem', sm: '2rem' } }} gutterBottom>
@@ -36,20 +31,22 @@ const User = () => {
             </Typography>
             <Divider sx={{ marginBottom: 2 }} />
 
-            {/* Add New User Button */}
-            <Button
-                variant="contained"
-                startIcon={<Add />}
-                color="primary"
-                sx={{
-                    display: 'flex',
-                    justifyContent: 'flex-start',
-                    mb: 5,
-                    width: { xs: '100%', sm: 'auto' },
-                }}
-            >
-                Add New User
-            </Button>
+            <Link to={'/dashboard/user/create'}>
+                {/* Add New User Button */}
+                <Button
+                    variant="contained"
+                    startIcon={<Add />}
+                    color="primary"
+                    sx={{
+                        display: 'flex',
+                        justifyContent: 'flex-start',
+                        mb: 5,
+                        width: { xs: '100%', sm: 'auto' },
+                    }}
+                >
+                    Add New User
+                </Button>
+            </Link>
 
             {/* User Grid/Table */}
             <Paper>
@@ -93,7 +90,7 @@ const User = () => {
                     </Grid>
 
                     {/* User Rows */}
-                    {response && response.data ? response.data.map((user) => (
+                    {users && users.data ? users.data.map((user) => (
                         <Grid container item xs={12} key={user._id}
                             sx={{
                                 display: 'flex',
@@ -107,7 +104,6 @@ const User = () => {
                             <Grid item xs={1}>
                                 <Checkbox
                                     checked={selectedUsers.includes(user._id)}
-                                    onChange={() => handleSelectUser(user._id)}
                                     sx={{ color: 'success', bgcolor: '#f1f1f1' }}
                                 />
                             </Grid>
@@ -124,27 +120,30 @@ const User = () => {
                                 <Typography>{user.role}</Typography>
                             </Grid>
                             <Grid item xs={1}>
-                                <Typography>{user.isActive ? 'Yes' : 'No'}</Typography>
+                                <Typography>{user.active ? 'true' : 'false'}</Typography>
                             </Grid>
                             <Grid item xs={2} sx={{ textAlign: 'center' }}>
-                                <IconButton sx={{ color: 'black' }}>
-                                    <Visibility sx={{ color: 'black' }} />
-                                </IconButton>
-                                <Link to={`/admin/update-user/${user._id}`}>
-                                    <IconButton sx={{ color: 'blue' }}>
-                                        <Edit sx={{ color: 'blue' }} />
-                                    </IconButton>
-                                </Link>
-                                <IconButton sx={{ color: 'red' }}>
-                                    <Delete sx={{ color: 'red' }} />
+                        
+                                <IconButton
+                                    onClick={() => { setUserIdToDelete(user._id); setIsModalOpen(true); }}
+                                    sx={{ color: 'red' }}
+                                >
+                                    <Delete />
                                 </IconButton>
                             </Grid>
                         </Grid>
                     )) : <CircularProgress />}
                 </Grid>
 
-                <PaginationTabs paginationResult={response.paginationResult} />
+                <PaginationTabs paginationResult={users.paginationResult} />
             </Paper>
+            {/* Delete Confirmation Modal */}
+            <WarningModal
+                isOpen={isModalOpen}
+                onConfirm={handleConfirmDelete}
+                onCancel={handleCancelDelete}
+                message="Are you sure you want to delete this User?"
+            />
         </Box>
     );
 };

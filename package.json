@@ -15,6 +15,7 @@
     "bootstrap": "^5.3.3",
     "bootstrap-icons": "^1.11.3",
     "framer-motion": "^11.17.0",
+    "joi": "^17.13.3",
     "jwt-decode": "^4.0.0",
     "react": "^18.3.1",
     "react-bootstrap": "^2.10.6",
@@ -31,6 +32,7 @@
     "redux-devtools-extension": "^2.13.9",
     "redux-thunk": "^2.4.1",
     "slick-carousel": "^1.8.1",
+    "stripe": "^17.5.0",
     "styled-components": "^6.1.13",
     "swiper": "^11.1.15",
     "web-vitals": "^2.1.4"

@@ -1,6 +1,6 @@
 import baseURL from "../Api/baseURL";
 
-export const useInsertData = async (url, params) => {
+export const InsertData = async (url, params) => {
     const config = {
         headers: {
             Authorization: `Bearer ${localStorage.getItem("userToken")}`

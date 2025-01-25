@@ -1,113 +1,112 @@
-// src/components/Navbar.js
 import React, { useEffect, useState } from 'react';
-import { AppBar, Toolbar, IconButton, Typography, InputBase, Box, Avatar, Menu, MenuItem, Button, Badge, circularProgressClasses } from '@mui/material';
-import { Menu as MenuIcon, Search as SearchIcon, ShoppingCart as ShoppingCartIcon, AccountCircle, FavoriteBorderOutlined, FavoriteRounded } from '@mui/icons-material';
+import {
+  AppBar, Toolbar, IconButton, Typography, InputBase, Box, Avatar,
+  Menu, MenuItem, Button, Badge
+} from '@mui/material';
+import {
+  Menu as MenuIcon, Search as SearchIcon, ShoppingCart as ShoppingCartIcon,
+  FavoriteRounded
+} from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { alpha, styled } from '@mui/system';
-import { useDispatch, useSelector } from 'react-redux/lib/exports';
-import { getUserCart } from '../../redux/action/cartAction';
 import GetUserCartHook from '../../customHooks/Cart/get-user-cart-hook';
 import WarningModal from './WarningModal';
+import GetProductSearchHook from '../../customHooks/Product/GetProductSearchHook';
+import Notification from '../../customHooks/useNotification';
+import GetAllWishListProduct from '../../customHooks/Wishlist/GetAllWishListProduct';
+
+
+// Colors
+const primaryColor = '#1976D2';
+const accentColor = '#FF5722';
+const backgroundColor = '#F5F5F5';
 
 // Styled Search bar
-const Search = styled('div')(({ theme }) => ({
+const Search = styled('div')({
   position: 'relative',
-  borderRadius: theme.shape.borderRadius,
-  backgroundColor: alpha(theme.palette.common.white, 0.15),
-  '&:hover': {
-    backgroundColor: alpha(theme.palette.common.white, 0.25),
-  },
+  borderRadius: '4px',
+  backgroundColor: alpha(backgroundColor, 0.15),
+  '&:hover': { backgroundColor: alpha(backgroundColor, 0.25) },
   marginLeft: 0,
   width: '100%',
-  [theme.breakpoints.up('sm')]: {
-    marginLeft: theme.spacing(2),
-    width: 'auto',
-  },
-}));
-
-const SearchIconWrapper = styled('div')({
-  position: 'absolute',
-  left: '10px',
   display: 'flex',
   alignItems: 'center',
-  justifyContent: 'center',
+  padding: '5px 10px',
+  maxWidth: '300px',
+  color: '#fff'
 });
 
-const StyledInputBase = styled(InputBase)(({ theme }) => ({
-  color: 'inherit',
-  paddingLeft: '35px',
-  width: '100%',
-  '& .MuiInputBase-input': {
-    padding: theme.spacing(1),
-    transition: theme.transitions.create('width'),
-    [theme.breakpoints.up('sm')]: {
-      width: '20ch',
-    },
-  },
-}));
+const SearchIconWrapper = styled('div')({
+  marginRight: '10px',
+});
 
+const StyledInputBase = styled(InputBase)({
+  color: 'black',
+  width: '100%',
+});
 
 const NavbarLogged = () => {
-
-
   const [anchorEl, setAnchorEl] = useState(null);
   const [user, setUser] = useState('');
-  const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const navigate = useNavigate();
-  const dispatch = useDispatch();
 
+  const [
+    sortOption,
+    setSortOption,
+    category,
+    setCategory,
+    brand,
+    setPriceRange,
+    priceRange,
+    setBrand,
+    handleSearch,
+    searchedProducts
+  ] = GetProductSearchHook();
+  const [itemsNum] = GetUserCartHook();
+  const [prodInWishlist] = GetAllWishListProduct();
+
+  useEffect(() => {
+    if (localStorage.getItem('user')) {
+      setUser(JSON.parse(localStorage.getItem('user')));
+    }
+  }, []);
+  console.log('the user', user)
+  const handleMenuClick = (event) => { setAnchorEl(event.currentTarget); };
+  const handleMenuClose = () => { setAnchorEl(null); };
+  const handleNavigate = (path) => { navigate(path); };
 
   const handleConfirmLogout = () => {
-    localStorage.removeItem("user")
-    localStorage.removeItem("userToken")
-    setUser('')
+    localStorage.removeItem('user');
+    localStorage.removeItem('userToken');
+    setUser('');
+    window.location.href = '/';
+  };
 
-    window.location.href = '/'
+  if (!localStorage.getItem('userToken')) {
+
+    Notification('Session Expired Please Login Again ', 'info')
+
+    window.location.href = '/login';
+
+
+
   }
 
-  const handleOpenModal = () => { setIsModalOpen(true) }
-  const handleCancelLogout = () => { setIsModalOpen(false) }
-
-  const [itemsNum] = GetUserCartHook();
-  console.log(itemsNum)
-  //   if (itemsNum) {setCartItems(itemsNum)};
-
-  // Open/close user menu
-  const handleMenuClick = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleMenuClose = () => {
-    setAnchorEl(null);
-  };
-
-  const handleNavigate = (path) => {
-    navigate(path);
-  };
-
-  const handleSearch = (event) => {
-    // You can implement search logic here
-  };
-  useEffect(() => {
-
-    if (localStorage.getItem("user") != null) {
-      setUser(JSON.parse(localStorage.getItem("user")))
-    }
-  }, [])
-
-
-
   return (
-    <AppBar position="sticky" sx={{ zIndex: 1201 }}>
+    <AppBar position="sticky" sx={{ backgroundColor: primaryColor, mb: 7 }}>
       <Toolbar sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        {/* Logo Section */}
-        <Typography variant="h5" sx={{ flexGrow: 1, fontWeight: 'bold', cursor: 'pointer' }} onClick={() => handleNavigate('/')}>
+
+        {/* Logo */}
+        <Typography
+          variant="h5"
+          sx={{ fontWeight: 'bold', cursor: 'pointer', color: '#fff' }}
+          onClick={() => handleNavigate('/')}
+        >
           AZARM.
         </Typography>
 
-
-
+        {/* Search Bar */}
         {/* Search Bar */}
         <Search>
           <SearchIconWrapper>
@@ -120,57 +119,62 @@ const NavbarLogged = () => {
           />
         </Search>
 
-        {/* Navigation Links (for larger screens) */}
-        <Box sx={{ display: { xs: 'none', sm: 'flex' }, flexGrow: 1, justifyContent: 'center' }}>
-          {user.role === 'admin' ?
-            <Button color="inherit" onClick={() => handleNavigate('/dashboard')}>Dashboard</Button>
-            : null}
-          <Button color="inherit" onClick={() => handleNavigate('/')}>Home</Button>
-          <Button color="inherit" onClick={() => handleNavigate('/product')}>Product</Button>
-          <Button color="inherit" onClick={() => handleNavigate('/profile')}>Profile</Button>
+
+        {/* Navigation Links */}
+        <Box sx={{ display: { xs: 'none', sm: 'flex' }, gap: 2 }}>
+          <Button sx={{ color: '#fff' }} onClick={() => handleNavigate('/')}>Home</Button>
+          <Button sx={{ color: '#fff' }} onClick={() => handleNavigate('/product')}>Products</Button>
+          <Button sx={{ color: '#fff' }} onClick={() => handleNavigate('/brand')}>Brands</Button>
+          <Button sx={{ color: '#fff' }} onClick={() => handleNavigate('/category')}>Categories</Button>
+          <Button sx={{ color: '#fff' }} onClick={() => handleNavigate('/profile')}>Profile</Button>
+          {user.role === 'admin' && (
+            <Button sx={{ color: accentColor }} onClick={() => handleNavigate('/dashboard')}>Dashboard</Button>
+          )}
         </Box>
 
-        {/* Icons Section (Avatar, Cart, and Mobile Menu) */}
-        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+        {/* Icons Section */}
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+          {/* Wishlist */}
           <IconButton color="inherit" onClick={() => handleNavigate('/wishlist')}>
-            <Badge badgeContent={3} color="error"> {/* Replace `3` with dynamic wishlist count */}
+            <Badge badgeContent={prodInWishlist ?
+              prodInWishlist.numberOfLikedProduct : '0'}
+              color="error">
               <FavoriteRounded />
             </Badge>
           </IconButton>
+
           {/* Shopping Cart */}
           <IconButton color="inherit" onClick={() => handleNavigate('/cart')}>
-            <Badge badgeContent={itemsNum} color="error">
-              <ShoppingCartIcon />
+            <Badge badgeContent={itemsNum || '0'} color="error">
+              <ShoppingCartIcon sx={{ color: '#fff' }} />
             </Badge>
           </IconButton>
 
-          {/* Avatar and Account Menu */}
-          <IconButton edge="end" color="inherit" onClick={handleMenuClick}>
-            <Avatar src={user.profileImage} />
+          {/* Avatar & Account Menu */}
+          <IconButton onClick={handleMenuClick}>
+            <Avatar
+              src={user?.profileImage || '/default-avatar.png'}
+              alt={user?.name || 'User'}
+            />
           </IconButton>
-
-          {/* User Menu */}
-          <Menu
-            anchorEl={anchorEl}
-            open={Boolean(anchorEl)}
-            onClose={handleMenuClose}
-          >
+          <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleMenuClose}>
             <MenuItem onClick={() => handleNavigate('/profile')}>Profile</MenuItem>
             <MenuItem onClick={() => handleNavigate('/order')}>Orders</MenuItem>
-            <MenuItem onClick={handleOpenModal}>Logout</MenuItem>
+            <MenuItem onClick={() => setIsModalOpen(true)}>Logout</MenuItem>
           </Menu>
 
           {/* Mobile Menu Icon */}
-          <IconButton color="inherit" sx={{ display: { sm: 'none' } }}>
+          <IconButton sx={{ display: { sm: 'none' }, color: '#fff' }}>
             <MenuIcon />
           </IconButton>
         </Box>
       </Toolbar>
-      {/* Delete Confirmation Modal */}
+
+      {/* Logout Confirmation Modal */}
       <WarningModal
         isOpen={isModalOpen}
         onConfirm={handleConfirmLogout}
-        onCancel={handleCancelLogout}
+        onCancel={() => setIsModalOpen(false)}
         message="Are you sure you want to logout?"
       />
     </AppBar>

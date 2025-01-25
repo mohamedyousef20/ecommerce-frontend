@@ -8,22 +8,21 @@ const BrandHomePage = () => {
     const [loading, brand] = BrandHomeHook()
 
     return (
-
-        < Container >
-
-
+        <Container>
             <Box sx={{ padding: 2 }}>
                 {/* Categories Grid */}
-                <Stack container spacing={2} direction={'row'} justifyContent={'center'}>
+                <Grid container spacing={2} justifyContent={'center'}>
                     {brand && brand.data ? brand.data.slice(0, 6).map((brand) => (
-                        <Grid item xs={6} sm={4} md={2} key={brand._id}>
+                        <Grid item xs={12} sm={6} md={4} lg={2} key={brand._id}>
                             <BrandCard brand={brand} />
                         </Grid>
-                    )) : <CircularProgress />}
-                </Stack>
+                    )) : <CircularProgress sx={{ margin: 'auto' }} />}
+                </Grid>
             </Box>
-        </Container >
+        </Container>
     )
 }
 
 export default BrandHomePage
+// 1- done
+// 2-responsive 

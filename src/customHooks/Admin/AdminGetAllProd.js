@@ -11,7 +11,7 @@ const AdminGetAllProd = () => {
 
         dispatch(getAllProduct());
 
-    }, [])
+    }, [dispatch])
 
     const allProduct = useSelector((state) => state.allProduct.allProduct);
 // if error occur just make products = []

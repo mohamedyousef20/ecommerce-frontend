@@ -1,7 +1,7 @@
 
 import useDeleteData from "../../Hooks/useDeleteData";
 import { useGetData, useGetDataToken } from "../../Hooks/useGetData";
-import { useInsertData } from "../../Hooks/useInsertData";
+import { InsertData } from "../../Hooks/useInsertData";
 import { useUpdateData } from "../../Hooks/useUpdateData";
 
 import { GET_ALL_COUPON, CREATE_COUPON, GET_ERROR, UPDATE_COUPON, GET_COUPON, DELETE_COUPON } from "../type";
@@ -31,7 +31,7 @@ export const getAllCoupon = () => async (dispatch) => {
 export const createCoupon = (data) => async (dispatch) => {
 
     try {
-        const response = await useInsertData('/api/vi/coupon', data)
+        const response = await InsertData('/api/vi/coupon', data)
 
         dispatch({
             type: CREATE_COUPON,

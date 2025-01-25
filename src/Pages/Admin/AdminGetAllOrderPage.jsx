@@ -2,10 +2,10 @@
 
 // import React from 'react'
 
-// const AdminGetAllOrderPage = () => {
+// const AdminGetAllOrderHookPage = () => {
 //   return (
 
 //   )
 // }
 
-// export default AdminGetAllOrderPage
+// export default AdminGetAllOrderHookPage

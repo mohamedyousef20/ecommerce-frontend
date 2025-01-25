@@ -15,6 +15,7 @@ const initial = {
     getOneAnnouncement: [],
     updateAnnouncement: [],
     deleteAnnouncement: [],
+    error: [],
     loading: true,
 };
 
@@ -39,7 +40,7 @@ const announcementReducer = (state = initial, action) => {
         case CREATE_ANNOUNCEMENT:
             return {
                 ...state,
-                category: action.payload,
+                createAnnouncement: action.payload,
                 loading: false,
             }
         case DELETE_ANNOUNCEMENT:
@@ -64,7 +65,7 @@ const announcementReducer = (state = initial, action) => {
 
         case GET_ERROR:
             return {
-                category: action.payload,
+                error: action.payload,
                 loading: true,
             }
         default:

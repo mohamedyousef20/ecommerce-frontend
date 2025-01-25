@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch } from "react-redux/lib/exports";
 import { deleteProduct } from '../../redux/action/productAction';
 import Notification from '../useNotification';
@@ -7,41 +7,46 @@ const AdminDeleteProdHook = () => {
 
     const dispatch = useDispatch();
     const [productIdToDelete, setProductIdToDelete] = useState(null);
-    const [open, setOpen] = useState(false);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [loading, setLoading] = useState(false);
 
 
 
 
-    const handleCloseModal = () => setOpen(false);
-
+    const handleCancelDelete = () => setIsModalOpen(false);
+    
     const handleOpenModal = (id) => {
         setProductIdToDelete(id);
-        setOpen(true)
+        setIsModalOpen(true)
         
 
     }
 
 
-    const handleDelete = async () => {
+    const handleConfirmDelete = async () => {
 
-        await dispatch(deleteProduct(productIdToDelete))
+        setLoading(true)
+        await dispatch(deleteProduct(productIdToDelete));
+        setLoading(false)
         // hide modal
-        setOpen(false);
+        setIsModalOpen(false);
         // send Notification
-        Notification('Product deleted successfully', 'success')
 
         // to refresh the page
         window.location.reload();
     };
 
+  
+
     return [
         productIdToDelete,
         setProductIdToDelete,
-        open,
-        setOpen,
-        handleDelete,
+        isModalOpen,
+        setIsModalOpen,
+        handleConfirmDelete,
         handleOpenModal,
-        handleCloseModal]
+        handleCancelDelete
+    ]
 }
 
 export default AdminDeleteProdHook

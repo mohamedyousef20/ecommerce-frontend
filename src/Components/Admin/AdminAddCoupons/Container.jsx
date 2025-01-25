@@ -1,68 +1,87 @@
-import React, { useEffect, useRef, useState } from 'react'
-import { Box, Button, Container, TextField, Stack, Typography } from '@mui/material'
-import { useDispatch, useSelector } from 'react-redux/lib/exports';
+import React, { useEffect, useState } from 'react';
+import { Box, Button, Container, TextField, Stack, Typography } from '@mui/material';
+
 import { createCoupon } from '../../../redux/action/couponAction';
+import Joi from 'joi';
+import Notification from '../../../customHooks/useNotification';
+import { useDispatch, useSelector } from 'react-redux/lib/exports';
 
 const CouponContainer = () => {
     const dispatch = useDispatch();
-
     const [couponName, setCouponName] = useState('');
     const [couponValue, setCouponValue] = useState('');
     const [couponExpireDate, setCouponExpireDate] = useState('');
     const [loading, setLoading] = useState(true);
+    const [errors, setErrors] = useState({});
 
-    // Handle coupon name change
-    const handleCouponName = (e) => {
-        setCouponName(e.target.value);
-    };
+    // Joi Schema for Validation
+    const schema = Joi.object({
+        couponName: Joi.string().min(2).max(50).required().messages({
+            'string.empty': 'Coupon name is required',
+            'string.min': 'Coupon name must be at least 2 characters',
+            'string.max': 'Coupon name must be less than 50 characters',
+        }),
+        couponValue: Joi.number().min(1).max(100).required().messages({
+            'number.base': 'Coupon value must be a valid number',
+            'number.min': 'Coupon discount must be at least 1%',
+            'number.max': 'Coupon discount must be at most 100%',
+            'any.required': 'Coupon discount is required',
+        }),
+        couponExpireDate: Joi.date().min(new Date().toISOString().split("T")[0]).required().messages({
+            'date.base': 'Invalid date format',
+            'date.min': 'Expiration date must be in the future',
+            'any.required': 'Expiration date is required',
+        }),
+    });
 
-    // Handle coupon value change (ensure it's a valid number)
-    const handleCouponValue = (e) => {
-        setCouponValue(e.target.value);
-    };
+    // Handle Input Changes
+    const handleCouponName = (e) => setCouponName(e.target.value);
+    const handleCouponValue = (e) => setCouponValue(e.target.value);
+    const handleCouponExpireDate = (e) => setCouponExpireDate(e.target.value);
 
-    // Handle coupon expiration date change
-    const handleCouponExpireDate = (e) => {
-        setCouponExpireDate(e.target.value);
-        console.log('Selected Expiry Date:', e.target.value);  // Log selected expiration date
-    };
-
-    // Handle form submission
+    // Handle Submit with Joi Validation
     const handleSubmit = async () => {
-        // validation: Ensure all fields are filled
-        if (!couponName || !couponValue || !couponExpireDate || couponExpireDate <= 0) {
-            alert("Please fill all fields!");
+        const formData = { couponName, couponValue, couponExpireDate };
+        const { error } = schema.validate(formData, { abortEarly: false });
+
+        if (error) {
+            const errorMessages = {};
+            error.details.forEach((err) => {
+                errorMessages[err.path[0]] = err.message;
+            });
+            setErrors(errorMessages);
+            Notification('Validation failed. Please check the form.', 'error');
             return;
         }
-        setLoading(true)
+
+        setErrors({}); // Clear previous errors
+        setLoading(true);
+
         await dispatch(createCoupon({
             name: couponName,
             discount: couponValue,
             expireDate: couponExpireDate,
         }));
-        setLoading(false)
 
+        setLoading(false);
     };
+
+    // Handle API Response
     const response = useSelector(state => state.couponReducer.createCoupon);
-    console.log(response)
-    console.log(response.status)
 
     useEffect(() => {
-
         if (loading === false) {
             if (response && response.status === 201) {
-                Notification(" Create Coupon Successfully ", "success")
-                window.location.reload(false)
+                Notification("Coupon created successfully!", "success");
+                window.location.reload();
             } else if (response && response.status === 500) {
-                Notification("Coupon Already Exist ", "success")
+                Notification("Coupon already exists!", "error");
+            } else if (response && response.status === 403) {
+                Notification("You don't have permission to create a coupon!", "error");
             }
-            else if (response && response.status === 403) {
-                Notification("Need Create Coupon Permission", "success")
-            }
-
         }
+    }, [loading]);
 
-    }, [loading])
     return (
         <Container
             component="main"
@@ -79,31 +98,24 @@ const CouponContainer = () => {
                 boxShadow: 3,
             }}
         >
-            {/* Title Section */}
             <Box mb={3}>
                 <Typography fontSize={'1.5rem'} fontWeight={600} color="red" textAlign="center">
                     Add New Coupon
                 </Typography>
             </Box>
 
-            {/* Form Inputs */}
             <Stack direction="column" alignItems="stretch" spacing={2}>
-                {/* Coupon Name Input */}
                 <TextField
                     fullWidth
                     label="Enter Coupon Name"
                     variant="outlined"
                     value={couponName}
                     onChange={handleCouponName}
-                    sx={{
-                        '& .MuiInputBase-root': {
-                            borderRadius: 2,
-                            backgroundColor: '#fafafa',
-                        },
-                    }}
+                    error={!!errors.couponName}
+                    helperText={errors.couponName}
+                    sx={{ '& .MuiInputBase-root': { borderRadius: 2, backgroundColor: '#fafafa' } }}
                 />
 
-                {/* Coupon Value Input */}
                 <TextField
                     fullWidth
                     label="Enter Coupon Discount Percentage"
@@ -111,34 +123,24 @@ const CouponContainer = () => {
                     type="number"
                     value={couponValue}
                     onChange={handleCouponValue}
-                    sx={{
-                        '& .MuiInputBase-root': {
-                            borderRadius: 2,
-                            backgroundColor: '#fafafa',
-                        },
-                    }}
+                    error={!!errors.couponValue}
+                    helperText={errors.couponValue}
+                    sx={{ '& .MuiInputBase-root': { borderRadius: 2, backgroundColor: '#fafafa' } }}
                 />
 
-                {/* Coupon Expiry Date Input */}
                 <TextField
                     label="Enter Coupon Expire Date"
                     type="date"
-                    value={couponExpireDate}  // Corrected value to bind correctly with state
+                    value={couponExpireDate}
                     onChange={handleCouponExpireDate}
-                    InputLabelProps={{
-                        shrink: true, // Ensures the label stays in place when the field is filled
-                    }}
+                    error={!!errors.couponExpireDate}
+                    helperText={errors.couponExpireDate}
+                    InputLabelProps={{ shrink: true }}
                     fullWidth
-                    sx={{
-                        '& .MuiInputBase-root': {
-                            borderRadius: 2,
-                            backgroundColor: '#fafafa',
-                        },
-                    }}
+                    sx={{ '& .MuiInputBase-root': { borderRadius: 2, backgroundColor: '#fafafa' } }}
                 />
             </Stack>
 
-            {/* Submit Button */}
             <Button
                 variant="contained"
                 onClick={handleSubmit}
@@ -150,13 +152,8 @@ const CouponContainer = () => {
                     fontWeight: '600',
                     color: "#fff",
                     borderRadius: "5px",
-                    '&:hover': {
-                        bgcolor: "#151515",
-                        boxShadow: "0px 4px 16px rgba(43, 52, 69, 0.1)",
-                    },
-                    '&:active': {
-                        bgcolor: "#0277a6", // Active state for button
-                    },
+                    '&:hover': { bgcolor: "#151515", boxShadow: "0px 4px 16px rgba(43, 52, 69, 0.1)" },
+                    '&:active': { bgcolor: "#0277a6" },
                 }}
             >
                 ADD COUPON
@@ -165,4 +162,4 @@ const CouponContainer = () => {
     );
 };
 
-export default CouponContainer
+export default CouponContainer;

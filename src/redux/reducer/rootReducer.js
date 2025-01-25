@@ -11,6 +11,7 @@ import announcementReducer from "./announcementReducer";
 import brandReducer from "./brandReducer";
 import orderReducer from "./orderReducer";
 import paymentReducer from "./paymentReducer";
+import subcategoryReducer from "./subcategoryReducer";
 
 export default combineReducers({
     categoryReducer: categoryReducer,
@@ -25,5 +26,6 @@ export default combineReducers({
     brandReducer: brandReducer,
     orderReducer: orderReducer,
     paymentReducer: paymentReducer,
+    subcategoryReducer: subcategoryReducer,
 })
 

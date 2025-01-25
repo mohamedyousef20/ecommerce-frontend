@@ -6,67 +6,33 @@ import { deleteBrand, getAllBrand } from '../../../redux/action/brandAction';
 const AdminGetAllBrandHook = () => {
 
 
-    const [selectedBrand, setSelectedBrand] = useState([]);
-    const [open, setOpen] = useState(false);
-    const [brandIdToDelete, setBrandIdToDelete] = useState(null);
+const [loading,setLoading] = useState(true)
+ 
 
 
-    // Handle row selection/deselection
-    const handleSelectBrand = (id) => {
-        setSelectedBrand((prev) => {
-            if (prev.includes(id)) {
-                return prev.filter((brandId) => brandId !== id);
-            }
-            return [...prev, id];
-        });
-    };
-
-
-    // Modal Handlers
-    const handleOpenModal = (id) => {
-        setBrandIdToDelete(id);
-        setOpen(true);
-    };
-
-    const handleCloseModal = () => {
-        setOpen(false);
-        setBrandIdToDelete(null);
-    };
-
-    const handleDelete = async () => {
-
-
-        await dispatch(deleteBrand(brandIdToDelete))
-
-        handleCloseModal();
-
-        window.location.reload(true)
-    };
     const dispatch = useDispatch();
 
     useEffect(() => {
-
+        setLoading(true)
         dispatch(getAllBrand())
+        setLoading(false)
     }, [])
 
-    const brand = useSelector((state) => state.brandReducer.allBrand)
+    const allBrands = useSelector((state) => state.brandReducer.allBrand)
 
-    return [
-        selectedBrand,
-        setSelectedBrand,
-        open,
-        setOpen,
-        brandIdToDelete,
-        setBrandIdToDelete,
-        handleSelectBrand,
-        handleOpenModal,
-        handleCloseModal,
-        handleDelete,
-        brand
+    let brands = [];
+    try {
+        if (allBrands) {
+            brands = allBrands;
+        }
+        else {
+            brands = [];
+        }
+    } catch (e) {
+        console.log(e)
+    }
 
-
-
-    ]
+    return [brands,loading]
 }
 
 export default AdminGetAllBrandHook

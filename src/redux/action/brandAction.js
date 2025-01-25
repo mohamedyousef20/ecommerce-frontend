@@ -62,7 +62,8 @@ export const getAllBrand = () => async (dispatch) => {
 export const createBrand = (formData) => async (dispatch) => {
 
     try {
-        const response = await useInsertDataWithImage('/api/vi/brand', formData)
+        const response = await useInsertDataWithImage('/api/vi/brand', formData);
+        console.log(response)
         dispatch({
             type: CREATE_BRAND,
             payload: response,

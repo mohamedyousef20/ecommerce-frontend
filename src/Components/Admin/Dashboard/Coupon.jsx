@@ -8,6 +8,8 @@ import {
 import { Add, Delete, Edit, Visibility } from "@mui/icons-material";
 import { Link } from 'react-router-dom';
 import WarningModal from '../../Utils/WarningModal';
+import AdminGetAllCouponHook from '../../../customHooks/Coupon/AdminGetAllCouponHook';
+import AdminDeleteCouponHook from '../../../customHooks/Coupon/AdminDeleteCouponHook';
 
 // Helper function to format the date
 const formatDate = (dateString) => {
@@ -15,41 +17,29 @@ const formatDate = (dateString) => {
   const day = date.getDate().toString().padStart(2, '0');
   const month = (date.getMonth() + 1).toString().padStart(2, '0');
   const year = date.getFullYear().toString().slice(-2);
-  return `${day}/${month}/${year}`;
+  return `${day}${month}/${year}`;
 };
 
 const Coupon = () => {
-  const dispatch = useDispatch();
-  const [selectedProducts, setSelectedProducts] = useState([]);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [itemId, setItemId] = useState(null);
+
+
+  const [coupons] = AdminGetAllCouponHook();
+
+  const [
+    selectedProducts,
+    setSelectedProducts,
+    itemId,
+    setItemId,
+    isModalOpen,
+    setIsModalOpen,
+    handleCancelDelete,
+    handleConfirmDelete
+  ] = AdminDeleteCouponHook();
 
   const isMobile = useMediaQuery('(max-width:600px)');
 
-  useEffect(() => {
-    dispatch(getAllCoupon());
-  }, [dispatch]);
 
-  const handleSelectCoupon = (id) => {
-    setSelectedProducts((prev) => {
-      if (prev.includes(id)) {
-        return prev.filter((couponId) => couponId !== id);
-      }
-      return [...prev, id];
-    });
-  };
 
-  const handleCancelDelete = () => {
-    setIsModalOpen(false);
-  };
-
-  const handleConfirmDelete = async () => {
-    setIsModalOpen(false);
-    await dispatch(deleteCoupon(itemId));
-    window.location.reload(true);
-  };
-
-  const coupons = useSelector((state) => state.couponReducer.getAllCoupon);
 
   return (
     <Box sx={{ padding: 2, flex: 1, bgcolor: '#f4f4f4' }}>
@@ -58,20 +48,21 @@ const Coupon = () => {
       </Typography>
       <Divider sx={{ marginBottom: 2 }} />
 
-      <Button
-        variant="contained"
-        startIcon={<Add />}
-        color="primary"
-        sx={{
-          display: 'flex',
-          justifyContent: 'flex-start',
-          mb: 5,
-          width: { xs: '100%', sm: 'auto' },
-        }}
-      >
-        Add New Product
-      </Button>
-
+      <Link to={'/dashboard/coupon/create'}>
+        <Button
+          variant="contained"
+          startIcon={<Add />}
+          color="primary"
+          sx={{
+            display: 'flex',
+            justifyContent: 'flex-start',
+            mb: 5,
+            width: { xs: '100%', sm: 'auto' },
+          }}
+        >
+          Add New Product
+        </Button>
+      </Link>
       <Box sx={{ overflowX: 'auto' }}>
         <Paper>
           <Grid container spacing={3}>
@@ -118,7 +109,7 @@ const Coupon = () => {
                 }}>
                 <Grid item xs={1}>
                   <Checkbox
-                    onChange={() => handleSelectCoupon(coupon.id)}
+                    // onChange={() => handleSelectCoupon(coupon.id)}
                     sx={{ color: 'success', bgcolor: '#f1f1f1' }}
                   />
                 </Grid>
@@ -138,11 +129,9 @@ const Coupon = () => {
                 </Grid>
 
                 <Grid item xs={2} sx={{ textAlign: 'center' }}>
-                  <IconButton sx={{ color: 'black' }}>
-                    <Visibility sx={{ color: 'black' }} />
-                  </IconButton>
 
-                  <Link to={`/admin/update-Coupon/${coupon._id}`}>
+
+                  <Link to={`/admin/coupon/update/${coupon._id}`}>
                     <IconButton sx={{ color: 'blue' }}>
                       <Edit sx={{ color: 'blue' }} />
                     </IconButton>
