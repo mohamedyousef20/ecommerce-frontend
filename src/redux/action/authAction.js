@@ -20,6 +20,7 @@ import {
 export const registerUser = (data) => async (dispatch) => {
 
     try {
+      
         const response = await InsertData(`/api/vi/auth/register`, data);
         dispatch({
             type: REGISTER_USER,

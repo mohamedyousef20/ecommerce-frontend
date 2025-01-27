@@ -9,6 +9,8 @@ import {
     Stack,
     Typography,
     Snackbar,
+    useTheme,
+
     CircularProgress,
 } from "@mui/material";
 import Navbar from "../../Components/Utils/NavbarLogged";
@@ -19,31 +21,38 @@ import StarOutlinedIcon from "@mui/icons-material/StarOutlined";
 import Notification from "../../customHooks/useNotification";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
-import Slider from "react-slick"; // Image slider component
+import { Swiper, SwiperSlide } from 'swiper/react';
 import ReviewSection from "../../Components/Review/UserAddReview";
 import { useDispatch } from "react-redux/lib/exports";
-// Import Slick styles
-import "slick-carousel/slick/slick.css";
-import "slick-carousel/slick/slick-theme.css";
 import { AddProductToCart } from "../../redux/action/cartAction";
+import 'swiper/css/pagination';
+import '../../Pages/Admin/Utils/swiper.css'
+import { Pagination } from 'swiper/modules';
 
 const ProductDetailsPage = () => {
+    const theme = useTheme();
 
     const { id } = useParams(); // Get product ID from URL params
     const [item] = GetProdDetails(id); // Fetch product details using custom hook
-    const [color, setColor] = useState("");
+    const [colors, setColors] = useState([]); // Update state variable name to 'colors'
     const [quantity, setQuantity] = useState(1);
     const [loading, setLoading] = useState();
-
     const dispatch = useDispatch();
+    console.log(colors) // Update console log to 'colors'
 
     const handleColorClick = (color) => {
-        setColor(color);
+        setColors((prevColors) => {
+            if (prevColors.includes(color)) {
+                return prevColors.filter(c => c !== color); // Remove color if already selected
+            } else {
+                return [...prevColors, color]; // Add color if not selected
+            }
+        });
     };
 
     const handleSubmit = async () => {
         if (item.colors && item.colors.length >= 1) {
-            if (color === "") {
+            if (colors.length === 0) {
                 Notification("Please choose a color", "warn");
                 return;
             }
@@ -52,7 +61,7 @@ const ProductDetailsPage = () => {
         setLoading(true); // Start loading animation
         dispatch(AddProductToCart({
             productId: id,
-            color: color,
+            color: colors,
             quantity: quantity
         }))
 
@@ -69,20 +78,9 @@ const ProductDetailsPage = () => {
         setQuantity((prevQuantity) => (prevQuantity > 1 ? prevQuantity - 1 : 1));
     };
 
-    const sliderSettings = {
-        dots: true,
-        infinite: true,
-        speed: 500,
-        slidesToShow: 1,
-        slidesToScroll: 1,
-        autoplay: false,
-        adaptiveHeight: true,
-        arrows: true
-    };
-
     return (
         <>
-            <Container maxWidth="lg" sx={{ paddingY: 3 }}>
+            <Container maxWidth="lg" sx={{ paddingY: 3, bgcolor: "#f5f5f5" }}>
                 <Stack
                     direction={{ xs: "column", md: "row" }} // Make it column on small screens
                     spacing={3}
@@ -97,32 +95,26 @@ const ProductDetailsPage = () => {
                         display="flex"
                         justifyContent="center"
                         alignItems="center"
-                        sx={{ height: { xs: 300, md: 400 }, overflow: 'hidden' }} // Adjust height
+                        sx={{ height: { xs: 400, md: 500 }, overflow: 'hidden' }} // Adjust height
                     >
-                        {item.images && item.images.length > 1 ? (
-                            <Slider {...sliderSettings}>
-                                {item && item.images ? item.images.map((image, index) => (
-                                    <Box key={index} sx={{ px: 2 }}>
-                                        <CardMedia
-                                            key={index}
-                                            component="img"
-                                            width="100%"
-                                            height="100%"
-                                            image={image.url}
-                                            sx={{ objectFit: "contain", maxHeight: "100%" }}
-                                        />
-                                    </Box>
-                                )) : <CircularProgress />}
-                            </Slider>
-                        ) : (
-                            <CardMedia
-                                component="img"
-                                width="100%"
-                                height={400}
-                                image={item.imageCover}
-                                sx={{ objectFit: "contain" }}
-                            />
-                        )}
+                        <Swiper
+                            direction={'vertical'}
+                            pagination={{
+                                clickable: true,
+                            }}
+                            disabled={true}
+                            loop={true}
+                            modules={[Pagination]}
+                            className="mySwiper"
+
+                        >
+                            {item.images?.map((image, index) => (
+                                <SwiperSlide key={index}>
+                                    <img src={image.url} alt={`Product Image ${index + 1}`} style={{ width: '100%', height: '98%', borderRadius: '2px' }} />
+                                </SwiperSlide>
+                            ))}
+
+                        </Swiper>
                     </Box>
 
                     {/* Product Details Section */}
@@ -163,7 +155,7 @@ const ProductDetailsPage = () => {
                         {/* Available Colors */}
                         {item.colors && item.colors.length > 0 && (
                             <Typography variant="h6" fontWeight={600} mb={2}>
-                                Available Colors:
+                                Available colors:
                             </Typography>
                         )}
                         <Stack direction="row" spacing={2} mb={2}>
@@ -177,8 +169,7 @@ const ProductDetailsPage = () => {
                                     bgcolor={color}
                                     sx={{
                                         cursor: "pointer",
-                                        border:
-                                            color === color ? "3px solid #0A7DFF" : "none",
+                                        border: colors.includes(color) ? "3px solid #0A7DFF" : "none",
                                         transition: "border 0.3s ease",
                                     }}
                                 />

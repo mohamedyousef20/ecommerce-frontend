@@ -271,7 +271,7 @@ const ProductCard = ({ product }) => {
         height: "400px",
         p: 2,
         borderRadius: "2px",
-        bgcolor: "#F5F5F5",
+        bgcolor: "#fff",
         boxShadow: "none",
         display: "flex",
         flexDirection: "column",

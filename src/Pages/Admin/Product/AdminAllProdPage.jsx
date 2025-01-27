@@ -4,13 +4,13 @@ import AdminAllProductContainer from '../../../Components/Admin/AdminAllProduct/
 const AdminAllProdPage = () => {
 
 
-  return (
+    return (
 
-    <div>
+        <div>
 
-      <AdminAllProductContainer />
-    </div>
-  )
+            <AdminAllProductContainer />
+        </div>
+    )
 }
 
 export default AdminAllProdPage

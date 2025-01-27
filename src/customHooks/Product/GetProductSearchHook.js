@@ -45,7 +45,7 @@ const GetProductSearchHook = () => {
 
     }, [searchWord, sortOption,category,brand,priceRange, dispatch]);
 
-    const searchedProduct = useSelector((state) => state.allProduct.allProductSearch);
+    const searchedProduct = useSelector((state) => state.productReducer.allProductSearch);
     let searchedProducts = [];
 
     try {

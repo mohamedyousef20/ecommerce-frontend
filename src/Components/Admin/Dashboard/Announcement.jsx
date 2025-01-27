@@ -1,41 +1,33 @@
+
 import { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux/lib/exports';
 import {
     Grid, Box, Checkbox, Button, IconButton, Typography, Divider,
-    Paper, CircularProgress, useMediaQuery,
-    Switch
+    Paper, CircularProgress, useMediaQuery
 } from '@mui/material';
 import { Add, Delete, Edit, Visibility } from "@mui/icons-material";
 import { Link } from 'react-router-dom';
-import { activeAnnouncement, deleteAnnouncement, getAllAnnouncement } from '../../../redux/action/announcementAction';
+import { deleteAnnouncement, getAllAnnouncement } from '../../../redux/action/announcementAction';
 import WarningModal from '../../Utils/WarningModal';
-import GetAllAnnouncementHook from '../../../customHooks/Admin/Announcement/GetAllAnnouncementHook';
-import DeleteAnnouncementHook from '../../../customHooks/Admin/Announcement/DeleteAnnouncementHook';
 
 const Announcement = () => {
-
-    const [announcements] = GetAllAnnouncementHook();
-    const [
-        isModalOpen,
-        setIsModalOpen,
-        itemId,
-        setItemId,
-        handleCancelDelete,
-        handleConfirmDelete] = DeleteAnnouncementHook();
-
-    const isSmallScreen = useMediaQuery((theme) => theme.breakpoints.down('sm'));
-
-
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [itemId, setItemId] = useState(null);
 
     const dispatch = useDispatch();
+    const announcements = useSelector((state) => state.announcementReducer.getAllAnnouncement);
+    const isSmallScreen = useMediaQuery((theme) => theme.breakpoints.down('sm'));
 
+    useEffect(() => {
+        dispatch(getAllAnnouncement());
+    }, [dispatch]);
 
-    const handleToggleActive = async (announcement) => {
+    const handleCancelDelete = () => setIsModalOpen(false);
 
-
-        await dispatch(activeAnnouncement(announcement._id));
-
-
+    const handleConfirmDelete = async () => {
+        setIsModalOpen(false);
+        await dispatch(deleteAnnouncement(itemId));
+        window.location.reload(true);
     };
 
     return (
@@ -148,21 +140,13 @@ const Announcement = () => {
                                     </Grid>
                                     {!isSmallScreen && (
                                         <Grid item xs={2}>
-                                            <Switch
-                                                checked={announcement.isActive}
-                                                onChange={() => handleToggleActive(announcement)}
-                                            // announcement.isActive == true;TODO}
-                                            color="success"
-                                            />
+                                            <Typography>{announcement.isActive ? 'Yes' : 'No'}</Typography>
                                         </Grid>
                                     )}
                                     <Grid item xs={isSmallScreen ? 3 : 2} sx={{ textAlign: 'center' }}>
-                                        <Link to="/#announcement-section">
-
-                                            <IconButton>
-                                                <Visibility />
-                                            </IconButton>
-                                        </Link>
+                                        <IconButton>
+                                            <Visibility />
+                                        </IconButton>
                                         <Link to={`/dashboard/update/announcement/${announcement._id}`}>
                                             <IconButton>
                                                 <Edit sx={{ color: 'blue' }} />
@@ -201,3 +185,450 @@ const Announcement = () => {
 };
 
 export default Announcement;
+
+
+// // import { useEffect, useState } from 'react';
+// // import { useSelector, useDispatch } from 'react-redux/lib/exports';
+// // import {
+// //     Grid, Box, Checkbox, Button, IconButton, Typography, Divider,
+// //     Paper, CircularProgress, useMediaQuery, Card, CardContent,
+// //     Switch, Stack, Container, Alert
+// // } from '@mui/material';
+// // import { Add, Delete, Edit, Visibility, NotificationsActive } from "@mui/icons-material";
+// // import { Link } from 'react-router-dom';
+// // import { activeAnnouncement, deleteAnnouncement, getAllAnnouncement } from '../../../redux/action/announcementAction';
+// // import WarningModal from '../../Utils/WarningModal';
+// // import GetAllAnnouncementHook from '../../../customHooks/Admin/Announcement/GetAllAnnouncementHook';
+// // import DeleteAnnouncementHook from '../../../customHooks/Admin/Announcement/DeleteAnnouncementHook';
+
+// // const Announcement = () => {
+// //     const [announcements] = GetAllAnnouncementHook();
+// //     const [
+// //         isModalOpen,
+// //         setIsModalOpen,
+// //         itemId,
+// //         setItemId,
+// //         handleCancelDelete,
+// //         handleConfirmDelete
+// //     ] = DeleteAnnouncementHook();
+
+// //     const isSmallScreen = useMediaQuery((theme) => theme.breakpoints.down('sm'));
+// //     const dispatch = useDispatch();
+
+// //     const handleToggleActive = async (announcement) => {
+// //         await dispatch(activeAnnouncement(announcement._id));
+// //     };
+
+// //     return (
+// //         <Box sx={{ 
+// //             minHeight: '100vh',
+// //             backgroundColor: '#F8FAFC',
+// //             py: 4
+// //         }}>
+// //             <Container maxWidth="xl">
+// //                 {/* Header Section */}
+// //                 <Box sx={{
+// //                     display: 'flex',
+// //                     justifyContent: 'space-between',
+// //                     alignItems: 'center',
+// //                     mb: 4
+// //                 }}>
+// //                     <Stack direction="row" spacing={2} alignItems="center">
+// //                         <NotificationsActive sx={{ 
+// //                             color: '#1976D2',
+// //                             fontSize: { xs: 28, sm: 32 }
+// //                         }} />
+// //                         <Typography
+// //                             variant="h4"
+// //                             sx={{
+// //                                 fontSize: { xs: '1.5rem', sm: '2rem' },
+// //                                 fontWeight: 600,
+// //                                 color: '#1976D2'
+// //                             }}
+// //                         >
+// //                             Announcements
+// //                         </Typography>
+// //                     </Stack>
+
+// //                     <Button
+// //                         component={Link}
+// //                         to="/dashboard/announcement/create"
+// //                         variant="contained"
+// //                         startIcon={<Add />}
+// //                         sx={{
+// //                             borderRadius: '12px',
+// //                             py: 1.5,
+// //                             px: { xs: 2, sm: 3 },
+// //                             backgroundColor: '#1976D2',
+// //                             '&:hover': {
+// //                                 backgroundColor: '#1565C0'
+// //                             }
+// //                         }}
+// //                     >
+// //                         New Announcement
+// //                     </Button>
+// //                 </Box>
+
+// //                 {/* Announcements Grid */}
+// //                 <Grid container spacing={3}>
+// //                     {announcements && announcements.data ? (
+// //                         announcements.data.map((announcement) => (
+// //                             <Grid item xs={12} sm={6} md={4} key={announcement._id}>
+// //                                 <Card sx={{
+// //                                     height: '100%',
+// //                                     borderRadius: '16px',
+// //                                     boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)',
+// //                                     transition: 'transform 0.2s ease-in-out',
+// //                                     '&:hover': {
+// //                                         transform: 'translateY(-4px)'
+// //                                     }
+// //                                 }}>
+// //                                     <CardContent>
+// //                                         <Box sx={{ position: 'relative' }}>
+// //                                             <img 
+// //                                                 src={announcement.image} 
+// //                                                 alt={announcement.title}
+// //                                                 style={{
+// //                                                     width: '100%',
+// //                                                     height: '200px',
+// //                                                     borderRadius: '12px',
+// //                                                     objectFit: 'cover',
+// //                                                     marginBottom: '16px'
+// //                                                 }}
+// //                                             />
+// //                                             <Switch
+// //                                                 checked={announcement.isActive}
+// //                                                 onChange={() => handleToggleActive(announcement)}
+// //                                                 color="success"
+// //                                                 sx={{
+// //                                                     position: 'absolute',
+// //                                                     top: 8,
+// //                                                     right: 8,
+// //                                                     bgcolor: 'rgba(255, 255, 255, 0.9)',
+// //                                                     borderRadius: '12px',
+// //                                                     '& .MuiSwitch-thumb': {
+// //                                                         bgcolor: announcement.isActive ? '#2E7D32' : '#grey.500'
+// //                                                     }
+// //                                                 }}
+// //                                             />
+// //                                         </Box>
+
+// //                                         <Typography 
+// //                                             variant="h6" 
+// //                                             sx={{ 
+// //                                                 mb: 1,
+// //                                                 fontWeight: 600,
+// //                                                 color: '#1F2937'
+// //                                             }}
+// //                                         >
+// //                                             {announcement.title}
+// //                                         </Typography>
+
+// //                                         <Typography 
+// //                                             color="text.secondary" 
+// //                                             sx={{ 
+// //                                                 mb: 2,
+// //                                                 display: '-webkit-box',
+// //                                                 WebkitLineClamp: 3,
+// //                                                 WebkitBoxOrient: 'vertical',
+// //                                                 overflow: 'hidden',
+// //                                                 minHeight: '4.5em'
+// //                                             }}
+// //                                         >
+// //                                             {announcement.desc}
+// //                                         </Typography>
+
+// //                                         <Stack 
+// //                                             direction="row" 
+// //                                             spacing={1} 
+// //                                             justifyContent="flex-end"
+// //                                             sx={{ mt: 2 }}
+// //                                         >
+// //                                             <IconButton
+// //                                                 component={Link}
+// //                                                 to="/#announcement-section"
+// //                                                 sx={{
+// //                                                     color: '#1976D2',
+// //                                                     '&:hover': { backgroundColor: 'rgba(25, 118, 210, 0.04)' }
+// //                                                 }}
+// //                                             >
+// //                                                 <Visibility />
+// //                                             </IconButton>
+// //                                             <IconButton
+// //                                                 component={Link}
+// //                                                 to={`/dashboard/update/announcement/${announcement._id}`}
+// //                                                 sx={{
+// //                                                     color: '#1976D2',
+// //                                                     '&:hover': { backgroundColor: 'rgba(25, 118, 210, 0.04)' }
+// //                                                 }}
+// //                                             >
+// //                                                 <Edit />
+// //                                             </IconButton>
+// //                                             <IconButton
+// //                                                 onClick={() => {
+// //                                                     setItemId(announcement._id);
+// //                                                     setIsModalOpen(true);
+// //                                                 }}
+// //                                                 sx={{
+// //                                                     color: '#DC2626',
+// //                                                     '&:hover': { backgroundColor: 'rgba(220, 38, 38, 0.04)' }
+// //                                                 }}
+// //                                             >
+// //                                                 <Delete />
+// //                                             </IconButton>
+// //                                         </Stack>
+// //                                     </CardContent>
+// //                                 </Card>
+// //                             </Grid>
+// //                         ))
+// //                     ) : (
+// //                         <Grid item xs={12}>
+// //                             <Box sx={{ 
+// //                                 display: 'flex', 
+// //                                 justifyContent: 'center',
+// //                                 alignItems: 'center',
+// //                                 minHeight: '200px'
+// //                             }}>
+// //                                 <CircularProgress sx={{ color: '#1976D2' }} />
+// //                             </Box>
+// //                         </Grid>
+// //                     )}
+// //                 </Grid>
+
+// //                 {/* Warning Modal */}
+// //                 <WarningModal
+// //                     open={isModalOpen}
+// //                     onClose={handleCancelDelete}
+// //                     onConfirm={handleConfirmDelete}
+// //                     title="Delete Announcement"
+// //                     message="Are you sure you want to delete this announcement? This action cannot be undone."
+// //                 />
+// //             </Container>
+// //         </Box>
+// //     );
+// // };
+
+// // export default Announcement;
+
+// import { useEffect, useState } from 'react';
+// import { useSelector, useDispatch } from 'react-redux/lib/exports';
+// import {
+//     Grid, Box, Checkbox, Button, IconButton, Typography, Divider,
+//     Paper, CircularProgress, useMediaQuery, Card, CardContent,
+//     Switch, Stack, Container, Alert
+// } from '@mui/material';
+// import { Add, Delete, Edit, Visibility, NotificationsActive } from "@mui/icons-material";
+// import { Link } from 'react-router-dom';
+// import { activeAnnouncement, deleteAnnouncement, getAllAnnouncement } from '../../../redux/action/announcementAction';
+// import WarningModal from '../../Utils/WarningModal';
+// import GetAllAnnouncementHook from '../../../customHooks/Admin/Announcement/GetAllAnnouncementHook';
+// import DeleteAnnouncementHook from '../../../customHooks/Admin/Announcement/DeleteAnnouncementHook';
+
+// const Announcement = () => {
+//     const [announcements] = GetAllAnnouncementHook();
+//     const [
+//         isModalOpen,
+//         setIsModalOpen,
+//         itemId,
+//         setItemId,
+//         handleCancelDelete,
+//         handleConfirmDelete
+//     ] = DeleteAnnouncementHook();
+
+//     const isSmallScreen = useMediaQuery((theme) => theme.breakpoints.down('sm'));
+//     const dispatch = useDispatch();
+
+//     const handleToggleActive = async (announcement) => {
+//         await dispatch(activeAnnouncement(announcement._id));
+//     };
+
+//     return (
+//         <Box sx={{
+//             minHeight: '100vh',
+//             backgroundColor: '#F8FAFC',
+//             py: 4
+//         }}>
+//             <Container maxWidth="xl">
+//                 {/* Header Section */}
+//                 <Box sx={{
+//                     display: 'flex',
+//                     justifyContent: 'space-between',
+//                     alignItems: 'center',
+//                     mb: 4
+//                 }}>
+//                     <Stack direction="row" spacing={2} alignItems="center">
+//                         <NotificationsActive sx={{
+//                             color: '#1976D2',
+//                             fontSize: { xs: 28, sm: 32 }
+//                         }} />
+//                         <Typography
+//                             variant="h4"
+//                             sx={{
+//                                 fontSize: { xs: '1.5rem', sm: '2rem' },
+//                                 fontWeight: 600,
+//                                 color: '#1976D2'
+//                             }}
+//                         >
+//                             Announcements
+//                         </Typography>
+//                     </Stack>
+
+//                     <Button
+//                         component={Link}
+//                         to="/dashboard/announcement/create"
+//                         variant="contained"
+//                         startIcon={<Add />}
+//                         sx={{
+//                             borderRadius: '12px',
+//                             py: 1.5,
+//                             px: { xs: 2, sm: 3 },
+//                             backgroundColor: '#1976D2',
+//                             '&:hover': {
+//                                 backgroundColor: '#1565C0'
+//                             }
+//                         }}
+//                     >
+//                         New Announcement
+//                     </Button>
+//                 </Box>
+
+//                 {/* Announcements Grid */}
+//                 <Grid container spacing={3}>
+//                     {announcements && announcements.data ? (
+//                         announcements.data.map((announcement) => (
+//                             <Grid item xs={12} sm={6} md={4} key={announcement._id}>
+//                                 <Card sx={{
+//                                     height: '100%',
+//                                     borderRadius: '16px',
+//                                     boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)',
+//                                     transition: 'transform 0.2s ease-in-out',
+//                                     '&:hover': {
+//                                         transform: 'translateY(-4px)'
+//                                     }
+//                                 }}>
+//                                     <CardContent>
+//                                         <Box sx={{ position: 'relative' }}>
+//                                             <img
+//                                                 src={announcement.image}
+//                                                 alt={announcement.title}
+//                                                 style={{
+//                                                     width: '100%',
+//                                                     height: '200px',
+//                                                     borderRadius: '12px',
+//                                                     objectFit: 'cover',
+//                                                     marginBottom: '16px'
+//                                                 }}
+//                                             />
+//                                             <Switch
+//                                                 checked={announcement.isActive}
+//                                                 onChange={() => handleToggleActive(announcement)}
+//                                                 color="success"
+//                                                 sx={{
+//                                                     position: 'absolute',
+//                                                     top: 8,
+//                                                     right: 8,
+//                                                     bgcolor: 'rgba(255, 255, 255, 0.9)',
+//                                                     borderRadius: '12px',
+//                                                     '& .MuiSwitch-thumb': {
+//                                                         bgcolor: announcement.isActive ? '#2E7D32' : '#grey.500'
+//                                                     }
+//                                                 }}
+//                                             />
+//                                         </Box>
+
+//                                         <Typography
+//                                             variant="h6"
+//                                             sx={{
+//                                                 mb: 1,
+//                                                 fontWeight: 600,
+//                                                 color: '#1F2937'
+//                                             }}
+//                                         >
+//                                             {announcement.title}
+//                                         </Typography>
+
+//                                         <Typography
+//                                             color="text.secondary"
+//                                             sx={{
+//                                                 mb: 2,
+//                                                 display: '-webkit-box',
+//                                                 WebkitLineClamp: 3,
+//                                                 WebkitBoxOrient: 'vertical',
+//                                                 overflow: 'hidden',
+//                                                 minHeight: '4.5em'
+//                                             }}
+//                                         >
+//                                             {announcement.desc}
+//                                         </Typography>
+
+//                                         <Stack
+//                                             direction="row"
+//                                             spacing={1}
+//                                             justifyContent="flex-end"
+//                                             sx={{ mt: 2 }}
+//                                         >
+//                                             <IconButton
+//                                                 component={Link}
+//                                                 to="/#announcement-section"
+//                                                 sx={{
+//                                                     color: '#1976D2',
+//                                                     '&:hover': { backgroundColor: 'rgba(25, 118, 210, 0.04)' }
+//                                                 }}
+//                                             >
+//                                                 <Visibility />
+//                                             </IconButton>
+//                                             <IconButton
+//                                                 component={Link}
+//                                                 to={`/dashboard/update/announcement/${announcement._id}`}
+//                                                 sx={{
+//                                                     color: '#1976D2',
+//                                                     '&:hover': { backgroundColor: 'rgba(25, 118, 210, 0.04)' }
+//                                                 }}
+//                                             >
+//                                                 <Edit />
+//                                             </IconButton>
+//                                             <IconButton
+//                                                 onClick={() => {
+//                                                     setItemId(announcement._id);
+//                                                     setIsModalOpen(true);
+//                                                 }}
+//                                                 sx={{
+//                                                     color: '#DC2626',
+//                                                     '&:hover': { backgroundColor: 'rgba(220, 38, 38, 0.04)' }
+//                                                 }}
+//                                             >
+//                                                 <Delete />
+//                                             </IconButton>
+//                                         </Stack>
+//                                     </CardContent>
+//                                 </Card>
+//                             </Grid>
+//                         ))
+//                     ) : (
+//                         <Grid item xs={12}>
+//                             <Box sx={{
+//                                 display: 'flex',
+//                                 justifyContent: 'center',
+//                                 alignItems: 'center',
+//                                 minHeight: '200px'
+//                             }}>
+//                                 <CircularProgress sx={{ color: '#1976D2' }} />
+//                             </Box>
+//                         </Grid>
+//                     )}
+//                 </Grid>
+
+//                 {/* Warning Modal */}
+//                 <WarningModal
+//                     open={isModalOpen}
+//                     onClose={handleCancelDelete}
+//                     onConfirm={handleConfirmDelete}
+//                     title="Delete Announcement"
+//                     message="Are you sure you want to delete this announcement? This action cannot be undone."
+//                 />
+//             </Container>
+//         </Box>
+//     );
+// };
+
+// export default Announcement;

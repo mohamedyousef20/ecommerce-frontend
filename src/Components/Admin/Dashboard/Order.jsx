@@ -11,21 +11,18 @@ import AdminGetAllOrderHook from '../../../customHooks/Admin/Order/AdminGetAllOr
 import { useDispatch, useSelector } from 'react-redux/lib/exports';
 import LoadingProgress from '../../LoadingProgress';
 import Notification from '../../../customHooks/useNotification';
+import AdminUpdateOrderPayment from '../../../customHooks/Admin/Order/AdminUpdateOrderPayment';
 
 const ProductOrderManagement = () => {
     const [orders] = AdminGetAllOrderHook();
     const dispatch = useDispatch();
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedOrder, setSelectedOrder] = useState(null);
-    const [loading, setLoading] = useState();
     const [itemId, setItemId] = useState(null);
 
-    const handleUpdatePayment = (id) => {
-        dispatch(updateOrderPay(id));
-    };
-
+    const [handleUpdatePayment, loading] = AdminUpdateOrderPayment(itemId)
     const handleUpdateDeliver = (id) => {
-        console.log(id)
+        
         dispatch(updateOrderDeliver(id));
     };
 
@@ -33,15 +30,14 @@ const ProductOrderManagement = () => {
 
     const handleCancelDelete = () => setIsModalOpen(false);
 
-    console.log(itemId)
 
-    const handleConfirmDelete = async () => {
-        setLoading(true);
-        await dispatch(deleteOrder(itemId))
-        setLoading(false)
-        Notification('Deleting order successfully....')
-        setIsModalOpen(false);
-        window.location.reload(true);
+ const handleConfirmDelete = async () => { //TODE make it work
+        // setLoading(true);
+        // await dispatch(deleteOrder(itemId))
+        // setLoading(false)
+        // Notification('Deleting order successfully....')
+        // setIsModalOpen(false);
+        // window.location.reload(true);
 
     };
 
@@ -80,7 +76,7 @@ const ProductOrderManagement = () => {
                                         color={order.isPaid ? "success" : "primary"}
                                         onClick={() => handleUpdatePayment(order._id)}
                                     >
-                                        {order.isPaid ? formatDate(order.isPaidAt) : "Mark as Delivered"}
+                                        {order.isPaid ? formatDate(order.isPaidAt) : "Mark as Paid"}
                                     </Button>
                                 </Grid>
                                 <Grid item xs={2}>

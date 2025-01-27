@@ -164,7 +164,6 @@ const Address = ({ formData, setFormData }) => {
     const handleSubmit = (e) => {
         e.preventDefault();
         if (validateForm()) {
-            console.log("Form Data Submitted:", formData);
             alert("Address submitted successfully!");
         }
     };

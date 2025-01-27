@@ -18,7 +18,6 @@ const Categories = () => {
       pagination,
       page
     ] = AdminGetAllCategoryHook();
-  console.log(category)
 
   const [
     open,
@@ -139,7 +138,7 @@ const Categories = () => {
           }
         </Grid>
       </Paper>
-      {/* <PaginationTabs paginationResult={category.paginationResult} /> */}TODO
+      {/* <PaginationTabs paginationResult={category.paginationResult} /> */}
 
       {/* Delete Category Modal */}
       <Modal

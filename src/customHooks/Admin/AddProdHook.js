@@ -18,10 +18,8 @@ const AddProdHook = () => {
 
     // get all category
     const category = useSelector(state => state.categoryReducer.allCategory);
-    console.log('category', category)
     // get all category
-    const product = useSelector(state => state.allProduct.product);
-    console.log(product)
+    const product = useSelector(state => state.productReducer.product);
     // get all brands
     // const brand = useSelector(state => state.categoryReducer.category);
     const crop = {
@@ -245,7 +243,7 @@ const AddProdHook = () => {
                 setPriceAfterDiscount();
                 setPriceBeforeDiscount();
                 setProductImages([])
-                setColors([])
+                setColors('')
                 setCateID('category')
                 setQty(1)
 
@@ -260,7 +258,6 @@ const AddProdHook = () => {
     }, [loading]
     )
 
-    console.log(errors)
     return [
 
         productImages,

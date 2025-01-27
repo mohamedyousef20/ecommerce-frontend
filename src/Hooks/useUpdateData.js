@@ -9,7 +9,7 @@ export const useUpdateData = async (url, params) => {
             Authorization: `Bearer ${localStorage.getItem("userToken")}`
         }
     }
-    const res = await baseURL.put(url, params, config);
+    const res = await baseURL.patch(url, params, config);
     return res.data;
 
 
@@ -26,7 +26,7 @@ export const useUpdateDataWithImage = async (url, params) => {
         }
     }
 
-    const res = await baseURL.put(url, params, config);
+    const res = await baseURL.patch(url, params, config);
     return res;
 
 

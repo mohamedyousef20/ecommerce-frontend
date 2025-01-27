@@ -12,7 +12,7 @@ const GetMostOfferedProductHook = () => {
 
     }, [])
 
-    const allProduct = useSelector((state) => state.allProduct.mostOfferedProduct);
+    const allProduct = useSelector((state) => state.productReducer.mostOfferedProduct);
 
     let mostOfferedProduct = [];
     try {

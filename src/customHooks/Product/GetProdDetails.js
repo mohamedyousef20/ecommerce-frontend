@@ -15,7 +15,7 @@ const GetProdDetails = (id) => {
 
 
 
-    const oneProduct = useSelector((state) => state.allProduct.oneProduct);
+    const oneProduct = useSelector((state) => state.productReducer.oneProduct);
 console.log(oneProduct)
     let item = [];
 

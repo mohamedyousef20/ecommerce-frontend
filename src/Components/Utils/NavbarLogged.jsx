@@ -71,7 +71,6 @@ const NavbarLogged = () => {
       setUser(JSON.parse(localStorage.getItem('user')));
     }
   }, []);
-  console.log('the user', user)
   const handleMenuClick = (event) => { setAnchorEl(event.currentTarget); };
   const handleMenuClose = () => { setAnchorEl(null); };
   const handleNavigate = (path) => { navigate(path); };
@@ -128,7 +127,7 @@ const NavbarLogged = () => {
           <Button sx={{ color: '#fff' }} onClick={() => handleNavigate('/category')}>Categories</Button>
           <Button sx={{ color: '#fff' }} onClick={() => handleNavigate('/profile')}>Profile</Button>
           {user.role === 'admin' && (
-            <Button sx={{ color: accentColor }} onClick={() => handleNavigate('/dashboard')}>Dashboard</Button>
+            <Button sx={{ color: accentColor }} onClick={() => handleNavigate('/dashboard/overview')}>Dashboard</Button>
           )}
         </Box>
 

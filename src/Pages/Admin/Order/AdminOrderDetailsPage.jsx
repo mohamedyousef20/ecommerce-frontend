@@ -3,9 +3,13 @@ import { useParams } from 'react-router-dom';
 import { Box, Typography, Paper, Button, Divider, Grid, CircularProgress, Card, CardContent } from '@mui/material';
 import { getOneOrders } from '../../../redux/action/orderAction';
 import { useDispatch, useSelector } from 'react-redux/lib/exports';
+import AdminUpdateOrderPayment from '../../../customHooks/Admin/Order/AdminUpdateOrderPayment';
 
 const AdminOrderDetailsPage = () => {
+
     const { id } = useParams();
+    const [handleUpdatePayment, loading] = AdminUpdateOrderPayment(id)
+
     const dispatch = useDispatch();
     // const { order, loading } = useSelector((state) => state.orderDetails);
     const order = useSelector((state) => state.orderReducer.getOneOrder);
@@ -62,7 +66,10 @@ const AdminOrderDetailsPage = () => {
             </Paper>
 
             <Box sx={{ marginTop: 4, display: 'flex', justifyContent: 'center', gap: 2 }}>
-                <Button variant="contained" color="primary" sx={{ boxShadow: 3 }}>
+                <Button variant="contained" 
+                color="primary" sx={{ boxShadow: 3 }}
+                    onClick={()=>handleUpdatePayment(id)}
+                >
                     Mark as Paid
                 </Button>
                 <Button variant="contained" color="secondary" sx={{ boxShadow: 3 }}>

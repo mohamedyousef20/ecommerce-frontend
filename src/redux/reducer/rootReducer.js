@@ -15,7 +15,7 @@ import subcategoryReducer from "./subcategoryReducer";
 
 export default combineReducers({
     categoryReducer: categoryReducer,
-    allProduct: productReducer,
+    productReducer: productReducer,//TODO change allProduct to productReducer
     couponReducer: couponReducer,
     authReducer: authReducer,
     userReducer: userReducer,

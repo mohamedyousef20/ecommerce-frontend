@@ -7,7 +7,7 @@ const GetProductInCateHook = () => {
 
 
     const dispatch = useDispatch();
-    const {id} = useParams();
+    const { id } = useParams();
 
     useEffect(() => {
 
@@ -15,7 +15,7 @@ const GetProductInCateHook = () => {
 
     }, [])
 
-    const allProduct = useSelector((state) => state.allProduct.allProductInCate);
+    const allProduct = useSelector((state) => state.productReducer.allProductInCate);
 
     let products = [];
     if (allProduct.data) {

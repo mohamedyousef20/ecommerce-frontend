@@ -150,7 +150,7 @@ function App() {
             {/* <Route path="/admin/all-product" element={<AdminAllProdPage />} /> */}
             <Route exact path='/admin/product/update/:id' element={<AdminEditProductPage />} />
             {/* <Route exact path='/admin/add-coupon' element={<AdminAddCouponsPage />} /> */}
-            <Route exact path='/dashboard' element={<Dashboard />} />
+            <Route exact path='/dashboard/overview' element={<Dashboard />} />
             <Route exact path='/dashboard/category/create' element={<AdminAddCategoryPage />} />
             <Route exact path='/dashboard/products' element={<AdminProductPage />} />
             <Route exact path='/dashboard/orders' element={<AdminOrderPage />} />

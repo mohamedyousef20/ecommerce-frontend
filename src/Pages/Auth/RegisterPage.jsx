@@ -3,7 +3,6 @@ import { Box, TextField, Button, Typography, Container, InputAdornment, IconButt
 import { useNavigate } from 'react-router-dom';
 import { registerUser } from '../../redux/action/authAction';
 import Notification from '../../customHooks/useNotification';
-import { Visibility, VisibilityOff } from '@mui/icons-material';
 import LoadingProgress from '../../Components/LoadingProgress';
 import Joi from 'joi';
 import { useDispatch, useSelector } from 'react-redux/lib/exports';
@@ -17,7 +16,6 @@ const RegisterPage = () => {
     const [phone, setPhone] = useState('');
     const [password, setPassword] = useState('');
     const [passwordConfirm, setPasswordConfirm] = useState('');
-    const [showPassword, setShowPassword] = useState(false);
     const [errors, setErrors] = useState({});
     const [loading, setLoading] = useState(false);
 
@@ -51,6 +49,7 @@ const RegisterPage = () => {
 
     const handleRegister = (e) => {
         e.preventDefault();
+        setErrors({}); // Clear previous errors
 
         // Validate the form data before proceeding
         const { error } = schema.validate({ name, email, phone, password, passwordConfirm }, { abortEarly: false });
@@ -62,28 +61,35 @@ const RegisterPage = () => {
             return; // Stop execution if there are validation errors
         }
 
-        setErrors({}); // Clear previous errors
 
         // Start the loading state before API call
         setLoading(true);
 
         // Dispatch the register action
         dispatch(registerUser({ name, email, phone, password, passwordConfirm }));
+
+        // Stop the loading state before API call
+        setLoading(false);
+
+
     };
 
     // Handle response from the registration API
     useEffect(() => {
-        if (loading && response) {
+        if (response && response.data) {
             if (response.msg === 'success') {
                 Notification('You Registered Successfully...', 'success');
                 navigate('/login');
+            } else if (response.errors) {
+                response.errors.forEach((error) => {
+                    Notification(error.msg, 'error');
+                });
             } else {
-                console.log(errors)
                 Notification('Something went wrong, please try again...', 'error');
             }
             setLoading(false); // Stop loading after receiving response
         }
-    }, [loading, response, navigate]);
+    }, [response, navigate, dispatch]);
 
     return (
         <Container component="main" maxWidth="xs">
@@ -168,7 +174,7 @@ const RegisterPage = () => {
                     {/* Password */}
                     <TextField
                         label="Password"
-                        type={showPassword ? 'text' : 'password'}
+                        type="password"
                         variant="outlined"
                         fullWidth
                         margin="normal"
@@ -176,21 +182,12 @@ const RegisterPage = () => {
                         onChange={(e) => setPassword(e.target.value)}
                         error={!!errors.password}
                         helperText={errors.password}
-                        InputProps={{
-                            endAdornment: (
-                                <InputAdornment position="end">
-                                    <IconButton onClick={() => setShowPassword(!showPassword)} edge="end">
-                                        {showPassword ? <VisibilityOff /> : <Visibility />}
-                                    </IconButton>
-                                </InputAdornment>
-                            ),
-                        }}
                     />
 
                     {/* Confirm Password */}
                     <TextField
                         label="Confirm Password"
-                        type={showPassword ? 'text' : 'password'}
+                        type="password"
                         variant="outlined"
                         fullWidth
                         margin="normal"

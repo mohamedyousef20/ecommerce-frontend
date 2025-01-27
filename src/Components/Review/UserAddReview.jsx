@@ -96,6 +96,7 @@ const ReviewSection = () => {
         setRating(0);
         setSnackbarMessage('Review submitted successfully!');
         setOpenSnackbar(true);
+        window.location.reload(true)
     };
     // Handle delete functionality
     const handleDeleteClick = (reviewId) => {

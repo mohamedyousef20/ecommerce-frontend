@@ -3,12 +3,12 @@ import { Box, CircularProgress, Typography } from '@mui/material';
 import image from '../../Pages/image.jpg';
 import { Link } from 'react-router-dom';
 
-const CategoryCard = ({ item }) => {
-    console.log(item)
+const CategoryCard = ({ category }) => {
+    console.log(category)
     return (
         // Check if category exists before rendering
-        item ? (
-            <Link to={`/category/${item._id}/product`}>
+        category ? (
+            <Link to={`/category/${category._id}/product`}>
                 <Box
                     sx={{
                         position: 'relative',
@@ -21,8 +21,8 @@ const CategoryCard = ({ item }) => {
                 >
                     {/* Category Image */}
                     <img
-                        src={item.image}
-                        alt={item.name}
+                        src={category.image}
+                        alt={category.name}
                         style={{ width: '100%', height: '150px', objectFit: 'cover' }}
                     />
 
@@ -45,7 +45,7 @@ const CategoryCard = ({ item }) => {
                                 textAlign: 'center',
                             }}
                         >
-                            {item.name}
+                            {category.name}
                         </Typography>
                     </Box>
                 </Box>
@@ -53,7 +53,6 @@ const CategoryCard = ({ item }) => {
         ) : (
             // Show loading spinner if category is not available
             <CircularProgress size={50} thickness={4} color="primary" />
-
         )
     );
 };

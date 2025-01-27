@@ -12,7 +12,7 @@ const GetHomeProdHook = () => {
 
     }, [])
 
-    const allProduct = useSelector((state) => state.allProduct.allProduct);
+    const allProduct = useSelector((state) => state.productReducer.allProduct);
 
     let products = [];
     try {

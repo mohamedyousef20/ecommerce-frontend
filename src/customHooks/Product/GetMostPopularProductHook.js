@@ -12,7 +12,7 @@ const GetMostPopularProductHook = () => {
 
     }, [])
 
-    const allProduct = useSelector((state) => state.allProduct.mostPopularProduct);
+    const allProduct = useSelector((state) => state.productReducer.mostPopularProduct);
 
     let popularProduct = [];
     try {

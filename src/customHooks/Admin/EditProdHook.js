@@ -64,7 +64,7 @@ const EditProdHook = (id) => {
 
 
     // get one product
-    const product = useSelector((state) => state.allProduct.oneProduct);
+    const product = useSelector((state) => state.productReducer.oneProduct);
     // get all category
     const category = useSelector(state => state.categoryReducer.allCategory);
     // get all brand
@@ -92,10 +92,12 @@ const EditProdHook = (id) => {
     // to store color selected 
     const [colors, setColors] = useState([])
     console.log('productimages ', productImages)
-
     useEffect(() => {
         if (product) {
-            const existingImages = product.images ? product.images.map(img => img.url) : [];
+            
+            const existingImages = product.images ?
+                product.images.map(img => img.url) : [];
+
             setProductImages(existingImages);
             setProdName(product.name || '');
             setDesc(product.desc || '');
@@ -105,10 +107,13 @@ const EditProdHook = (id) => {
             setCateID(product.category || '');
             setColors(product.colors || []);
             setBrandID(product.brand || '');
+            console.log('existingImages', existingImages)
+            
+
         }
     }, [product]);
 
-
+    console.log('productImages',productImages)
     // Handle Product Name
     const handelName = (e) => {
         setProdName(e.target.value);
@@ -165,10 +170,6 @@ const EditProdHook = (id) => {
 
     }
 
-    // Helper to check if string is base64
-    const isBase64Image = (str) => {
-        return str && str.startsWith('data:image');
-    };
 
     // Convert single cover image to file
     const convertImageToFile = (dataUrl, fileName) => {
@@ -188,16 +189,68 @@ const EditProdHook = (id) => {
         }
     };
 
-    const handleImageChange = (images) => {
-        setProductImages((prevImages) => [...prevImages, ...images]);
+    // Helper function to check if string is base64 image
+    const isBase64Image = (str) => {
+
+        // Check if it's a data URL
+        if (!str.startsWith('data:image/')) return false;
+
+        // Check if it has the base64 marker
+        if (!str.includes(';base64,')) return false;
+
+        try {
+            // Get the base64 content after the marker
+            const base64Content = str.split(';base64,')[1];
+            // Try to decode it - if it fails, it's not valid base64
+            window.atob(base64Content);
+            return true;
+        } catch (e) {
+            return false;
+        }
     };
 
-    console.log('####',productImages)
-    
+    const handleImageChange = (newImages) => {
+        // If newImages is a FileList or from input event, convert to array of Files
+        if (newImages.target && newImages.target.files) {
+            const filesArray = Array.from(newImages.target.files);
+            setProductImages((prevImages) => [...prevImages, ...filesArray]);
+            return;
+        }
+
+        // If newImages is a string (URL or comma-separated URLs)
+        if (typeof newImages === 'string') {
+            const urls = newImages.split(',').map(url => url.trim());
+            setProductImages((prevImages) => {
+                const uniqueUrls = urls.filter(url => !prevImages.includes(url));
+                return [...prevImages, ...uniqueUrls];
+            });
+            return;
+        }
+
+        // If newImages is an array, process each image
+        if (Array.isArray(newImages)) {
+            setProductImages((prevImages) => {
+                // Filter out any duplicate images by comparing URLs
+                const uniqueNewImages = newImages.filter(newImg => {
+                    // If the new image is a File object or base64, it's always unique
+                    if (newImg instanceof File || isBase64Image(newImg)) {
+                        return true;
+                    }
+                    // For URLs, check if it already exists in prevImages
+                    return !prevImages.includes(newImg);
+                });
+
+                return [...prevImages, ...uniqueNewImages];
+            });
+        }
+    };
+
+    console.log('####', brandID)
+
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        
+
         const { error } = productSchema.validate({
             prodName,
             desc,
@@ -218,22 +271,9 @@ const EditProdHook = (id) => {
         try {
             setLoading(true);
 
-            // Convert cover image only if it's base64
-            const imgBase64ToFile = productImages[0] ? 
-                (isBase64Image(productImages[0]) ? 
-                    convertImageToFile(productImages[0], `cover-${Date.now()}.jpeg`) : 
-                    productImages[0]) : 
-                null;
-
-            // Convert only base64 images in the array, keep URLs as they are
-            const imagesItems = productImages.length > 0 ? 
-                productImages.map((image, index) => 
-                    isBase64Image(image) ? 
-                        convertImageToFile(image, `image-${Date.now()}-${index}.jpeg`) : 
-                        image
-                ).filter(item => item !== null) : [];
-
             const formData = new FormData();
+            
+            // Add all form fields
             formData.append("name", prodName);
             formData.append("desc", desc);
             formData.append("quantity", Qty);
@@ -241,43 +281,90 @@ const EditProdHook = (id) => {
             formData.append("priceAfterDiscount", priceAfterDiscount || '');
             formData.append("category", cateID);
             formData.append("brand", brandID);
+
+            console.log('========== FORM DATA DETAILS ==========');
+            console.log('Product Name:', prodName);
+            console.log('Description:', desc);
+            console.log('Quantity:', Qty);
+            console.log('Price Before Discount:', priceBeforeDiscount);
+            console.log('Price After Discount:', priceAfterDiscount);
+            console.log('Category ID:', cateID);
+            console.log('Brand ID:', brandID);
+            console.log('Colors:', colors);
+            console.log('=====================================');
+
+            // Handle images
+            console.log('========== IMAGES DETAILS ==========');
+            console.log('Total Images:', productImages.length);
             
-            // Append colors as JSON string
-            if (colors.length > 0) {
-                formData.append("colors", JSON.stringify(colors));
-            }
-
-            // Handle cover image
-            if (imgBase64ToFile) {
-                if (typeof imgBase64ToFile === 'string' && imgBase64ToFile.startsWith('http')) {
-                    // It's a URL, send it as is
-                    formData.append("existingImageCover", imgBase64ToFile);
-                } else {
-                    // It's a File object
-                    formData.append("imageCover", imgBase64ToFile);
-                }
-            }
-
-            // Handle additional images
-            imagesItems.forEach((image, index) => {
-                if (typeof image === 'string' && image.startsWith('http')) {
-                    // It's a URL, send as existing image
-                    formData.append(`existingImages[${index}]`, image);
-                } else {
-                    // It's a File object
+            productImages.forEach((image, index) => {
+                console.log(`\nProcessing Image ${index + 1}:`);
+                if (image instanceof File) {
+                    console.log(`Type: File`);
+                    console.log(`Name: ${image.name}`);
+                    console.log(`Size: ${(image.size / 1024).toFixed(2)} KB`);
+                    console.log(`Type: ${image.type}`);
+                    formData.append("images", image);
+                } else if (isBase64Image(image)) {
+                    console.log(`Type: Base64 Image`);
+                    const imageFile = convertImageToFile(image, `image-${Date.now()}-${index}.jpeg`);
+                    if (imageFile) {
+                        console.log(`Converted to File: ${imageFile.name}`);
+                        console.log(`Size: ${(imageFile.size / 1024).toFixed(2)} KB`);
+                        formData.append("images", imageFile);
+                    }
+                } else if (typeof image === 'string' && !isBase64Image(image)) {
+                    console.log(`Type: URL`);
+                    console.log(`URL: ${image}`);
                     formData.append("images", image);
                 }
             });
 
-         
-
-            const res = await dispatch(updateProduct(id, formData));
-            
-            if (res && res.status === 200) {
-                Notification("Product updated successfully", "success");
-            } else {
-                Notification("Error updating product", "error");
+            // Handle cover image
+            if (productImages[0]) {
+                console.log('\n========== COVER IMAGE DETAILS ==========');
+                const coverImage = productImages[0];
+                console.log('Cover Image Type:', coverImage instanceof File ? 'File' : 
+                                              isBase64Image(coverImage) ? 'Base64' : 'URL');
+                
+                if (coverImage instanceof File) {
+                    console.log('Cover Image Name:', coverImage.name);
+                    console.log('Size:', (coverImage.size / 1024).toFixed(2), 'KB');
+                    formData.append("imageCover", coverImage);
+                } else if (isBase64Image(coverImage)) {
+                    const coverFile = convertImageToFile(coverImage, `cover-${Date.now()}.jpeg`);
+                    if (coverFile) {
+                        console.log('Converted Cover Image Name:', coverFile.name);
+                        console.log('Size:', (coverFile.size / 1024).toFixed(2), 'KB');
+                        formData.append("imageCover", coverFile);
+                    }
+                } else if (typeof coverImage === 'string') {
+                    console.log('Cover Image URL:', coverImage);
+                    formData.append("imageCover", coverImage);
+                }
             }
+
+            // Append colors
+            if (colors.length > 0) {
+                formData.append("colors", colors);
+            }
+
+            console.log('\n========== FINAL FORM DATA CONTENTS ==========');
+            for (let [key, value] of formData.entries()) {
+                if (value instanceof File) {
+                    console.log(`${key}: File - ${value.name} (${(value.size / 1024).toFixed(2)} KB)`);
+                } else if (typeof value === 'string' && value.startsWith('http')) {
+                    console.log(`${key}: URL - ${value}`);
+                } else {
+                    console.log(`${key}: ${value}`);
+                }
+            }
+            console.log('==========================================');
+
+            // Send to backend
+            console.log('\nSending data to backend...');
+            await dispatch(updateProduct(id, formData));
+
         } catch (err) {
             console.error('Error updating product:', err);
             Notification(err.message || "Error updating product", "error");
@@ -286,32 +373,39 @@ const EditProdHook = (id) => {
         }
     };
 
+    const res = useSelector((state) => state.productReducer.updateProduct)
+    console.log(res)
 
     useEffect(() => {
-        if (loading === false) {
-            setProdName('');
-            setDesc('');
-            setPriceBeforeDiscount(0);
-            setPriceAfterDiscount(0);
-            setPriceBeforeDiscount(0);
-            setColors([])
-            setCateID('')
-            setQty(1)
-            setTimeout(() => {
-                setLoading(true)
-            }, 1000);
-
-            if (product) {
-
-                Notification('Update Product Is Done Successfully..', 'success')
-
-            }
-            else {
-                Notification('Something Went Wrong , Check Internet Connection ', 'error')
-
-            }
-
+        if (res && res.status === 200) {
+            Notification("Product updated successfully", "success");
+        } else {
+            Notification("Error updating product", "error");
         }
+        // if (loading === false) {
+        //     setProdName('');
+        //     setDesc('');
+        //     setPriceBeforeDiscount(0);
+        //     setPriceAfterDiscount(0);
+        //     setPriceBeforeDiscount(0);
+        //     setColors([])
+        //     setCateID('')
+        //     setQty(1)
+        //     setTimeout(() => {
+        //         setLoading(true)
+        //     }, 1000);
+
+        //     if (product) {
+
+        //         Notification('Update Product Is Done Successfully..', 'success')
+
+        //     }
+        //     else {
+        //         Notification('Something Went Wrong , Check Internet Connection ', 'error')
+
+        //     }
+
+        // }
     }, [loading]
     )
 

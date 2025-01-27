@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
-import { Drawer, List, ListItem, ListItemText, ListItemIcon, Box } from '@mui/material';
-import { Home, ShoppingCart, People, Category, Subscriptions, Dashboard, Store, BrandingWatermark, Business, Discount, Storefront, Analytics, Announcement } from '@mui/icons-material';
-import { Link } from 'react-router-dom';
+import React from 'react';
+import { Drawer, List, ListItem, ListItemText, ListItemIcon, Box, Typography } from '@mui/material';
+import { Home, ShoppingCart, People, Category, Subscriptions, Dashboard, Store, BrandingWatermark, Business, Discount, Storefront, Analytics, Announcement, ViewAgenda } from '@mui/icons-material';
+import { Link, useLocation } from 'react-router-dom';
 
 // Colors
 const primaryColor = '#1976D2';  // Blue
@@ -9,72 +9,87 @@ const accentColor = '#FF5722';   // Orange
 const backgroundColor = '#F5F5F5'; // Light Gray
 
 const AdminSideBar = ({ toggleSidebar, isSidebarOpen }) => {
+    const location = useLocation();
+    const menuItems = [
+        { text: 'Overview', icon: ViewAgenda, path: '/dashboard/overview' },
+        { text: 'Products', icon: Storefront, path: '/dashboard/products' },
+        { text: 'Orders', icon: ShoppingCart, path: '/dashboard/orders' },
+        { text: 'Users', icon: People, path: '/dashboard/users' },
+        { text: 'Categories', icon: Category, path: '/dashboard/categories' },
+        { text: 'Subcategories', icon: Subscriptions, path: '/dashboard/subcategory' },
+        { text: 'Brands', icon: Business, path: '/dashboard/brands' },
+        { text: 'Coupons', icon: Discount, path: '/dashboard/coupon' },
+        { text: 'Announcements', icon: Announcement, path: '/dashboard/announcement' },
+    ];
 
     return (
         <Drawer
             sx={{
-                width: 270,  // Increased width
+                width: 280,
                 flexShrink: 0,
                 '& .MuiDrawer-paper': {
-                    width: 270,  // Increased width
+                    width: 280,
                     boxSizing: 'border-box',
-                    backgroundColor: primaryColor, // Use primary color as background
-                    color: '#fff', // Text color inside sidebar
-                    m: 2,
-                    borderRadius: '10px 10px 0 0', // Rounded corners at the top
-                    position: 'absolute',
-                    bottom: 0,  // Positioning at the bottom of the navbar
-                    height: 'auto',  // Let the sidebar height adjust as needed
+                    background: 'linear-gradient(180deg, #1976D2 0%, #1565C0 100%)',
+                    color: '#fff',
+                    borderRadius: '0 16px 16px 0',
+                    boxShadow: '0 4px 20px rgba(0, 0, 0, 0.15)',
+                    border: 'none',
+                    mx:1 ,
+                    my:10 ,
+                    alignItems:'center'
+                    
                 },
             }}
             variant="permanent"
             anchor="left"
         >
-            <List sx={{ cursor: 'pointer', fontWeight: 'bold' }}>
-                <ListItem button component={Link} to="/dashboard/analytics" onClick={toggleSidebar}>
-                    <Analytics sx={{ color: '#fff' }} />
-                    <ListItemText primary="Analytics" sx={{ color: '#fff' }} />
-                </ListItem>
+            <Box sx={{ p: 3, mb: 2 }}>
+                <Typography variant="h6" fontWeight="bold" sx={{ color: '#fff' }}>
+                    Admin Dashboard
+                </Typography>
+            </Box>
 
-                <ListItem button component={Link} to="/dashboard/products">
-                    <Storefront sx={{ color: '#fff' }} />
-                    <ListItemText primary="Product" sx={{ color: '#fff' }} />
-                </ListItem>
+            <List sx={{ px: 2 }}>
+                {menuItems.map((item) => {
+                    const isActive = location.pathname === item.path;
+                    const Icon = item.icon;
 
-                <ListItem button component={Link} to="/dashboard/orders">
-                    <ShoppingCart sx={{ color: '#fff' }} />
-                    <ListItemText primary="Orders" sx={{ color: '#fff' }} />
-                </ListItem>
-
-                <ListItem button component={Link} to="/dashboard/users">
-                    <People sx={{ color: '#fff' }} />
-                    <ListItemText primary="User" sx={{ color: '#fff' }} />
-                </ListItem>
-
-                <ListItem button component={Link} to="/dashboard/categories">
-                    <Category sx={{ color: '#fff' }} />
-                    <ListItemText primary="Categories" sx={{ color: '#fff' }} />
-                </ListItem>
-
-                <ListItem button component={Link} to="/dashboard/subcategory">
-                    <Subscriptions sx={{ color: '#fff' }} />
-                    <ListItemText primary="Subcategories" sx={{ color: '#fff' }} />
-                </ListItem>
-
-                <ListItem button component={Link} to="/dashboard/brands">
-                    <Business sx={{ color: '#fff' }} />
-                    <ListItemText primary="Brands" sx={{ color: '#fff' }} />
-                </ListItem>
-
-                <ListItem button component={Link} to="/dashboard/coupon">
-                    <Discount sx={{ color: '#fff' }} />
-                    <ListItemText primary="Coupons" sx={{ color: '#fff' }} />
-                </ListItem>
-
-                <ListItem button component={Link} to="/dashboard/announcement">
-                    <Announcement sx={{ color: '#fff' }} />
-                    <ListItemText primary="Announcements" sx={{ color: '#fff' }} />
-                </ListItem>
+                    return (
+                        <ListItem
+                            key={item.text}
+                            component={Link}
+                            to={item.path}
+                            sx={{
+                                mb: 1,
+                                borderRadius: '12px',
+                                backgroundColor: isActive ? 'rgba(255, 255, 255, 0.1)' : 'transparent',
+                                '&:hover': {
+                                    backgroundColor: 'rgba(255, 255, 255, 0.15)',
+                                },
+                                transition: 'all 0.2s ease-in-out',
+                            }}
+                        >
+                            <Icon
+                                sx={{
+                                    mr: 2,
+                                    color: isActive ? '#fff' : 'rgba(255, 255, 255, 0.7)',
+                                    transition: 'color 0.2s ease-in-out',
+                                }}
+                            />
+                            <ListItemText
+                                primary={item.text}
+                                sx={{
+                                    '& .MuiTypography-root': {
+                                        fontWeight: isActive ? 600 : 400,
+                                        color: isActive ? '#fff' : 'rgba(255, 255, 255, 0.7)',
+                                        transition: 'color 0.2s ease-in-out',
+                                    },
+                                }}
+                            />
+                        </ListItem>
+                    );
+                })}
             </List>
         </Drawer>
     );

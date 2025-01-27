@@ -35,7 +35,6 @@ const Dashboard = () => {
         products: 0,
         orders: 0,
         announcements: 0,
-        analytics: 200, // Static value
         brands: 0,
         categories: 0,
         coupons: 0,
@@ -48,7 +47,6 @@ const Dashboard = () => {
             products: products?.numberOfDocuments || dashboardData.products,
             orders: orders?.numberOfDocuments || dashboardData.orders,
             announcements: announcements?.numberOfDocuments || dashboardData.announcements,
-            analytics: dashboardData.analytics, // Keep static value
             brands: brands?.numberOfDocuments || dashboardData.brands,
             categories: category?.numberOfDocuments || dashboardData.categories,
             coupons: coupons?.numberOfDocuments || dashboardData.coupons,
@@ -68,7 +66,6 @@ const Dashboard = () => {
         { title: 'Products', value: dashboardData.products, icon: <Inventory sx={{ fontSize: 40, color: '#3B82F6' }} />, bgColor: '#E8F5E9' },
         { title: 'Orders', value: dashboardData.orders, icon: <ShoppingCart sx={{ fontSize: 40, color: '#3B82F6' }} />, bgColor: '#FFF3E0' },
         { title: 'Announcements', value: dashboardData.announcements, icon: <Campaign sx={{ fontSize: 40, color: '#3B82F6' }} />, bgColor: '#FCE4EC' },
-        { title: 'Analytics', value: dashboardData.analytics, icon: <Insights sx={{ fontSize: 40, color: '#3B82F6' }} />, bgColor: '#EDE7F6' },
         { title: 'Brands', value: dashboardData.brands, icon: <BrandingWatermark sx={{ fontSize: 40, color: '#3B82F6' }} />, bgColor: '#F3E5F5' },
         { title: 'Categories', value: dashboardData.categories, icon: <Category sx={{ fontSize: 40, color: '#3B82F6' }} />, bgColor: '#E8F5E9' },
         { title: 'Coupons', value: dashboardData.coupons, icon: <Discount sx={{ fontSize: 40, color: '#3B82F6' }} />, bgColor: '#FFF3E0' },

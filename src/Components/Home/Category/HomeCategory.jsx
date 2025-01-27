@@ -6,18 +6,13 @@ import HomeCateHook from '../../../customHooks/Category/HomeCateHook';
 
 const HomeCategoryPage = () => {
   const [loading, category] = HomeCateHook();
-
   return (
     <Container>
       <Box sx={{ paddingY: 4 }}>
         {/* Header */}
-      
+
         {/* Categories Grid */}
-        {loading ? (
-          <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '200px' }}>
-            <CircularProgress sx={{ color: "#FF5722" }} />
-          </Box>
-        ) : (
+        {category?.data ? (
           <Grid container spacing={2} justifyContent="center">
             {category?.data?.slice(0, 6).map((cat) => (
               <Grid item xs={6} sm={4} md={2} key={cat._id}>
@@ -25,6 +20,10 @@ const HomeCategoryPage = () => {
               </Grid>
             ))}
           </Grid>
+        ) : (
+          <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '200px' }}>
+            <CircularProgress sx={{ color: "#FF5722" }} />
+          </Box>
         )}
       </Box>
     </Container>
