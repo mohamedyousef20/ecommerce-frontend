@@ -38,7 +38,7 @@ const ProductDetailsPage = () => {
     const [quantity, setQuantity] = useState(1);
     const [loading, setLoading] = useState();
     const dispatch = useDispatch();
-    console.log(colors) // Update console log to 'colors'
+    console.log(item) // Update console log to 'colors'
 
     const handleColorClick = (color) => {
         setColors((prevColors) => {
@@ -153,23 +153,27 @@ const ProductDetailsPage = () => {
                         </Stack>
 
                         {/* Available Colors */}
-                        {item.colors && item.colors.length > 0 && (
-                            <Typography variant="h6" fontWeight={600} mb={2}>
-                                Available colors:
-                            </Typography>
-                        )}
-                        <Stack direction="row" spacing={2} mb={2}>
-                            {item.colors?.map((color, index) => (
+                      
+                        <Stack direction="row" spacing={2} mb={2} 
+                        justifyContent={'flex-start'}
+                        alignItems={'center'}
+                        >
+                            {item.colors && item.colors.length > 0 && (
+                                <Typography variant="h6" fontWeight={600} mb={2}>
+                                 Colors:
+                                </Typography>
+                            )}
+                            {item.colors && item.colors.map((col, index) => (
                                 <Box
                                     key={index}
-                                    onClick={() => handleColorClick(color)}
-                                    height={30}
-                                    width={30}
+                                    onClick={() => handleColorClick(col)}
+                                    height={25}
+                                    width={25}
                                     borderRadius="50%"
-                                    bgcolor={color}
+                                    bgcolor={col}
                                     sx={{
                                         cursor: "pointer",
-                                        border: colors.includes(color) ? "3px solid #0A7DFF" : "none",
+                                        border: colors.includes(col) ? "3px solid #0A7DFF" : "none",
                                         transition: "border 0.3s ease",
                                     }}
                                 />

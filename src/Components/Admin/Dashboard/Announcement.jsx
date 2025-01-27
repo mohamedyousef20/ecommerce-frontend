@@ -258,7 +258,7 @@ export default Announcement;
 // //                         sx={{
 // //                             borderRadius: '12px',
 // //                             py: 1.5,
-// //                             px: { xs: 2, sm: 3 },
+// //                             px: { state.productReducer: 2, sm: 3 },
 // //                             backgroundColor: '#1976D2',
 // //                             '&:hover': {
 // //                                 backgroundColor: '#1565C0'
@@ -459,7 +459,7 @@ export default Announcement;
 //                     <Stack direction="row" spacing={2} alignItems="center">
 //                         <NotificationsActive sx={{
 //                             color: '#1976D2',
-//                             fontSize: { xs: 28, sm: 32 }
+//                             fontSize: { state.productReducer: 28, sm: 32 }
 //                         }} />
 //                         <Typography
 //                             variant="h4"

@@ -19,23 +19,30 @@ import { Button } from '@mui/material'
 import BrandHomePage from '../Components/Home/Brand/BrandHomePage'
 // import Coupons from '../Components/Coupons'
 const HomePage = () => {
- 
+    const [user, setUser] = useState('')
+    useEffect(() => {
 
-  return (
-    <div>
+        if (localStorage.getItem("user") != null) {
+            setUser(JSON.parse(localStorage.getItem("user")))
+        }
+
+    }, [])
+
+    return (
+        <div>
 
 
-      <Announcement />
-      <HomeCategory/>
-      <HomeProduct/>
-      <BrandHomePage />
-      <Footer />
+            <Announcement />
+            <HomeCategory />
+            <HomeProduct />
+            <BrandHomePage />
+            <Footer />
 
 
 
-    </div>
+        </div>
 
-  )
+    )
 }
 
 export default HomePage

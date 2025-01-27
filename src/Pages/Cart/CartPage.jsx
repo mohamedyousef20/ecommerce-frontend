@@ -32,14 +32,19 @@ const CartPage = () => {
         <Box>
             <Stack direction={{ xs: 'column', md: 'row' }} m={2} gap={2} justifyContent={'center'} alignItems={'center'}>
                 <Box>
-                    <Button sx={{ bgcolor: '#151515', color: '#fff', textTransform: 'none' }}>
-                        Continue Shopping
-                    </Button>
+                    <Link to={'/product'}>
+                        <Button sx={{ bgcolor: '#151515', color: '#fff', textTransform: 'none' }}>
+                            Continue Shopping
+                        </Button>
+                    </Link>
                 </Box>
                 <Box>
-                    <Button sx={{ bgcolor: '#0295db', color: '#fff', textTransform: 'none' }}>
-                        Checkout Now
-                    </Button>
+                    <Link to={`${cartId}/payment`}>
+                        <Button sx={{ bgcolor: '#0295db', color: '#fff', textTransform: 'none' }}>
+                            Checkout Now
+                        </Button>
+                    </Link>
+
                 </Box>
             </Stack>
 
@@ -186,15 +191,11 @@ const CartPage = () => {
                             <Box display="flex" justifyContent="center" marginTop={4}>
                                 <Link to={`${cartId}/payment`}>
                                     <Button variant="contained" color="primary" size="large" sx={{ padding: '10px 40px' }}>
-                                        Proceed to Checkout
+                                        Checkout
                                     </Button>
                                 </Link>
                             </Box>
-                            <Box display="flex" justifyContent="center" marginTop={4}>
-                                <Button variant="contained" color="primary" disabled={response.data?.isPaid}>
-                                    Mark as Paid
-                                </Button>
-                            </Box>
+
                         </Paper>
                     ) : (
                         <CircularProgress />

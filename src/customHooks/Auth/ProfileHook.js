@@ -21,6 +21,7 @@ const ProfileHook = () => {
         email: '',
         image: '', // Profile image URL
         isActive: true, // Profile image URL
+        phon: '', // 
     });
 
     // New state for the deactivation dialog
@@ -81,7 +82,7 @@ const ProfileHook = () => {
                 email: user.email,
                 image: user.profileImage,
                 isActive: user.active,
-                // phon:user.phon
+                phon:user.phon
             })
         }
         // setLoading(true)

@@ -14,7 +14,6 @@ const AdminGetAllCategoryHook = () => {
     // get last loading from redux
     const loading = useSelector(state => state.categoryReducer.loading);
 
-
     let page = 0;
     try {
         if (category.paginationResult) { page = category.paginationResult };

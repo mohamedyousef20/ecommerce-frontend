@@ -39,7 +39,7 @@ const Brand = () => {
       </Link>
 
       {/* Brand List */}
-      <Paper sx={{ padding: 2, bgcolor: "white", borderRadius: 2, overflowX: "auto" }}>
+      <Paper sx={{ padding: 2, bgcolor: "#f5f5f5", overflowX: "auto" }}>
         <Grid container spacing={2}>
           {/* Header Row */}
           <Grid container item xs={12} sx={{ bgcolor: "#E0E0E0", py: 1, px: 2, borderRadius: 1 }}>

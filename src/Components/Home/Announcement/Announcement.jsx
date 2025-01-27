@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Typography, Button, Grid, Card, CardMedia, CardContent, CircularProgress, Alert } from '@mui/material';
+import { Box, Typography, Button, Grid, Card, CardMedia, CardContent, CircularProgress, Alert, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux/lib/exports';
 import { getAnnouncementHomePage } from '../../../redux/action/announcementAction';
 import { Link } from 'react-router-dom';
@@ -45,81 +45,46 @@ const AnnouncementSection = () => {
                         <CircularProgress sx={{ margin: 'auto' }} />
                     ) : (
                         randomAnnouncements.length > 0 ? (
-                            randomAnnouncements.map((announcement) => (
-                                <Grid item xs={12} sm={6} md={4} lg={3} key={announcement._id}>
-                                    <Card
-                                        sx={{
-                                            width: '100%',
-                                            borderRadius: 1,
-                                            boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-                                            '&:hover': {
-                                                boxShadow: '0 4px 16px rgba(0,0,0,0.15)',
-                                            },
-                                            textAlign: 'center',
-                                        }}
-                                    >
-                                        <Link to={`/product`}>
-                                            <CardMedia
-                                                component="img"
-                                                image={announcement.image}
-                                                alt={announcement.title}
-                                                sx={{
-                                                    objectFit: 'cover',
-                                                    height: { xs: '150px', sm: '200px', md: '250px' },
-                                                }}
-                                            />
-                                        </Link>
-
-                                        <CardContent sx={{ padding: '8px' }}>
-                                            <Typography
-                                                variant="subtitle1"
-                                                fontWeight="bold"
-                                                sx={{
-                                                    color: '#151515',
-                                                    mb: 1,
-                                                    fontSize: { xs: '0.8rem', sm: '1rem' },
-                                                }}
-                                            >
-                                                {announcement.title}
-                                            </Typography>
-                                            <Typography
-                                                variant="body2"
-                                                sx={{
-                                                    color: '#555',
-                                                    mb: 1,
-                                                    fontSize: { xs: '0.7rem', sm: '0.8rem' },
-                                                }}
-                                            >
-                                                {announcement.desc}
-                                            </Typography>
-                                            <Link to={`/product`}>
-                                                <Button
-                                                    variant="contained"
-                                                    size="small"
-                                                    sx={{
-                                                        backgroundColor: '#ff5722',
-                                                        color: '#fff',
-                                                        textTransform: 'none',
-                                                        fontWeight: 'bold',
-                                                        fontSize: { xs: '0.7rem', sm: '0.75rem' },
-                                                        '&:hover': { backgroundColor: '#e64a19' },
-                                                    }}
-                                                >
-                                                    Shop Now
-                                                </Button>
-                                            </Link>
-                                        </CardContent>
-                                    </Card>
-                                </Grid>
-                            ))
+                            <Announcement announcements={randomAnnouncements} />
                         ) : (
                             <Typography variant="h6" sx={{ margin: 'auto' }}>
-                                        <Alert severity='info'>  No announcements found</Alert>
+                                <Alert severity='info'>  No announcements found</Alert>
                             </Typography>
                         )
                     )}
                 </Grid>
             </Box>
+        </Box>
+    );
+};
+
+const Announcement = ({ announcements }) => {
+    return (
+        <Box sx={{ padding: 3, bgcolor: '#f5f5f5' }}>
+            <Typography variant="h4" sx={{ marginBottom: 3, color: '#333' }}>Announcements</Typography>
+            <TableContainer component={Paper}>
+                <Table>
+                    <TableHead>
+                        <TableRow>
+                            <TableCell sx={{ fontWeight: 'bold', bgcolor: '#e0e0e0' }}>Title</TableCell>
+                            <TableCell sx={{ fontWeight: 'bold', bgcolor: '#e0e0e0' }}>Date</TableCell>
+                            <TableCell sx={{ fontWeight: 'bold', bgcolor: '#e0e0e0' }}>Actions</TableCell>
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        {announcements.map((announcement) => (
+                            <TableRow key={announcement._id}>
+                                <TableCell>{announcement.title}</TableCell>
+                                <TableCell>{announcement.date}</TableCell>
+                                <TableCell>
+                                    <Button variant="contained" color="primary">Edit</Button>
+                                    <Button variant="contained" color="error">Delete</Button>
+                                </TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+            </TableContainer>
         </Box>
     );
 };
