@@ -1,10 +1,19 @@
 
+TODO 
+##########################
+
+4- push 15 item for all modal in you data base after upload it to server
+7-if update order payment to card navigate to payment page
+
+9- if add same product with same color update quantity
+##########################
+
+
 
 #1976d2
 
 auto complet for inputs
 
-phon on register api
 
 
 
@@ -13,12 +22,7 @@ export default ProductGrid;
 AZARM.
 </Typography>
 
-TODO# ANNOUNCEMNTS
-    {
-      
-       
-        image: "https://via.placeholder.com/150x100", // Replace with actual image URL
-    },
+
 
 
 

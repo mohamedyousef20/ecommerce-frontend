@@ -8,9 +8,7 @@ import WarningModal from '../../Components/Utils/WarningModal';
 import { Link } from 'react-router-dom';
 
 const CartPage = () => {
-
     const [
-
         itemsNum,
         cartId,
         isModalOpen,
@@ -26,8 +24,11 @@ const CartPage = () => {
         handleUpdateQuantity,
         handleCancelDelete,
         handleConfirmDelete
+    ] = GetUserCartHook();
 
-    ] = GetUserCartHook()
+    // Check if cart is empty
+    const isCartEmpty = !response.data?.cartItem || response.data.cartItem.length === 0;
+
     return (
         <Box>
             <Stack direction={{ xs: 'column', md: 'row' }} m={2} gap={2} justifyContent={'center'} alignItems={'center'}>
@@ -39,12 +40,23 @@ const CartPage = () => {
                     </Link>
                 </Box>
                 <Box>
-                    <Link to={`${cartId}/payment`}>
-                        <Button sx={{ bgcolor: '#0295db', color: '#fff', textTransform: 'none' }}>
+                    <Link to={isCartEmpty ? '#' : `${cartId}/payment`}>
+                        <Button
+                            sx={{
+                                bgcolor: isCartEmpty ? '#gray' : '#0295db',
+                                color: '#fff',
+                                textTransform: 'none',
+                                '&:disabled': {
+                                    bgcolor: '#gray',
+                                    opacity: 0.6,
+                                    cursor: 'not-allowed'
+                                }
+                            }}
+                            disabled={isCartEmpty}
+                        >
                             Checkout Now
                         </Button>
                     </Link>
-
                 </Box>
             </Stack>
 
@@ -68,7 +80,6 @@ const CartPage = () => {
                                 </Grid>
 
                                 <Grid item xs={12} md={7}>
-
                                     <Stack direction="column" spacing={1} sx={{ padding: { xs: 2, md: 3 }, fontSize: '0.9rem' }}>
                                         <Stack direction="column" spacing={1}>
                                             <Stack direction="row" justifyContent="flex-start" alignItems="center" gap={1}>
@@ -114,25 +125,20 @@ const CartPage = () => {
                                                     variant="outlined"
                                                     size="small"
                                                     sx={{ width: 60, textAlign: 'center' }}
-                                                    onChange={(e) => handleQuantityChange(e, item._id)} // Handle input change
+                                                    onChange={(e) => handleQuantityChange(e, item._id)}
                                                 />
                                                 <Button
-                                                    onClick={() => handleUpdateQuantity(item._id, quantities[item._id] || item.quantity)} // Pass the updated quantity
+                                                    onClick={() => handleUpdateQuantity(item._id, quantities[item._id] || item.quantity)}
                                                     variant="contained"
                                                     color="primary"
                                                     size="small"
                                                 >
                                                     Apply
                                                 </Button>
-
                                             </Stack>
-
-
                                         </Stack>
                                     </Stack>
-
                                 </Grid>
-                                {/* Add delete icon button */}
                                 <IconButton
                                     onClick={() => { setItemId(item._id); setIsModalOpen(true); }}
                                     sx={{ color: 'red', marginTop: 2, transform: 'none' }}
@@ -166,7 +172,6 @@ const CartPage = () => {
                                         Discount Applied
                                     </Typography>
                                     <Typography variant="h6" color="primary">
-                                        {/* //TODO toFixed */}
                                         -${(response.data.totalPrice) - (response.data.priceAfterDiscount)}
                                     </Typography>
                                 </Box>
@@ -189,13 +194,25 @@ const CartPage = () => {
                             )}
 
                             <Box display="flex" justifyContent="center" marginTop={4}>
-                                <Link to={`${cartId}/payment`}>
-                                    <Button variant="contained" color="primary" size="large" sx={{ padding: '10px 40px' }}>
+                                <Link to={isCartEmpty ? '#' : `${cartId}/payment`}>
+                                    <Button
+                                        variant="contained"
+                                        color="primary"
+                                        size="large"
+                                        sx={{
+                                            padding: '10px 40px',
+                                            '&:disabled': {
+                                                bgcolor: '#gray',
+                                                opacity: 0.6,
+                                                cursor: 'not-allowed'
+                                            }
+                                        }}
+                                        disabled={isCartEmpty}
+                                    >
                                         Checkout
                                     </Button>
                                 </Link>
                             </Box>
-
                         </Paper>
                     ) : (
                         <CircularProgress />

@@ -7,7 +7,9 @@ import {
     UPDATE_ORDER_PAY,
     UPDATE_ORDER_PAYMENT_METHOD,
     UPDATE_ORDER_DELIVER,
-    DELETE_ORDER
+    DELETE_ORDER,
+    CANCEL_ORDER,
+    ACTIVE_ORDER
 } from '../type'
 
 
@@ -110,6 +112,42 @@ export const deleteOrder = (id) => async (dispatch) => {
     } catch (e) {
         dispatch({
             type: DELETE_ORDER,
+            payload: e.response,
+        })
+    }
+}
+
+export const cancelOrder = (id) => async (dispatch) => {
+    try {
+        const response = await useUpdateData(`/api/vi/order/cancel`,id);
+
+        dispatch({
+            type: CANCEL_ORDER,
+            payload: response,
+        })
+
+    } catch (e) {
+        dispatch({
+            type: CANCEL_ORDER,
+            payload: e.response,
+        })
+    }
+}
+
+
+
+export const activeOrder = (id) => async (dispatch) => {
+    try {
+        const response = await useUpdateData(`/api/vi/order/active`, id);
+
+        dispatch({
+            type: ACTIVE_ORDER,
+            payload: response,
+        })
+
+    } catch (e) {
+        dispatch({
+            type: ACTIVE_ORDER,
             payload: e.response,
         })
     }

@@ -58,6 +58,8 @@ export const GET_ALL_ORDER = 'GET_ALL_ORDER'
 export const CREATE_ORDER = 'CREATE_ORDER'
 export const GET_ONE_ORDER = 'GET_ONE_ORDER'
 export const DELETE_ORDER = 'DELETE_ORDER'
+export const CANCEL_ORDER = 'CANCEL_ORDER'
+export const ACTIVE_ORDER = 'ACTIVE_ORDER'
 
 
 export const CREATE_ORDER_CASH = 'CREATE_ORDER_CASH'

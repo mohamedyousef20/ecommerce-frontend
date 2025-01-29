@@ -15,7 +15,7 @@ import {
 } from "@mui/material";
 import Navbar from "../../Components/Utils/NavbarLogged";
 import Footer from "../../Components/Utils/Footer";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import GetProdDetails from "../../customHooks/Product/GetProdDetails";
 import StarOutlinedIcon from "@mui/icons-material/StarOutlined";
 import Notification from "../../customHooks/useNotification";
@@ -31,6 +31,8 @@ import { Pagination } from 'swiper/modules';
 
 const ProductDetailsPage = () => {
     const theme = useTheme();
+
+    const navigate = useNavigate();
 
     const { id } = useParams(); // Get product ID from URL params
     const [item] = GetProdDetails(id); // Fetch product details using custom hook
@@ -68,6 +70,7 @@ const ProductDetailsPage = () => {
         setLoading(false); // Stop loading animation
 
         Notification("Product added to cart", "success");
+        navigate('/product')
     };
 
     const handleIncrease = () => {
@@ -153,14 +156,14 @@ const ProductDetailsPage = () => {
                         </Stack>
 
                         {/* Available Colors */}
-                      
-                        <Stack direction="row" spacing={2} mb={2} 
-                        justifyContent={'flex-start'}
-                        alignItems={'center'}
+
+                        <Stack direction="row" spacing={2} mb={2}
+                            justifyContent={'flex-start'}
+                            alignItems={'center'}
                         >
                             {item.colors && item.colors.length > 0 && (
                                 <Typography variant="h6" fontWeight={600} mb={2}>
-                                 Colors:
+                                    Colors:
                                 </Typography>
                             )}
                             {item.colors && item.colors.map((col, index) => (

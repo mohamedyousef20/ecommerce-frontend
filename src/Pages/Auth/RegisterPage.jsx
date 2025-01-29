@@ -1,89 +1,27 @@
 import React, { useEffect, useState } from 'react';
 import { Box, TextField, Button, Typography, Container, InputAdornment, IconButton } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
-import { registerUser } from '../../redux/action/authAction';
-import Notification from '../../customHooks/useNotification';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import LoadingProgress from '../../Components/LoadingProgress';
 import Joi from 'joi';
-import { useDispatch, useSelector } from 'react-redux/lib/exports';
+import RegisterHook from '../../customHooks/Auth/RegisterHook';
 
 const RegisterPage = () => {
-    const navigate = useNavigate();
-    const dispatch = useDispatch();
+    const [handleRegister,
+        handleNavigate, name, setName,
+        email, setEmail,
+        phone,
+        setPhone,
+        password,
+        setPassword,
+        passwordConfirm,
+        setPasswordConfirm,
+        showPassword,
+        setShowPassword,
+        errors,
+        setErrors,
+        loading,
+        setLoading] = RegisterHook();
 
-    const [name, setName] = useState('');
-    const [email, setEmail] = useState('');
-    const [phone, setPhone] = useState('');
-    const [password, setPassword] = useState('');
-    const [passwordConfirm, setPasswordConfirm] = useState('');
-    const [showPassword, setShowPassword] = useState(false);
-    const [errors, setErrors] = useState({});
-    const [loading, setLoading] = useState(false);
-
-    // Redux response and user token
-    const response = useSelector((state) => state.authReducer.register);
-
-    // Joi Validation Schema
-    const schema = Joi.object({
-        name: Joi.string().min(3).max(30).required().messages({
-            'string.empty': 'Name is required',
-            'string.min': 'Name must be at least 3 characters',
-            'string.max': 'Name cannot exceed 30 characters',
-        }),
-        email: Joi.string().email({ tlds: { allow: false } }).required().messages({
-            'string.empty': 'Email is required',
-            'string.email': 'Invalid email format',
-        }),
-        phone: Joi.string().pattern(/^01[0-9]{9}$/).required().messages({
-            'string.empty': 'Phone number is required',
-            'string.pattern.base': 'Phone number must be a valid Egyptian number (01XXXXXXXXX)',
-        }),
-        password: Joi.string().min(6).required().messages({
-            'string.empty': 'Password is required',
-            'string.min': 'Password must be at least 6 characters long',
-        }),
-        passwordConfirm: Joi.any().equal(Joi.ref('password')).required().messages({
-            'any.only': 'Passwords do not match',
-            'any.required': 'Confirm password is required',
-        }),
-    });
-
-    const handleRegister = (e) => {
-        e.preventDefault();
-
-        // Validate the form data before proceeding
-        const { error } = schema.validate({ name, email, phone, password, passwordConfirm }, { abortEarly: false });
-
-        if (error) {
-            const errorMessages = {};
-            error.details.forEach((err) => errorMessages[err.path[0]] = err.message);
-            setErrors(errorMessages);
-            return; // Stop execution if there are validation errors
-        }
-
-        setErrors({}); // Clear previous errors
-
-        // Start the loading state before API call
-        setLoading(true);
-
-        // Dispatch the register action
-        dispatch(registerUser({ name, email, phone, password, passwordConfirm }));
-    };
-
-    // Handle response from the registration API
-    useEffect(() => {
-        if (loading && response) {
-            if (response.msg === 'success') {
-                Notification('You Registered Successfully...', 'success');
-                navigate('/login');
-            } else {
-                console.log(errors)
-                Notification('Something went wrong, please try again...', 'error');
-            }
-            setLoading(false); // Stop loading after receiving response
-        }
-    }, [loading, response, navigate]);
 
     return (
         <Container component="main" maxWidth="xs">
@@ -226,7 +164,7 @@ const RegisterPage = () => {
                         textDecoration: 'underline',
                         '&:hover': { color: '#FF5722' },
                     }}
-                    onClick={() => navigate('/login')}
+                    onClick={handleNavigate}
                 >
                     Have an Account? Log in
                 </Typography>

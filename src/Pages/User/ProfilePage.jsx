@@ -1,9 +1,32 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Avatar, Typography, TextField, Button, Modal, Dialog, DialogActions, DialogContent, DialogTitle, Drawer, List, ListItem, ListItemIcon, ListItemText, useMediaQuery, Stack } from '@mui/material';
-import { Edit, ShoppingCart, Favorite, ListAlt } from '@mui/icons-material';
-
+import {
+    Box,
+    Avatar,
+    Typography,
+    TextField,
+    Button,
+    Modal,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogTitle,
+    Stack,
+    IconButton,
+    useTheme,
+    useMediaQuery
+} from '@mui/material';
+import { Edit } from '@mui/icons-material';
 import ProfileHook from '../../customHooks/Auth/ProfileHook';
+import Footer from '../../Components/Utils/Footer';
+
+// Color constants
+const PRIMARY_COLOR = '#1976D2';
+const SECONDARY_COLOR = '#FF5722';
+const NEUTRAL_COLOR = '#F5F5F5';
+
 const ProfilePage = () => {
+    const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
     const [
         profile,
@@ -57,270 +80,374 @@ const ProfilePage = () => {
         handleDeactivateAccount,
         handleDeleteMyAccount,
         handleChangePassword
+    ] = ProfileHook();
 
+    const modalStyle = {
+        position: 'absolute',
+        top: '50%',
+        left: '50%',
+        transform: 'translate(-50%, -50%)',
+        bgcolor: 'white',
+        boxShadow: 24,
+        p: 4,
+        width: { xs: '90%', sm: '400px' },
+        maxHeight: '90vh',
+        overflowY: 'auto',
+        borderRadius: 2,
+    };
 
-    ] = ProfileHook()
-
-    console.log(profile)
     return (
-        <Box sx={{ display: 'flex' }}>
-            {/* Profile Content Area */}
-            <Stack sx={{ flexGrow: 1, padding: 3 }} direction={'column'} alignItems={'center'}>
-                <Typography variant="h4" gutterBottom>Profile</Typography>
+        <>
+            <Box sx={{
+                backgroundColor: NEUTRAL_COLOR,
+                minHeight: '100vh',
+                p: { xs: 2, md: 4 }
+            }}>
+                <Box sx={{
+                    backgroundColor: 'white',
+                    borderRadius: 2,
+                    p: { xs: 2, md: 4 },
+                    maxWidth: '1200px',
+                    margin: '0 auto',
+                    boxShadow: '0 4px 6px rgba(0,0,0,0.1)'
+                }}>
+                    {/* Profile Header */}
+                    <Typography variant="h4" sx={{
+                        color: PRIMARY_COLOR,
+                        textAlign: 'center',
+                        mb: 4,
+                        fontSize: { xs: '1.5rem', md: '2rem' }
+                    }}>
+                        Profile
+                    </Typography>
 
-                <Box display="flex" alignItems="center" marginBottom={2} flexDirection={'column'}>
-                    <Box display="flex" alignItems="center" marginBottom={1}>
-                        <Avatar alt="Profile Picture" src={profile.image} sx={{ width: 100, height: 100, marginRight: 2 }} />
-                        <Box>
-                            <Edit sx={{ cursor: 'pointer', fontSize: 18, color: '#bdbdbd70' }} onClick={handleOpenUpdateImageModal} />
+                    {/* Profile Content */}
+                    <Stack spacing={3} alignItems="center">
+                        {/* Avatar Section */}
+                        <Box sx={{ position: 'relative' }}>
+                            <Avatar
+                                src={profile.image}
+                                sx={{
+                                    width: { xs: 100, md: 120 },
+                                    height: { xs: 100, md: 120 },
+                                    border: `3px solid ${PRIMARY_COLOR}`
+                                }}
+                            />
+                            <IconButton
+                                onClick={handleOpenUpdateImageModal}
+                                sx={{
+                                    position: 'absolute',
+                                    bottom: 0,
+                                    right: 0,
+                                    backgroundColor: PRIMARY_COLOR,
+                                    '&:hover': { backgroundColor: 'primary.dark' },
+                                    p: 1
+                                }}
+                            >
+                                <Edit sx={{ color: 'white', fontSize: '1.2rem' }} />
+                            </IconButton>
                         </Box>
-                    </Box>
-                    <Box marginTop={2}>
-                        <Typography variant="body2" sx={{ color: profile.isActive ? 'green' : 'red' }}>
+
+                        {/* Status Badge */}
+                        <Typography sx={{
+                            color: profile.isActive ? 'success.main' : 'error.main',
+                            bgcolor: profile.isActive ? '#e8f5e9' : '#ffebee',
+                            px: 2,
+                            py: 0.5,
+                            borderRadius: 1,
+                            fontSize: '0.875rem'
+                        }}>
                             {profile.isActive ? 'Active' : 'Inactive'}
                         </Typography>
-                    </Box>
-                    <Box display="flex" alignItems="center" marginBottom={1}>
-                        <Typography variant="h6" sx={{ marginRight: 2 }}>{profile.name}</Typography>
-                        <Box>
-                            <Edit sx={{ cursor: 'pointer', fontSize: 18, color: '#bdbdbd70' }} onClick={handleOpenUpdateNameModal} />
-                        </Box>
-                    </Box>
 
-                    <Box display="flex" alignItems="center">
-                        <Typography variant="body2" sx={{ marginRight: 2 }}>{profile.email}</Typography>
-                        <Box>
-                            <Edit sx={{ cursor: 'pointer', fontSize: 18, color: '#bdbdbd70' }} onClick={handleOpenUpdateEmailModal} />
-                        </Box>
-                    </Box>
-                    <Box display="flex" alignItems="center" marginBottom={1}>
-                        <Typography variant="h6" sx={{ marginRight: 2 }}>{profile.phon}</Typography>
-                        <Box>
-                            <Edit sx={{ cursor: 'pointer', fontSize: 18, color: '#bdbdbd70' }} onClick={handleOpenUpdateNameModal} />
-                        </Box>
-                    </Box>
+                        {/* Profile Details */}
+                        <Stack spacing={2} sx={{ width: '100%', maxWidth: 500 }}>
+                            {/* Name */}
+                            <Box sx={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                gap: 1
+                            }}>
+                                <Typography variant="h6">{profile.name}</Typography>
+                                <IconButton onClick={handleOpenUpdateNameModal} size="small">
+                                    <Edit sx={{ fontSize: '1rem', color: PRIMARY_COLOR }} />
+                                </IconButton>
+                            </Box>
 
-                </Box>
+                            {/* Email */}
+                            <Box sx={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                gap: 1
+                            }}>
+                                <Typography>{profile.email}</Typography>
+                                <IconButton onClick={handleOpenUpdateEmailModal} size="small">
+                                    <Edit sx={{ fontSize: '1rem', color: PRIMARY_COLOR }} />
+                                </IconButton>
+                            </Box>
 
-                {/* Modals */}
-                {/* Update Name Modal */}
-                <Modal open={isUpdateNameModalOpen} onClose={handleCloseUpdateNameModal}>
-                    <Box sx={{
-                        position: 'absolute',
-                        top: '50%',
-                        left: '50%',
-                        transform: 'translate(-50%, -50%)',
-                        bgcolor: 'background.paper',
-                        padding: 3,
-                        borderRadius: 1,
-                        boxShadow: 24,
-                        width: 300
-                    }}>
-                        <Typography variant="h6" gutterBottom>Update Name</Typography>
-                        <TextField
-                            label="Name"
-                            fullWidth
-                            variant="outlined"
-                            value={newName}
-                            onChange={(e) => setNewName(e.target.value)}
-                            sx={{ marginBottom: 2 }}
-                        />
-                        <Box display="flex" justifyContent="flex-end">
-                            <Button variant="contained" color="primary" onClick={handleUpdateProfile}>
+                            {/* Phone */}
+                            <Box sx={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                gap: 1
+                            }}>
+                                <Typography>{profile.phon}</Typography>
+                                <IconButton onClick={handleOpenUpdateNameModal} size="small">
+                                    <Edit sx={{ fontSize: '1rem', color: PRIMARY_COLOR }} />
+                                </IconButton>
+                            </Box>
+                        </Stack>
+
+                        {/* Action Buttons */}
+                        <Stack
+                            direction={{ xs: 'column', sm: 'row' }}
+                            spacing={2}
+                            sx={{
+                                width: '100%',
+                                maxWidth: 600,
+                                mt: 4
+                            }}
+                        >
+                            <Button
+                                fullWidth
+                                variant="contained"
+                                sx={{
+                                    bgcolor: PRIMARY_COLOR,
+                                    '&:hover': { bgcolor: 'primary.dark' }
+                                }}
+                                onClick={handleOpenChangePasswordModal}
+                            >
+                                Change Password
+                            </Button>
+                            <Button
+                                fullWidth
+                                variant="contained"
+                                color="error"
+                                onClick={handleOpenDeactivateDialog}
+                            >
+                                Deactivate Account
+                            </Button>
+                            <Button
+                                fullWidth
+                                variant="contained"
+                                sx={{
+                                    bgcolor: SECONDARY_COLOR,
+                                    '&:hover': { bgcolor: 'secondary.dark' }
+                                }}
+                                onClick={handleOpenDeleteAccountModal}
+                            >
+                                Delete Account
+                            </Button>
+                        </Stack>
+                    </Stack>
+
+                    {/* Update Name Modal */}
+                    <Modal open={isUpdateNameModalOpen} onClose={handleCloseUpdateNameModal}>
+                        <Box sx={modalStyle}>
+                            <Typography variant="h6" sx={{ mb: 2, color: PRIMARY_COLOR }}>
+                                Update Name
+                            </Typography>
+                            <TextField
+                                fullWidth
+                                label="Name"
+                                value={newName}
+                                onChange={(e) => setNewName(e.target.value)}
+                                sx={{ mb: 2 }}
+                            />
+                            <Button
+                                fullWidth
+                                variant="contained"
+                                sx={{ bgcolor: PRIMARY_COLOR }}
+                                onClick={handleUpdateProfile}
+                            >
                                 Update
                             </Button>
                         </Box>
-                    </Box>
-                </Modal>
+                    </Modal>
 
-                {/* Update Email Modal */}
-                <Modal open={isUpdateEmailModalOpen} onClose={handleCloseUpdateEmailModal}>
-                    <Box sx={{
-                        position: 'absolute',
-                        top: '50%',
-                        left: '50%',
-                        transform: 'translate(-50%, -50%)',
-                        bgcolor: 'background.paper',
-                        padding: 3,
-                        borderRadius: 1,
-                        boxShadow: 24,
-                        width: 300
-                    }}>
-                        <Typography variant="h6" gutterBottom>Update Email</Typography>
-                        <TextField
-                            label="Email"
-                            fullWidth
-                            variant="outlined"
-                            value={newEmail}
-                            onChange={(e) => setNewEmail(e.target.value)}
-                            error={!!emailError}
-                            helperText={emailError}
-                            sx={{ marginBottom: 2 }}
-                        />
-                        <Box display="flex" justifyContent="flex-end">
-                            <Button variant="contained" color="primary" onClick={handleUpdateProfile}>
+                    {/* Update Email Modal */}
+                    <Modal open={isUpdateEmailModalOpen} onClose={handleCloseUpdateEmailModal}>
+                        <Box sx={modalStyle}>
+                            <Typography variant="h6" sx={{ mb: 2, color: PRIMARY_COLOR }}>
+                                Update Email
+                            </Typography>
+                            <TextField
+                                fullWidth
+                                label="Email"
+                                value={newEmail}
+                                onChange={(e) => setNewEmail(e.target.value)}
+                                error={!!emailError}
+                                helperText={emailError}
+                                sx={{ mb: 2 }}
+                            />
+                            <Button
+                                fullWidth
+                                variant="contained"
+                                sx={{ bgcolor: PRIMARY_COLOR }}
+                                onClick={handleUpdateProfile}
+                            >
                                 Update Email
                             </Button>
                         </Box>
-                    </Box>
-                </Modal>
+                    </Modal>
 
-                {/* Update Image Modal */}
-                <Modal open={isUpdateImageModalOpen} onClose={handleCloseUpdateImageModal}>
-                    <Box sx={{
-                        position: 'absolute',
-                        top: '50%',
-                        left: '50%',
-                        transform: 'translate(-50%, -50%)',
-                        bgcolor: 'background.paper',
-                        padding: 3,
-                        borderRadius: 1,
-                        boxShadow: 24,
-                        width: 300
-                    }}>
-                        <Typography variant="h6" gutterBottom>Update Profile Image</Typography>
-                        <input
-                            type="file"
-                            accept="image/*"
-                            onChange={handleProfileImageChange}
-                            style={{ marginBottom: 10 }}
-                        />
-
-                        {/* Only show image preview after the user selects an image */}
-                        {newProfileImage && (
-                            <Box>
-                                <Typography variant="body2">Selected Image:</Typography>
-                                <img
-                                    src={newProfileImage}
-                                    alt="Selected Profile"
-                                    style={{
-                                        width: 50,
-                                        height: 50,
-                                        objectFit: 'cover',
-                                        marginTop: 10,
-                                    }}
-                                />
-                            </Box>
-                        )}
-
-                        <Box display="flex" justifyContent="flex-end">
-                            <Button variant="contained" color="primary" onClick={handleUpdateProfile}>
+                    {/* Update Image Modal */}
+                    <Modal open={isUpdateImageModalOpen} onClose={handleCloseUpdateImageModal}>
+                        <Box sx={modalStyle}>
+                            <Typography variant="h6" sx={{ mb: 2, color: PRIMARY_COLOR }}>
+                                Update Profile Image
+                            </Typography>
+                            <input
+                                type="file"
+                                accept="image/*"
+                                onChange={handleProfileImageChange}
+                                style={{ marginBottom: '1rem' }}
+                            />
+                            {newProfileImage && (
+                                <Box sx={{ mt: 2 }}>
+                                    <Typography variant="body2" sx={{ mb: 1 }}>
+                                        Selected Image:
+                                    </Typography>
+                                    <img
+                                        src={newProfileImage}
+                                        alt="Selected Profile"
+                                        style={{
+                                            width: isMobile ? '100px' : '150px',
+                                            height: isMobile ? '100px' : '150px',
+                                            objectFit: 'cover',
+                                            borderRadius: '8px'
+                                        }}
+                                    />
+                                </Box>
+                            )}
+                            <Button
+                                fullWidth
+                                variant="contained"
+                                sx={{ bgcolor: PRIMARY_COLOR, mt: 2 }}
+                                onClick={handleUpdateProfile}
+                            >
                                 Update
                             </Button>
                         </Box>
-                    </Box>
-                </Modal>
+                    </Modal>
 
-
-                {/* Deactivate Account Dialog */}
-                <Dialog open={isDeactivateDialogOpen} onClose={handleCloseDeactivateDialog}>
-                    <DialogTitle>Deactivate Account</DialogTitle>
-                    <DialogContent>
-                        <Typography variant="body1">Are you sure you want to deactivate your account? This action is irreversible.</Typography>
-                    </DialogContent>
-                    <DialogActions>
-                        <Button onClick={handleCloseDeactivateDialog} color="primary">
-                            Cancel
-                        </Button>
-                        <Button onClick={handleDeactivateAccount} color="secondary">
-                            Deactivate
-                        </Button>
-                    </DialogActions>
-                </Dialog>
-
-
-
-                {/* Change Password Dialog */}
-                <Dialog open={isChangePasswordModalOpen} onClose={handleCloseChangePasswordModal}>
-                    <DialogTitle>Change Password</DialogTitle>
-                    <DialogContent>
-                        <TextField
-                            label="Old Password"
-                            type="password"
-                            fullWidth
-                            variant="outlined"
-                            value={oldPassword}
-                            onChange={(e) => setOldPassword(e.target.value)}
-                            sx={{ marginBottom: 2 }}
-                        />
-
-                        <TextField
-                            label="New Password"
-                            type="password"
-                            fullWidth
-                            variant="outlined"
-                            value={newPassword}
-                            onChange={(e) => setNewPassword(e.target.value)}
-                            sx={{ marginBottom: 2 }}
-                        />
-
-                        <TextField
-                            label="Confirm New Password"
-                            type="password"
-                            fullWidth
-                            variant="outlined"
-                            value={confirmNewPassword}
-                            onChange={(e) => setConfirmNewPassword(e.target.value)}
-                            sx={{ marginBottom: 2 }}
-                        />
-                    </DialogContent>
-                    <DialogActions >
-                        <Button onClick={handleCloseChangePasswordModal} color="primary">Cancel</Button>
-                        <Button onClick={handleChangePassword} color="secondary">Change Password</Button>
-                    </DialogActions>
-                </Dialog>
-
-                <Stack direction={'row'} gap={2} >
-
-                    {/* Deactivate Account Button */}
-                    <Button
-                        variant="contained"
-                        color="error"
-                        sx={{ marginTop: 3 }}
-                        onClick={handleOpenDeactivateDialog}
+                    {/* Change Password Dialog */}
+                    <Dialog
+                        open={isChangePasswordModalOpen}
+                        onClose={handleCloseChangePasswordModal}
+                        fullWidth
+                        maxWidth="sm"
                     >
-                        Deactivate Account
-                    </Button>
+                        <DialogTitle sx={{ color: PRIMARY_COLOR }}>
+                            Change Password
+                        </DialogTitle>
+                        <DialogContent>
+                            <Stack spacing={2} sx={{ mt: 2 }}>
+                                <TextField
+                                    label="Old Password"
+                                    type="password"
+                                    fullWidth
+                                    value={oldPassword}
+                                    onChange={(e) => setOldPassword(e.target.value)}
+                                />
+                                <TextField
+                                    label="New Password"
+                                    type="password"
+                                    fullWidth
+                                    value={newPassword}
+                                    onChange={(e) => setNewPassword(e.target.value)}
+                                />
+                                <TextField
+                                    label="Confirm New Password"
+                                    type="password"
+                                    fullWidth
+                                    value={confirmNewPassword}
+                                    onChange={(e) => setConfirmNewPassword(e.target.value)}
+                                />
+                            </Stack>
+                        </DialogContent>
+                        <DialogActions sx={{ p: 3 }}>
+                            <Button onClick={handleCloseChangePasswordModal}>
+                                Cancel
+                            </Button>
+                            <Button
+                                variant="contained"
+                                sx={{ bgcolor: PRIMARY_COLOR }}
+                                onClick={handleChangePassword}
+                            >
+                                Change Password
+                            </Button>
+                        </DialogActions>
+                    </Dialog>
 
-                    {/* Button to Change Password */}
-                    <Button
-                        sx={{ marginTop: 3 }}
-                        variant="contained" color="secondary"
-                        onClick={handleOpenChangePasswordModal}>
-                        Change Password
-                    </Button>
-
-                    {/* Delete Account Button */}
-                    <Button
-                        variant="contained"
-                        color="error"
-                        sx={{ marginTop: 3 }}
-                        onClick={handleOpenDeleteAccountModal}
+                    {/* Deactivate Account Dialog */}
+                    <Dialog
+                        open={isDeactivateDialogOpen}
+                        onClose={handleCloseDeactivateDialog}
+                        fullWidth
+                        maxWidth="sm"
                     >
-                        Delete My Account
-                    </Button>
-                    {/* Delete Account Modal */}
-                    <Dialog open={isDeleteAccountModalOpen} onClose={handleCloseDeleteAccountModal}>
-                        <DialogTitle>Delete Account</DialogTitle>
+                        <DialogTitle sx={{ color: 'error.main' }}>
+                            Deactivate Account
+                        </DialogTitle>
+                        <DialogContent>
+                            <Typography variant="body1">
+                                Are you sure you want to deactivate your account? This action is irreversible.
+                            </Typography>
+                        </DialogContent>
+                        <DialogActions sx={{ p: 3 }}>
+                            <Button onClick={handleCloseDeactivateDialog}>
+                                Cancel
+                            </Button>
+                            <Button
+                                variant="contained"
+                                color="error"
+                                onClick={handleDeactivateAccount}
+                            >
+                                Deactivate
+                            </Button>
+                        </DialogActions>
+                    </Dialog>
+
+                    {/* Delete Account Dialog */}
+                    <Dialog
+                        open={isDeleteAccountModalOpen}
+                        onClose={handleCloseDeleteAccountModal}
+                        fullWidth
+                        maxWidth="sm"
+                    >
+                        <DialogTitle sx={{ color: 'error.main' }}>
+                            Delete Account
+                        </DialogTitle>
                         <DialogContent>
                             <Typography variant="body1">
                                 Are you sure you want to delete your account? This action is irreversible.
                             </Typography>
                         </DialogContent>
-                        <DialogActions>
-                            <Button onClick={handleCloseDeleteAccountModal} color="primary">
+                        <DialogActions sx={{ p: 3 }}>
+                            <Button onClick={handleCloseDeleteAccountModal}>
                                 Cancel
                             </Button>
-                            <Button onClick={handleDeleteMyAccount} color="error">
+                            <Button
+                                variant="contained"
+                                color="error"
+                                onClick={handleDeleteMyAccount}
+                            >
                                 Delete
                             </Button>
                         </DialogActions>
                     </Dialog>
 
-                </Stack>
+                </Box>
+                <Footer />
 
-            </Stack>
-        </Box>
+            </Box>
+            <Footer />
+        </>
     );
 };
 

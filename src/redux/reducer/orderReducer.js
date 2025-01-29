@@ -5,7 +5,9 @@ import {
     UPDATE_ORDER_DELIVER,
     UPDATE_ORDER_PAY,
     UPDATE_ORDER_PAYMENT_METHOD,
-    DELETE_ORDER
+    DELETE_ORDER,
+    CANCEL_ORDER,
+    ACTIVE_ORDER
 } from "../type";
 
 
@@ -17,6 +19,8 @@ const initial = {
     updateOrderPaymentMethod: [],
     updateOrderDeliver: [],
     deleteOrder: [],
+    cancelOrder: [],
+    activeOrder: [],
 
 
 
@@ -68,6 +72,19 @@ const orderReducer = (state = initial, action) => {
                 loading: false,
             }
 
+        case CANCEL_ORDER:
+            return {
+                ...state,
+                cancelOrder: action.payload,
+                loading: false,
+            }
+
+        case ACTIVE_ORDER:
+            return {
+                ...state,
+                activeOrder: action.payload,
+                loading: false,
+            }
 
         case DELETE_ORDER:
             return {

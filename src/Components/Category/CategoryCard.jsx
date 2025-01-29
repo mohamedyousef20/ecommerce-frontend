@@ -1,6 +1,5 @@
 import React from 'react';
 import { Box, CircularProgress, Typography } from '@mui/material';
-import image from '../../Pages/image.jpg';
 import { Link } from 'react-router-dom';
 
 const CategoryCard = ({ category }) => {

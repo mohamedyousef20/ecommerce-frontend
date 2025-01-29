@@ -12,10 +12,11 @@ import {
     Divider,
     Alert,
 } from "@mui/material";
-import { getAllOrders, getOneOrders, updateOrderPaymentMethod } from "../../redux/action/orderAction";
+import { activeOrder, cancelOrder, getAllOrders, getOneOrders, updateOrderPaymentMethod } from "../../redux/action/orderAction";
 import { useDispatch, useSelector } from "react-redux/lib/exports";
 import Notification from "../../customHooks/useNotification";
-
+import { Link } from "react-router-dom";
+import { ArrowForward, BackHand, Forward } from "@mui/icons-material";
 const UserOrdersPage = () => {
     const dispatch = useDispatch();
     const [ordersData, setOrdersData] = useState([]);
@@ -33,6 +34,7 @@ const UserOrdersPage = () => {
                 ...order,
                 selectedPaymentMethod: order.paymentMethod, // Store the payment method for each order
             }));
+
             setOrdersData(updatedOrders);
         }
     }, [orders]);
@@ -46,11 +48,23 @@ const UserOrdersPage = () => {
         Notification("Payment method updated successfully!", "success");
     };
 
-    const handleCancelOrder = (orderId) => {
+    const handleCancelOrder = async (orderId) => {
         const updatedOrders = ordersData.filter((order) => order._id !== orderId);
+        await dispatch(cancelOrder({ id: orderId }))
         setOrdersData(updatedOrders); // Remove canceled order from the state
-        alert("Order canceled successfully!");
+        Notification("Order canceled successfully!", 'success');
     };
+
+    // active orders
+    const handleActiveOrder = async (orderId) => {
+
+        await dispatch(activeOrder({ id: orderId }));
+        window.location.reload(true)
+
+        Notification("Order Active successfully!", 'success');
+    };
+
+
 
     // Helper function to format the date
     const formatDate = (dateString) => {
@@ -123,7 +137,23 @@ const UserOrdersPage = () => {
                                     Update Payment
                                 </Button>
                                 <Divider sx={{ my: 2 }} />
-                                {order.canCancel ? (
+
+
+                                {order.OrderStatus === 'canceled' ? (
+                                    <Button
+                                        variant="outlined"
+                                        color="info"
+                                        onClick={() => handleActiveOrder(order._id)}
+                                    >
+                                        Active Order
+                                    </Button>
+                                ) : (
+                                    <Typography variant="body2" color="info">
+                                        Cannot cancel order after 2 days.
+                                    </Typography>
+                                )}
+
+                                {order.canCancel && order.OrderStatus === 'active' ? (
                                     <Button
                                         variant="outlined"
                                         color="error"
@@ -132,8 +162,8 @@ const UserOrdersPage = () => {
                                         Cancel Order
                                     </Button>
                                 ) : (
-                                    <Typography variant="body2" color="error">
-                                        Cannot cancel order after 2 days.
+                                    <Typography variant="body2" color="info">
+                                        Cannot Active order after 1 days.
                                     </Typography>
                                 )}
                             </Grid>
@@ -141,7 +171,32 @@ const UserOrdersPage = () => {
                     </Paper>
                 ))
             ) : (
-                <Alert severity="info">You have no orders at the moment.</Alert>
+                <>
+
+                    <Alert severity="info">You have no orders at the moment.</Alert>
+
+                        <Box>
+                            <Link to={'/product'}>
+                                <Button sx={{
+                                    bgcolor: '#1976D2', // Primary Color
+                                    color: '#FFFFFF', // Text Color
+                                    textTransform: 'none',
+                                    mt: 4,
+                                    padding: '10px 20px', // Increased padding for better appearance
+                                    borderRadius: '5px', // Rounded corners
+                                    boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)', // Subtle shadow for depth
+                                    '&:hover': {
+                                        bgcolor: '#115293', // Darker shade on hover
+                                        boxShadow: '0 6px 8px rgba(0, 0, 0, 0.2)', // Enhanced shadow on hover
+                                    }
+                                }}>
+                                    Continue Shopping <Forward />
+                                </Button>
+                            </Link>
+                        </Box>
+
+                </>
+
             )}
         </Box>
     );

@@ -20,6 +20,7 @@ import Address from '../../Components/Payment/Address';
 import { createOrderCard, createOrderCash } from '../../redux/action/paymentAction';
 import Notification from '../../customHooks/useNotification';
 import LoadingProgress from '../../Components/LoadingProgress';
+import Footer from '../../Components/Utils/Footer';
 
 const PaymentPage = () => {
     const dispatch = useDispatch();
@@ -85,23 +86,23 @@ const PaymentPage = () => {
 
         }
 
-       
-        // alert(`Order confirmed with ${paymentMethod} payment!`);
+
     };
 
     useEffect(() => {
-        if (cashOrder.data ) {
-            if (cashOrder.msg === 'success'){
-            
+        if (cashOrder.data) {
+            if (cashOrder.msg === 'success') {
+
                 Notification('order made successfully', 'success');
 
                 setTimeout(() => {
+                    setLoading(true)
                     navigate('/product')
 
                 }, 6000);
             }
-            else{
-                console.log('cashOrder',cashOrder)
+            else {
+                console.log('cashOrder', cashOrder)
                 Notification('Something went wrong please try again ', 'error');
 
             }
@@ -113,8 +114,9 @@ const PaymentPage = () => {
 
         if (!loadingPay) {
             if (CardPaymentRes.session) {
+                setLoading(true)
                 window.open(CardPaymentRes.session.url)
-
+                setLoading(false)
 
             }
 
@@ -125,7 +127,7 @@ const PaymentPage = () => {
     return (
         <>
 
-            <LoadingProgress loading={loadingPay} />
+            <LoadingProgress loading={loading} />
             <Box
                 sx={{
                     maxWidth: '600px',
@@ -195,7 +197,7 @@ const PaymentPage = () => {
                     Confirm Order
                 </Button>
             </Box>
-            
+            <Footer />
         </>
     );
 };

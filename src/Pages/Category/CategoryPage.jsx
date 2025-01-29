@@ -3,16 +3,17 @@ import CategoryContainer from '../../Components/Category/CategoryContainer'
 import PaginationTabs from '../../Components/Utils/Pagination'
 import CategoryPageTitle from '../../Components/Category/CategoryPageTitle'
 import AllCatePageHook from '../../customHooks/Category/AdminGetAllCategoryHook'
+import LoadingProgress from '../../Components/LoadingProgress'
 
 const CategoryPage = () => {
 
-  const [category, loading, pagination, page] = AllCatePageHook();
+  const [category, loading, onPageChange, paginationResult] = AllCatePageHook();
   return (
     <div>
-
+      <LoadingProgress loading={loading} />
       <CategoryPageTitle />
-      <CategoryContainer category={category.data} loading={loading} />
-      <PaginationTabs data={page} onPress={pagination} />
+      <CategoryContainer category={category.data} />
+      <PaginationTabs paginationResult={paginationResult} onPageChange={onPageChange} />
     </div>
   )
 }

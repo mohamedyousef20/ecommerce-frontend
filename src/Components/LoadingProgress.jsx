@@ -2,6 +2,7 @@ import { Box, CircularProgress, Typography } from '@mui/material'
 import React from 'react'
 
 const LoadingProgress = ({ loading }) => {
+    
     return (
         <>
             {loading && (
@@ -45,7 +46,7 @@ const LoadingProgress = ({ loading }) => {
                             }
                         }}
                     >
-                        Loading...
+                        AZARM...
                     </Typography>
                 </Box>
             )}

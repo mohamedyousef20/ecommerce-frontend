@@ -64,7 +64,7 @@ const LoginPage = () => {
     const response = useSelector((state) => state.authReducer.login);
   
     useEffect(() => {
-        if (!loading) {
+        if (response) {
             if (response.message === 'success' && response.userToken) {
                 localStorage.setItem("userToken", response.userToken);
                 localStorage.setItem("user", JSON.stringify(response.data));
@@ -75,7 +75,7 @@ const LoginPage = () => {
                 Notification(response.message, 'error');
             }
         }
-    }, [loading]);
+    }, [response.data]);
     return (
         <Container component="main" maxWidth="xs">
             <LoadingProgress loading={loading} />

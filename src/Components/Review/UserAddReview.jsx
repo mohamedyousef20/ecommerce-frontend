@@ -31,18 +31,16 @@ const ReviewSection = () => {
     const [editMode, setEditMode] = useState(null); // Track which review is being edited
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false); // Track dialog visibility
     const [reviewToDelete, setReviewToDelete] = useState(null); // Track which review to delete
-    const [user, setUser] = useState(""); // Track which review to delete
+    const [user, setUser] = useState(""); // Track the logged-in user
 
     const review = useSelector((state) => state.reviewReducer.getALLReview);
-    console.log('review', review)
     const [loading, setLoading] = useState(true);
 
-   useEffect(()=>{
-
-       if (localStorage.getItem("user") != null) {
-           setUser(JSON.parse(localStorage.getItem("user")))
-       }
-   },[])
+    useEffect(() => {
+        if (localStorage.getItem("user") != null) {
+            setUser(JSON.parse(localStorage.getItem("user")));
+        }
+    }, []);
 
     useEffect(() => {
         const get = async () => {
@@ -53,10 +51,8 @@ const ReviewSection = () => {
         get();
     }, [dispatch, id]);
 
-    // Handle edit functionality
     const handleEditClick = (review) => {
         setEditMode(review._id); // Set the review ID to be edited
-        setReviewToDelete(review._id); // Set the review ID to be edited
         setComment(review.title); // Pre-fill the comment field
         setRating(review.rating); // Pre-fill the rating field
     };
@@ -96,9 +92,9 @@ const ReviewSection = () => {
         setRating(0);
         setSnackbarMessage('Review submitted successfully!');
         setOpenSnackbar(true);
-        window.location.reload(true)
+        window.location.reload(true);
     };
-    // Handle delete functionality
+
     const handleDeleteClick = (reviewId) => {
         setReviewToDelete(reviewId);
         setDeleteDialogOpen(true); // Open the confirmation dialog
@@ -121,11 +117,8 @@ const ReviewSection = () => {
 
     return (
         <Box sx={{ maxWidth: 800, margin: 'auto', padding: 3 }}>
-            {/* Add Review Section */}
             <Paper sx={{ padding: 2, marginBottom: 3 }}>
-                <Stack direction={'column'}
-                    alignItems={'center'}
-                    justifyContent={'center'}>
+                <Stack direction={'column'} alignItems={'center'} justifyContent={'center'}>
                     <Typography variant="h6" gutterBottom>
                         Add a Review
                     </Typography>
@@ -216,8 +209,7 @@ const ReviewSection = () => {
                                         marginRight: 2,
                                     }}
                                 >
-                                    {!rev.user.profileImage &&
-                                        rev.user.name.charAt(0).toUpperCase()}
+                                    {!rev.user.profileImage && rev.user.name.charAt(0).toUpperCase()}
                                 </Avatar>
                                 <Box>
                                     <Typography variant="subtitle1" fontWeight="bold">
@@ -235,7 +227,7 @@ const ReviewSection = () => {
                             </Box>
                         )}
                         <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                            {rev.user._id && !editMode && (
+                            {rev.user._id === user._id && !editMode && ( // Only show icons if the review belongs to the logged-in user
                                 <>
                                     <IconButton
                                         onClick={() => handleEditClick(rev)}
@@ -285,3 +277,5 @@ const ReviewSection = () => {
 };
 
 export default ReviewSection;
+
+
