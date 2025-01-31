@@ -55,12 +55,12 @@ const RegisterHook = () => {
     // Handle response from the registration API
     useEffect(() => {
         if (response?.data) {
-            console.log(response)
+            // console.log(response)
             if (response.msg === 'success') {
                 Notification('You Registered Successfully...', 'success');
                 navigate('/login');
             } else {
-                console.log(errors)
+                // console.log(errors)
                 Notification(response?.message || 'Error sign up', 'error');
             }
             setLoading(false); // Stop loading after receiving response

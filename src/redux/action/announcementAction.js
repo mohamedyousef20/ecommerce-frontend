@@ -75,7 +75,7 @@ export const createAnnouncement = (formData) => async (dispatch) => {
 
     catch (err) {
         dispatch({
-            type: GET_ERROR,
+            type: CREATE_ANNOUNCEMENT,
             payload: err.response ? err.response.data : { message: 'An error occurred' },
         })
     }

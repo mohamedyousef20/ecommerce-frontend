@@ -20,7 +20,7 @@ const GetAllAnnouncementHook = () => {
             announcements = [];
         }
     } catch (e) {
-        console.log(e)
+        // console.log(e)
     }
 
     return [announcements];

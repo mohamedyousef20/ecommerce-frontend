@@ -128,7 +128,7 @@ const AddAnnouncementHook = () => {
         if (!loading && announcement) {
 
             if (announcement.status === 201) {
-                console.log('object')
+            
                 setAnnouncementTitle('');
                 setAnnouncementDesc('');
                 setAnnouncementImage([]);
@@ -138,7 +138,7 @@ const AddAnnouncementHook = () => {
             }
             else {
                 console.log(announcement)
-                // Notification()
+                Notification('Failed to  add', 'error');
 
             }
 

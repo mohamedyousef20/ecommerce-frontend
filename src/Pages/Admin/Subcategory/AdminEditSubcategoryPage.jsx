@@ -20,7 +20,7 @@ const AdminEditSubcategoryPage = () => {
     const [cateId, setCateId] = useState('');  // Track selected category ID
     const [loading, setLoading] = useState();
     const [errors, setErrors] = useState({});
-console.log(errors)
+// console.log(errors)
     // Validation schema using Joi
     const schema = Joi.object({
         subcategoryName: Joi.string().min(2).max(50).required().messages({
@@ -42,7 +42,7 @@ console.log(errors)
             // Set subcategory name and category ID when data is loaded
             setSubcategoryName(subcategory.name || '');
             setCateId(subcategory.category._id || '');  // Use category._id, not category.name
-            console.log(subcategory.category.name); // Optional: Log category name for debugging
+            // console.log(subcategory.category.name); // Optional: Log category name for debugging
         }
     }, [subcategory]);
 
@@ -56,7 +56,7 @@ console.log(errors)
             const { error } = schema.validate({ subcategoryName }, { abortEarly: false });
 
             if (error) {
-                console.log(error)
+                // console.log(error)
                 error.details.forEach((err) => Notification(err.message, 'error'));
                 return false;
             }
@@ -77,7 +77,7 @@ console.log(errors)
                 Notification('successfully edit subcategory','success')
             }
             else {
-                console.log(updatedSubcategory)
+                // console.log(updatedSubcategory)
                 Notification(updatedSubcategory.errors[0].msg, 'error')
 
 

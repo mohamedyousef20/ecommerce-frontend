@@ -3,7 +3,7 @@ import { Box, CircularProgress, Typography } from '@mui/material';
 import { Link } from 'react-router-dom';
 
 const CategoryCard = ({ category }) => {
-    console.log(category)
+    // console.log(category)
     return (
         // Check if category exists before rendering
         category ? (

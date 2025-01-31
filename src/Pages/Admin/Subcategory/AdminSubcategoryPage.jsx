@@ -9,7 +9,7 @@ import WarningModal from '../../../Components/Utils/WarningModal';
 
 const AdminSubcategoryPage = () => {
     const [subcategory] = AdminGetAllSubcategoryHook();
-    console.log(subcategory)
+    // console.log(subcategory)
     const [
         itemId,
         setItemId,

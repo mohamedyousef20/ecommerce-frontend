@@ -16,7 +16,7 @@ const GetProdDetails = (id) => {
 
 
     const oneProduct = useSelector((state) => state.productReducer.oneProduct);
-console.log(oneProduct)
+// console.log(oneProduct)
     let item = [];
 
     if (oneProduct) {
@@ -28,7 +28,7 @@ console.log(oneProduct)
     }
 console.log(item)
 if(item){
-    console.log(item.category)
+    // console.log(item.category)
 
 }
 
@@ -39,7 +39,7 @@ if(item){
     // }, []);
 
 
-console.log(item)
+// console.log(item)
     return [item];
 
 }

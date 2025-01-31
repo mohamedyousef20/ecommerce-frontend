@@ -1,16 +1,27 @@
-import React, { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import {
-    Grid, Box, Checkbox, Button, Modal,
-    IconButton, Typography, Divider, Paper, CircularProgress
+    Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
+    TablePagination, Paper, Typography, IconButton, Menu, MenuItem,
+    InputAdornment, TextField, TableSortLabel, CircularProgress,
+    Button
 } from '@mui/material';
-import { Add, Delete, Edit, Visibility } from "@mui/icons-material";
+import { MoreVert, Search, Edit, Delete, Add } from '@mui/icons-material';
 import { Link } from 'react-router-dom';
+import { deleteProduct, getAllProducts } from '../../../redux/action/productAction';
+import WarningModal from '../../Utils/WarningModal';
 import AdminDeleteProdHook from '../../../customHooks/Admin/AdminDeleteProdHook';
 import AdminGetAllProd from '../../../customHooks/Admin/AdminGetAllProd';
-import PaginationTabs from '../../Utils/Pagination';
-import WarningModal from '../../Utils/WarningModal';
 
-const Products = ({ item }) => {
+const Products = () => {
+    const [page, setPage] = useState(0);
+    const [rowsPerPage, setRowsPerPage] = useState(5);
+    const [searchQuery, setSearchQuery] = useState('');
+    const [orderBy, setOrderBy] = useState('name');
+    const [order, setOrder] = useState('asc');
+    const [anchorEl, setAnchorEl] = useState(null);
+    const [selectedRow, setSelectedRow] = useState(null);
+
     const [
         productIdToDelete,
         setProductIdToDelete,
@@ -22,155 +33,171 @@ const Products = ({ item }) => {
     ] = AdminDeleteProdHook();
 
     const [products] = AdminGetAllProd();
-    console.log(products.paginationResult);
 
-    const [selectedProducts, setSelectedProducts] = useState([]);
-    const [selectedProduct, setSelectedProduct] = useState(null);
-    const [openModal, setOpenModal] = useState(false);
+    console.log('Products:', products); // Debugging: Check the structure of products
 
-    // Handle row selection/deselection
-    const handleSelectProduct = (id) => {
-        setSelectedProducts((prev) => {
-            if (prev.includes(id)) {
-                return prev.filter((productId) => productId !== id);
-            }
-            return [...prev, id];
-        });
+    const handleRequestSort = (property) => {
+        const isAsc = orderBy === property && order === 'asc';
+        setOrder(isAsc ? 'desc' : 'asc');
+        setOrderBy(property);
     };
 
+    const handleMenuOpen = (event, row) => {
+        setAnchorEl(event.currentTarget);
+        setSelectedRow(row);
+    };
+
+    const handleMenuClose = () => {
+        setAnchorEl(null);
+        setSelectedRow(null);
+    };
+
+    // Filter and sort logic
+    const filteredRows =
+        products && products.data
+            ? products.data
+                .filter((row) =>
+                    Object.values(row).join(' ').toLowerCase().includes(searchQuery.toLowerCase())
+                )
+                .sort((a, b) =>
+                    order === 'asc'
+                        ? a[orderBy] < b[orderBy] ? -1 : 1
+                        : a[orderBy] > b[orderBy] ? -1 : 1
+                )
+            : [];
+
+    // Loading state
+    if (!products || !products.data) {
+        return <CircularProgress />;
+    }
+
     return (
-        <Box sx={{ padding: 2, flex: 1, bgcolor: '#f4f4f4' }}>
-            <Typography variant="h4" sx={{ fontSize: { xs: '1.5rem', sm: '2rem' } }} gutterBottom>
-                Products
-            </Typography>
-            <Divider sx={{ marginBottom: 2 }} />
+        <Box sx={{ width: '100%' }}>
+            <Paper sx={{ width: '100%', mb: 2, borderRadius: 2 }}>
+                <Box sx={{ p: 2 }}>
+                    <Typography variant="h6" component="div" sx={{ mb: 2 }}>
+                        Products
+                    </Typography>
+                    <Button
+                        sx={{ m: 1 }}
 
-            {/* Add New Product Button */}
-            <Link to={'/dashboard/product/create'}>
-                <Button
-                    variant="contained"
-                    startIcon={<Add />}
-                    color="primary"
-                    sx={{
-                        display: 'flex',
-                        justifyContent: 'flex-start',
-                        mb: 5,
-                        width: { xs: '100%', sm: 'auto' },
-                    }}
-                >
-                    Add New Product
-                </Button>
-            </Link>
-
-            {/* Product Table Layout */}
-            <Paper>
-                <Grid container spacing={3}>
-                    {/* Header row */}
-                    <Grid container item xs={12} sx={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'flex-start',
-                        bgcolor: '#f1f1f1',
-                        position: 'sticky',
-                        top: 0,
-                        zIndex: 1,
-                    }}>
-                        <Grid item xs={1}>
-                            <Typography fontWeight="bold">Select</Typography>
-                        </Grid>
-                        <Divider orientation="vertical" flexItem />
-                        <Grid item xs={2}>
-                            <Typography fontWeight="bold">Image</Typography>
-                        </Grid>
-                        <Divider orientation="vertical" flexItem />
-                        <Grid item xs={2}>
-                            <Typography fontWeight="bold">Name</Typography>
-                        </Grid>
-                        <Divider orientation="vertical" flexItem />
-                        <Grid item xs={2}>
-                            <Typography fontWeight="bold">Category</Typography>
-                        </Grid>
-                        <Divider orientation="vertical" flexItem />
-                        <Grid item xs={1}>
-                            <Typography fontWeight="bold">Price</Typography>
-                        </Grid>
-                        <Divider orientation="vertical" flexItem />
-                        <Grid item xs={1}>
-                            <Typography fontWeight="bold">Quantity</Typography>
-                        </Grid>
-                        <Divider orientation="vertical" flexItem />
-                        <Grid item xs={2}>
-                            <Typography fontWeight="bold">Actions</Typography>
-                        </Grid>
-                    </Grid>
-
-                    {/* Product Rows */}
-                    {products && products.data ? products.data.map((product) => (
-                        <Grid container item xs={12} key={product._id}
-                            sx={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                padding: 1,
-                                borderRadius: 1,
-                                justifyContent: 'flex-start',
-                                bgcolor: '#fff',
-                                borderBottom: '1px solid #ddd',
-                            }}>
-                            <Grid item xs={1}>
-                                <Checkbox
-                                    checked={selectedProducts.includes(product.id)}
-                                    onChange={() => handleSelectProduct(product.id)}
-                                    sx={{ color: 'success', bgcolor: '#f1f1f1' }}
-                                />
-                            </Grid>
-                            <Grid item xs={2}>
-                                <img src={product.imageCover} alt={product.name} style={{ width: '50px', height: '50px', borderRadius: '10px' }} />
-                            </Grid>
-                            <Grid item xs={2}>
-                                <Typography>{product.name}</Typography>
-                            </Grid>
-                            <Grid item xs={2}>
-                                {/* Assuming category is available */}
-                                {/* <Typography>{product.category.name}</Typography> */}
-                            </Grid>
-                            <Grid item xs={1}>
-                                <Typography>{product.price}</Typography>
-                            </Grid>
-                            <Grid item xs={1}>
-                                <Typography>{product.quantity}</Typography>
-                            </Grid>
-                            <Grid item xs={2} sx={{ textAlign: 'center' }}>
-
-                                <IconButton sx={{ color: 'black' }} onClick={() => handleOpenModal(product)}>
-                                    <Visibility sx={{ color: 'black' }} />
-                                </IconButton>
-
-
-                                <Link to={`/admin/product/update/${product._id}`}>
-                                    <IconButton sx={{ color: 'blue' }}>
-                                        <Edit sx={{ color: 'blue' }} />
-                                    </IconButton>
-                                </Link>
-                                <IconButton sx={{ color: 'red' }} onClick={() => handleOpenModal(product._id)}>
-                                    <Delete sx={{ color: 'red' }} />
-                                </IconButton>
-                            </Grid>
-                        </Grid>
-                    )) : <CircularProgress />}
-                </Grid>
+                        variant="contained"
+                        color="primary"
+                        component={Link}
+                        to="/dashboard/order/create"
+                        startIcon={<Add />}
+                    >
+                        Add New Product
+                    </Button>
+                    <TextField
+                        fullWidth
+                        variant="outlined"
+                        placeholder="Search..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        InputProps={{
+                            startAdornment: (
+                                <InputAdornment position="start">
+                                    <Search />
+                                </InputAdornment>
+                            ),
+                        }}
+                        sx={{ mb: 2 }}
+                    />
+                    <TableContainer>
+                        <Table sx={{ minWidth: 750 }}>
+                            <TableHead>
+                                <TableRow>
+                                    <TableCell>Image</TableCell>
+                                    <TableCell>
+                                        <TableSortLabel
+                                            active={orderBy === 'name'}
+                                            direction={orderBy === 'name' ? order : 'asc'}
+                                            onClick={() => handleRequestSort('name')}
+                                        >
+                                            Name
+                                        </TableSortLabel>
+                                    </TableCell>
+                                    <TableCell>Category</TableCell>
+                                    <TableCell>Price</TableCell>
+                                    <TableCell>Quantity</TableCell>
+                                    <TableCell>Actions</TableCell>
+                                </TableRow>
+                            </TableHead>
+                            <TableBody>
+                                {filteredRows.length > 0 ? (
+                                    filteredRows
+                                        .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                                        .map((product) => (
+                                            <TableRow hover key={product._id}>
+                                                <TableCell>
+                                                    <img
+                                                        src={product.imageCover}
+                                                        alt={product.name}
+                                                        style={{
+                                                            width: '50px',
+                                                            height: '50px',
+                                                            borderRadius: '10px',
+                                                            objectFit: 'cover',
+                                                        }}
+                                                    />
+                                                </TableCell>
+                                                <TableCell>{product.name}</TableCell>
+                                                <TableCell>{product.category?.name || 'N/A'}</TableCell>
+                                                <TableCell>{product.price}</TableCell>
+                                                <TableCell>{product.quantity}</TableCell>
+                                                <TableCell>
+                                                    <IconButton onClick={(event) => handleMenuOpen(event, product)}>
+                                                        <MoreVert />
+                                                    </IconButton>
+                                                </TableCell>
+                                            </TableRow>
+                                        ))
+                                ) : (
+                                    <TableRow>
+                                        <TableCell colSpan={6} align="center">
+                                            No products found.
+                                        </TableCell>
+                                    </TableRow>
+                                )}
+                            </TableBody>
+                        </Table>
+                    </TableContainer>
+                    <TablePagination
+                        rowsPerPageOptions={[5, 10, 25]}
+                        component="div"
+                        count={filteredRows.length}
+                        rowsPerPage={rowsPerPage}
+                        page={page}
+                        onPageChange={(event, newPage) => setPage(newPage)}
+                        onRowsPerPageChange={(event) => {
+                            setRowsPerPage(parseInt(event.target.value, 10));
+                            setPage(0);
+                        }}
+                    />
+                </Box>
             </Paper>
-            <PaginationTabs paginationResult={products.paginationResult} />
-
-            {/* Delete Product Modal */}
-
-            {/* Delete Confirmation Modal */}
+            <Menu
+                anchorEl={anchorEl}
+                open={Boolean(anchorEl)}
+                onClose={handleMenuClose}
+            >
+                <MenuItem component={Link} to={`/dashboard/product/update/${selectedRow?._id}`}>
+                    <Edit sx={{ mr: 1 }} /> Edit
+                </MenuItem>
+                <MenuItem onClick={() => {
+                    setProductIdToDelete(selectedRow?._id);
+                    setIsModalOpen(true);
+                }} sx={{ color: 'error.main' }}>
+                    <Delete sx={{ mr: 1 }} /> Delete
+                </MenuItem>
+            </Menu>
             <WarningModal
                 isOpen={isModalOpen}
                 onConfirm={handleConfirmDelete}
-                onCancel={handleCancelDelete}
-                message="Are you sure you want to delete this Announcement?"
+                onCancel={() => setIsModalOpen(false)}
+                message="Are you sure you want to delete this product?"
             />
-
         </Box>
     );
 };

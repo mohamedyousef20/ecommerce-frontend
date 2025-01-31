@@ -4,7 +4,7 @@ import { Pagination, Box, Typography, CircularProgress } from '@mui/material';
 const PaginationTabs = ({ paginationResult, onPageChange }) => {
     const [page, setPage] = useState(1);
     const [numberOfPage, setNumberOfPage] = useState(null);
-console.log(paginationResult)
+// console.log(paginationResult)
     // Update numberOfPage and current page when paginationResult changes
     useEffect(() => {
         if (paginationResult) {

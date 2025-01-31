@@ -10,7 +10,7 @@ const AdminGetAllUserHook = () => {
     }, []);
 
     const allUsers = useSelector((state) => state.userReducer.user);
-console.log('users',allUsers)
+// console.log('users',allUsers)
     let users = [];
     try {
         if (allUsers) {
@@ -20,7 +20,7 @@ console.log('users',allUsers)
             users = [];
         }
     } catch (e) {
-        console.log(e)
+        // console.log(e)
     }
 
     return [users];

@@ -1,119 +1,261 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import {
-    Grid, Box, Checkbox, Button, Modal,
-    IconButton, Typography, Divider, Paper, CircularProgress
+    Box,
+    Table,
+    TableBody,
+    TableCell,
+    TableContainer,
+    TableHead,
+    TableRow,
+    TablePagination,
+    Paper,
+    TextField,
+    IconButton,
+    Typography,
+    Chip,
+    Menu,
+    MenuItem,
+    InputAdornment,
+    TableSortLabel,
+    CircularProgress,
+    Button,
 } from '@mui/material';
-import { Visibility, Edit, Delete } from "@mui/icons-material";
+import { MoreVert, Search, Edit, Delete, Visibility } from '@mui/icons-material';
 import { Link } from 'react-router-dom';
 import WarningModal from '../../Utils/WarningModal';
-import { deleteOrder, updateOrderDeliver, updateOrderPay } from '../../../redux/action/orderAction';
 import AdminGetAllOrderHook from '../../../customHooks/Admin/Order/AdminGetAllOrderHook';
-import { useDispatch, useSelector } from 'react-redux/lib/exports';
-import LoadingProgress from '../../LoadingProgress';
-import Notification from '../../../customHooks/useNotification';
+import { deleteOrder, updateOrderDeliver } from '../../../redux/action/orderAction';
 import AdminUpdateOrderPayment from '../../../customHooks/Admin/Order/AdminUpdateOrderPayment';
+import LoadingProgress from '../../LoadingProgress';
+import { useDispatch } from 'react-redux/lib/exports';
+import Notification from '../../../customHooks/useNotification';
+
+// Helper function to format the date
+const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString();
+};
 
 const ProductOrderManagement = () => {
+    const [page, setPage] = useState(0);
+    const [rowsPerPage, setRowsPerPage] = useState(5);
+    const [searchQuery, setSearchQuery] = useState('');
+    const [orderBy, setOrderBy] = useState('totalOrderPrice');
+    const [order, setOrder] = useState('asc');
+    const [anchorEl, setAnchorEl] = useState(null);
+    const [selectedRow, setSelectedRow] = useState(null);
+    const [itemId, setItemId] = useState(null);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [loading, setLoading] = useState(false);
+
+    // Fetch orders data
     const [orders] = AdminGetAllOrderHook();
     const dispatch = useDispatch();
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const [selectedOrder, setSelectedOrder] = useState(null);
-    const [itemId, setItemId] = useState(null);
+    const [handleUpdatePayment] = AdminUpdateOrderPayment(itemId);
 
-    const [handleUpdatePayment, loading] = AdminUpdateOrderPayment(itemId)
+    // Handle sorting
+    const handleRequestSort = (property) => {
+        const isAsc = orderBy === property && order === 'asc';
+        setOrder(isAsc ? 'desc' : 'asc');
+        setOrderBy(property);
+    };
+
+    // Handle menu open
+    const handleMenuOpen = (event, row) => {
+        setAnchorEl(event.currentTarget);
+        setSelectedRow(row);
+    };
+
+    // Handle menu close
+    const handleMenuClose = () => {
+        setAnchorEl(null);
+        setSelectedRow(null);
+    };
+
+    // Handle update delivery status
     const handleUpdateDeliver = (id) => {
-        
+        setLoading(true)
         dispatch(updateOrderDeliver(id));
-    };
-
-
-
-    const handleCancelDelete = () => setIsModalOpen(false);
-
-
- const handleConfirmDelete = async () => { //TODE make it work
-        // setLoading(true);
-        // await dispatch(deleteOrder(itemId))
-        // setLoading(false)
-        // Notification('Deleting order successfully....')
-        // setIsModalOpen(false);
-        // window.location.reload(true);
+        setLoading(false);
+        window.location.reload(true)
 
     };
 
-    const formatDate = (dateString) => {
-        const date = new Date(dateString);
-        return date.toLocaleDateString();
+    // Handle delete confirmation
+    const handleConfirmDelete = async () => {
+
+        setLoading(true);
+        await dispatch(deleteOrder(itemId))
+        setLoading(false)
+        Notification('Deleting order successfully....')
+        setIsModalOpen(false);
+        window.location.reload(true);
     };
 
+    // Handle cancel delete
+    const handleCancelDelete = () => {
+        setIsModalOpen(false);
+    };
+
+    // Filter and sort data
+    const filteredRows = orders && orders.data
+        ? orders.data
+            .filter((row) =>
+                Object.values(row)
+                    .join(' ')
+                    .toLowerCase()
+                    .includes(searchQuery.toLowerCase())
+            )
+            .sort((a, b) => {
+                if (order === 'asc') {
+                    return a[orderBy] < b[orderBy] ? -1 : 1;
+                } else {
+                    return a[orderBy] > b[orderBy] ? -1 : 1;
+                }
+            })
+        : [];
 
     return (
-        <>
+        <Box sx={{ width: '100%' }}>
             <LoadingProgress loading={loading} />
-            <Box sx={{ padding: 3 }}>
-                <Typography variant="h4" gutterBottom>Order Management</Typography>
-                <Divider sx={{ marginBottom: 2 }} />
+            <Paper sx={{ width: '100%', mb: 2, borderRadius: 2 }}>
+                <Box sx={{ p: 2 }}>
+                    <Typography variant="h6" component="div" sx={{ mb: 2 }}>
+                        Order Management
+                    </Typography>
 
-                <Paper>
-                    <Grid container spacing={2}>
-                        <Grid container item xs={12} sx={{ bgcolor: '#f1f1f1', padding: 1 }}>
-                            <Grid item xs={2}><Typography fontWeight="bold">Customer</Typography></Grid>
-                            <Grid item xs={2}><Typography fontWeight="bold">Total</Typography></Grid>
-                            <Grid item xs={2}><Typography fontWeight="bold">Date</Typography></Grid>
-                            <Grid item xs={2}><Typography fontWeight="bold">Paid</Typography></Grid>
-                            <Grid item xs={2}><Typography fontWeight="bold">Delivered</Typography></Grid>
-                            <Grid item xs={2}><Typography fontWeight="bold">Actions</Typography></Grid>
-                        </Grid>
+                    
+                    <TextField
+                        fullWidth
+                        variant="outlined"
+                        placeholder="Search..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        InputProps={{
+                            startAdornment: (
+                                <InputAdornment position="start">
+                                    <Search />
+                                </InputAdornment>
+                            ),
+                        }}
+                        sx={{ mb: 2 }}
+                    />
+                    <TableContainer>
+                        <Table sx={{ minWidth: 750 }} aria-labelledby="tableTitle">
+                            <TableHead>
+                                <TableRow>
+                                    <TableCell>
+                                        <TableSortLabel
+                                            active={orderBy === 'totalOrderPrice'}
+                                            direction={orderBy === 'totalOrderPrice' ? order : 'asc'}
+                                            onClick={() => handleRequestSort('totalOrderPrice')}
+                                        >
+                                            Total
+                                        </TableSortLabel>
+                                    </TableCell>
+                                    <TableCell>Date</TableCell>
+                                    <TableCell>Paid</TableCell>
+                                    <TableCell>Delivered</TableCell>
+                                    <TableCell>Actions</TableCell>
+                                </TableRow>
+                            </TableHead>
+                            <TableBody>
+                                {!orders || !orders.data ? (
+                                    <TableRow>
+                                        <TableCell colSpan={5} align="center">
+                                            <CircularProgress />
+                                        </TableCell>
+                                    </TableRow>
+                                ) : filteredRows.length === 0 ? (
+                                    <TableRow>
+                                        <TableCell colSpan={5} align="center">
+                                            No orders found.
+                                        </TableCell>
+                                    </TableRow>
+                                ) : (
+                                    filteredRows
+                                        .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                                        .map((order) => (
+                                            <TableRow hover key={order._id}>
+                                                <TableCell>${order.totalOrderPrice}</TableCell>
+                                                <TableCell>{formatDate(order.updatedAt)}</TableCell>
+                                                <TableCell>
+                                                    <Button
+                                                        variant="contained"
+                                                        color={order.isPaid ? 'success' : 'info'}
+                                                        onClick={() => handleUpdatePayment(order._id)}
+                                                    >
+                                                        {order.isPaid ? formatDate(order.isPaidAt) : 'Mark as Paid'}
+                                                    </Button>
+                                                </TableCell>
+                                                <TableCell>
+                                                    <Button
+                                                        variant="contained"
+                                                        color={order.isDelivered ? 'success' : 'secondary'}
+                                                        onClick={() => handleUpdateDeliver(order._id)}
+                                                    >
+                                                        {order.isDelivered ? formatDate(order.deliveredAt) : 'Mark as Delivered'}
+                                                    </Button>
+                                                </TableCell>
+                                                <TableCell>
+                                                    <IconButton
+                                                        size="small"
+                                                        onClick={(event) => handleMenuOpen(event, order)}
+                                                    >
+                                                        <MoreVert />
+                                                    </IconButton>
+                                                </TableCell>
+                                            </TableRow>
+                                        ))
+                                )}
+                            </TableBody>
+                        </Table>
+                    </TableContainer>
+                    <TablePagination
+                        rowsPerPageOptions={[5, 10, 25]}
+                        component="div"
+                        count={filteredRows.length}
+                        rowsPerPage={rowsPerPage}
+                        page={page}
+                        onPageChange={(event, newPage) => setPage(newPage)}
+                        onRowsPerPageChange={(event) => {
+                            setRowsPerPage(parseInt(event.target.value, 10));
+                            setPage(0);
+                        }}
+                    />
+                </Box>
+            </Paper>
 
-                        {orders?.data?.map((order) => (
-                            <Grid container item xs={12} key={order._id} sx={{ padding: 1, borderBottom: '1px solid #ddd' }}>
-                                {/* <Grid item xs={2}><Typography>{order.user.name}</Typography></Grid> */}
-                                <Grid item xs={2}><Typography>${order.totalOrderPrice}</Typography></Grid>
-                                <Grid item xs={2}><Typography>{formatDate(order.updatedAt)}</Typography></Grid>
-                                <Grid item xs={2}>
-                                    <Button
-                                        variant="contained"
-                                        color={order.isPaid ? "success" : "primary"}
-                                        onClick={() => handleUpdatePayment(order._id)}
-                                    >
-                                        {order.isPaid ? formatDate(order.isPaidAt) : "Mark as Paid"}
-                                    </Button>
-                                </Grid>
-                                <Grid item xs={2}>
-                                    <Button
-                                        variant="contained"
-                                        color={order.isDelivered ? "success" : "secondary"}
-                                        onClick={() => handleUpdateDeliver(order._id)}
-                                    >
-                                        {order.isDelivered ? formatDate(order.deliveredAt) : "Mark as Delivered"}
-                                    </Button>
-                                </Grid>
-                                <Grid item xs={2} sx={{ textAlign: 'center' }}>
-                                    <Link to={`/dashboard/order/${order._id}/details`}>
-                                        <IconButton>
-                                            <Visibility />
-                                        </IconButton>
-                                    </Link>
-                                    <IconButton>
-                                        <Delete sx={{ color: 'red' }} onClick={() => {
-                                            setItemId(order._id);
-                                            setIsModalOpen(true);
-                                        }} />
+            {/* Actions Menu */}
+            <Menu
+                anchorEl={anchorEl}
+                open={Boolean(anchorEl)}
+                onClose={handleMenuClose}
+                transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+                anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+            >
+                <MenuItem component={Link} to={`/dashboard/order/${selectedRow?._id}/details`}>
+                    <Visibility sx={{ mr: 1 }} /> View Details
+                </MenuItem>
+                <MenuItem
+                    onClick={() => {
+                        setItemId(selectedRow?._id);
+                        setIsModalOpen(true);
+                    }}
+                    sx={{ color: 'error.main' }}
+                >
+                    <Delete sx={{ mr: 1 }} /> Delete
+                </MenuItem>
+            </Menu>
 
-                                    </IconButton>
-                                </Grid>
-                            </Grid>
-                        )) || <CircularProgress />}
-                    </Grid>
-                </Paper>
-
-                {/* Order Details Modal */}
-                <WarningModal isOpen={isModalOpen}
-                    onConfirm={handleConfirmDelete}
-                    onCancel={handleCancelDelete}
-                    message="Are you sure you want to delete this Brand?" />
-            </Box>
-        </>
+            {/* Delete Confirmation Modal */}
+            <WarningModal
+                isOpen={isModalOpen}
+                onConfirm={handleConfirmDelete}
+                onCancel={handleCancelDelete}
+                message="Are you sure you want to delete this order?"
+            />
+        </Box>
     );
 };
 

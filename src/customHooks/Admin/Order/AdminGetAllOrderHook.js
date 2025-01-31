@@ -22,7 +22,7 @@ const AdminGetAllOrderHook = () => {
             orders = [];
         }
     } catch (e) {
-        console.log(e)
+        // console.log(e)
     }
 
     return [orders];

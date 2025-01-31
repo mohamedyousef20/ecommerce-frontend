@@ -1,11 +1,12 @@
 
 TODO 
 ##########################
-
-4- push 15 item for all modal in you data base after upload it to server
-7-if update order payment to card navigate to payment page
-
-9- if add same product with same color update quantity
+1-make un logged nav bar is responsive
+2-pagination
+3-check product and brand and announcement
+- push 15 item for all modal in you data base after upload it to server
+-if update order payment to card navigate to payment page
+- if add same product with same color update quantity
 ##########################
 
 
@@ -358,3 +359,5 @@ const AdminListPage = () => {
 };
 
 export default AdminListPage;
+
+

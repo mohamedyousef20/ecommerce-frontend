@@ -10,8 +10,8 @@ const GetProductSearchHook = () => {
     const [brand, setBrand] = useState("");
     const [priceRange, setPriceRange] = useState([0, 2000]); // Adjust max price as needed
 
-    console.log(sortOption)
-    console.log(searchWord)
+    // console.log(sortOption)
+    // console.log(searchWord)
 
 
     const handleSearch = (event) => {
@@ -54,7 +54,7 @@ const GetProductSearchHook = () => {
         searchedProducts = [];
     }
 
-    console.log("Data received:", searchedProducts);
+    // console.log("Data received:", searchedProducts);
 
     return [
         sortOption,

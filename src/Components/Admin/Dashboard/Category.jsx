@@ -1,198 +1,225 @@
 import React, { useState } from 'react';
 import {
-  Grid, Box, Checkbox, Button, Modal,
-  IconButton, Typography, Divider, Paper, CircularProgress
+  Box,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  TablePagination,
+  Paper,
+  TextField,
+  IconButton,
+  Typography,
+  Chip,
+  Menu,
+  MenuItem,
+  InputAdornment,
+  TableSortLabel,
+  CircularProgress,
+  Button,
 } from '@mui/material';
-import { Add, Delete, Edit, Visibility } from "@mui/icons-material";
+import { MoreVert, Search, Edit, Delete, Visibility, Add } from '@mui/icons-material';
 import { Link } from 'react-router-dom';
 import PaginationTabs from '../../Utils/Pagination';
 import AdminDeleteCategoryHook from '../../../customHooks/Admin/Category/AdminDeleteCategoryHook';
 import AdminGetAllCategoryHook from '../../../customHooks/Category/AdminGetAllCategoryHook';
+import WarningModal from '../../Utils/WarningModal';
 
 const Categories = () => {
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [orderBy, setOrderBy] = useState('name');
+  const [order, setOrder] = useState('asc');
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [selectedRow, setSelectedRow] = useState(null);
 
-  const
-    [
-      category,
-      loading,
-      pagination,
-      page
-    ] = AdminGetAllCategoryHook();
+  // Fetch categories data
+  const [category, loading, pagination] = AdminGetAllCategoryHook();
 
   const [
-    open,
-    setOpen,
+    isModalOpen,
+    setIsModalOpen,
     categoryIdToDelete,
     setCategoryIdToDelete,
     handleOpenModal,
     handleCloseModal,
-    handleDelete] = AdminDeleteCategoryHook()
+    handleConfirmDelete
+  ] = AdminDeleteCategoryHook();
+
+  // Handle sorting
+  const handleRequestSort = (property) => {
+    const isAsc = orderBy === property && order === 'asc';
+    setOrder(isAsc ? 'desc' : 'asc');
+    setOrderBy(property);
+  };
+
+  // Handle menu open
+  const handleMenuOpen = (event, row) => {
+    setAnchorEl(event.currentTarget);
+    setSelectedRow(row);
+  };
+
+  // Handle menu close
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+    setSelectedRow(null);
+  };
+
+
+  // Filter and sort data
+  const filteredRows = category && category.data
+    ? category.data
+      .filter((row) =>
+        Object.values(row)
+          .join(' ')
+          .toLowerCase()
+          .includes(searchQuery.toLowerCase())
+      )
+      .sort((a, b) => {
+        if (order === 'asc') {
+          return a[orderBy] < b[orderBy] ? -1 : 1;
+        } else {
+          return a[orderBy] > b[orderBy] ? -1 : 1;
+        }
+      })
+    : [];
 
   return (
-    <Box sx={{ padding: 2, flex: 1, bgcolor: '#f4f4f4' }}>
-      <Typography variant="h4" sx={{ fontSize: { xs: '1.5rem', sm: '2rem' } }} gutterBottom>
-        Categories
-      </Typography>
-      <Divider sx={{ marginBottom: 2 }} />
-
-      {/* Add New Category Button */}
-      <Link to={'/dashboard/category/create'}>
-        <Button
-          variant="contained"
-          startIcon={<Add />}
-          color="primary"
-          sx={{
-            display: 'flex',
-            justifyContent: 'flex-start',
-            mb: 5,
-            width: { xs: '100%', sm: 'auto' },
-          }}
-        >
-          Add New Category
-        </Button>
-
-
-      </Link>
-      {/* Category Grid */}
-      <Paper>
-        <Grid container spacing={3}>
-          {/* Header Row */}
-          <Grid container item xs={12} sx={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'flex-start',
-            bgcolor: '#f1f1f1',
-            position: 'sticky',
-            top: 0,
-            zIndex: 1,
-          }}>
-            <Grid item xs={1}>
-              <Typography fontWeight="bold">Select</Typography>
-            </Grid>
-            <Divider orientation="vertical" flexItem />
-            <Grid item xs={2}>
-              <Typography fontWeight="bold">Image</Typography>
-            </Grid>
-            <Divider orientation="vertical" flexItem />
-            <Grid item xs={4}>
-              <Typography fontWeight="bold">Name</Typography>
-            </Grid>
-            <Divider orientation="vertical" flexItem />
-            <Grid item xs={3}>
-              <Typography fontWeight="bold">Actions</Typography>
-            </Grid>
-          </Grid>
-
-          {/* Category Rows */}
-          {category && category.data ?
-
-            category.data.map((category) => (
-              <Grid container item xs={12} key={category._id}
-                sx={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  padding: 1,
-                  borderRadius: 1,
-                  justifyContent: 'flex-start',
-                  bgcolor: '#fff',
-                  borderBottom: '1px solid #ddd',
-                }}
-              >
-                <Grid item xs={1}>
-                  <Checkbox
-                  // checked={selectedCategories.includes(category._id)}
-                  // onChange={() => handleSelectCategory(category._id)}
-                  />
-                </Grid>
-                <Grid item xs={2}>
-                  <img src={category.image} alt={category} style={{
-                    width: '50px',
-                    height: '50px',
-                    borderRadius: '10px',
-                    objectFit: 'cover',
-                  }} />
-                </Grid>
-                <Grid item xs={4}>
-                  {/* <Typography>{category.name}</Typography> */}
-                </Grid>
-                <Grid item xs={3} sx={{ textAlign: 'center' }}>
-                <Link to={`/category`}>
-                    <IconButton sx={{ color: 'black' }}>
-                      <Visibility sx={{ color: 'black' }} />
-                    </IconButton>
-                </Link>
-                  <Link to={`/dashboard/category/update/${category._id}`}>
-                    <IconButton sx={{ color: 'blue' }}>
-                      <Edit sx={{ color: 'blue' }} />
-                    </IconButton>
-                  </Link>
-                  <IconButton sx={{ color: 'red' }} onClick={() => handleOpenModal(category._id)}>
-                    <Delete sx={{ color: 'red' }} />
-                  </IconButton>
-                </Grid>
-              </Grid>
-            ))
-
-            :
-            <CircularProgress />
-          }
-        </Grid>
-      </Paper>
-      {/* <PaginationTabs paginationResult={category.paginationResult} /> */}
-
-      {/* Delete Category Modal */}
-      <Modal
-        open={open}
-        aria-labelledby="delete-modal-title"
-        aria-describedby="delete-modal-description"
-      >
-        <Box
-          sx={{
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            width: 400,
-            bgcolor: 'background.paper',
-            boxShadow: 18,
-            p: 4,
-            outline: 'none',
-          }}
-        >
-          <Typography id="delete-modal-title" variant="h6" component="h2">
-            Are you sure you want to delete this category?
+    <Box sx={{ width: '100%' }}>
+      <Paper sx={{ width: '100%', mb: 2, borderRadius: 2 }}>
+        <Box sx={{ p: 2 }}>
+          <Typography variant="h6" component="div" sx={{ mb: 2 }}>
+            Categories
           </Typography>
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 2 }}>
-            <Button
-              onClick={handleDelete}
-              sx={{
-                fontWeight: 600,
-                boxShadow: "0px 4px 16px rgba(43, 52, 69, 0.1)",
-                '&:hover': {
-                  backgroundColor: '#ff0000',
-                  color: '#fff',
-                },
-              }}
-            >
-              Delete
-            </Button>
-            <Button
-              onClick={handleCloseModal}
-              sx={{
-                fontWeight: 600,
-                boxShadow: "0px 4px 16px rgba(43, 52, 69, 0.1)",
-                color: '#000',
-                '&:hover': {
-                  backgroundColor: 'green',
-                  color: '#fff',
-                },
-              }}
-            >
-              Cancel
-            </Button>
-          </Box>
+          <Button
+            sx={{ m: 1 }}
+
+            variant="contained"
+            color="primary"
+            component={Link}
+            to="/dashboard/order/create"
+            startIcon={<Add />}
+          >
+            Add New Category
+          </Button>
+          <TextField
+            fullWidth
+            variant="outlined"
+            placeholder="Search..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <Search />
+                </InputAdornment>
+              ),
+            }}
+            sx={{ mb: 2 }}
+          />
+          <TableContainer>
+            <Table sx={{ minWidth: 750 }} aria-labelledby="tableTitle">
+              <TableHead>
+                <TableRow>
+                  <TableCell>
+                    <TableSortLabel
+                      active={orderBy === 'name'}
+                      direction={orderBy === 'name' ? order : 'asc'}
+                      onClick={() => handleRequestSort('name')}
+                    >
+                      Name
+                    </TableSortLabel>
+                  </TableCell>
+                  <TableCell>Image</TableCell>
+                  <TableCell>Actions</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {!category || !category.data ? (
+                  <TableRow>
+                    <TableCell colSpan={3} align="center">
+                      <CircularProgress />
+                    </TableCell>
+                  </TableRow>
+                ) : filteredRows.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={3} align="center">
+                      No categories found.
+                    </TableCell>
+                  </TableRow>
+                ) : (
+                  filteredRows
+                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                    .map((category) => (
+                      <TableRow hover key={category._id}>
+                        <TableCell>{category.name}</TableCell>
+                        <TableCell>
+                          <img
+                            src={category.image}
+                            alt={category.name}
+                            style={{
+                              width: '50px',
+                              height: '50px',
+                              borderRadius: '10px',
+                              objectFit: 'cover',
+                            }}
+                          />
+                        </TableCell>
+                        <TableCell>
+                          <IconButton
+                            size="small"
+                            onClick={(event) => handleMenuOpen(event, category)}
+                          >
+                            <MoreVert />
+                          </IconButton>
+                        </TableCell>
+                      </TableRow>
+                    ))
+                )}
+              </TableBody>
+            </Table>
+          </TableContainer>
+          <TablePagination
+            rowsPerPageOptions={[5, 10, 25]}
+            component="div"
+            count={filteredRows.length}
+            rowsPerPage={rowsPerPage}
+            page={page}
+            onPageChange={(event, newPage) => setPage(newPage)}
+            onRowsPerPageChange={(event) => {
+              setRowsPerPage(parseInt(event.target.value, 10));
+              setPage(0);
+            }}
+          />
         </Box>
-      </Modal>
+      </Paper>
+
+      {/* Actions Menu */}
+      <Menu
+        anchorEl={anchorEl}
+        open={Boolean(anchorEl)}
+        onClose={handleMenuClose}
+        transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+        anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+      >
+        <MenuItem component={Link} to={`/dashboard/category/update/${selectedRow?._id}`}>
+          <Edit sx={{ mr: 1 }} /> Edit
+        </MenuItem>
+        <MenuItem onClick={() => { setCategoryIdToDelete(selectedRow?._id); setIsModalOpen(true) }} sx={{ color: 'error.main' }}>
+          <Delete sx={{ mr: 1 }} /> Delete
+        </MenuItem>
+      </Menu>
+
+      {/* Delete Confirmation Modal */}
+      <WarningModal
+        isOpen={isModalOpen}
+        onConfirm={handleConfirmDelete}
+        onCancel={() => setIsModalOpen(false)}
+        message="Are you sure you want to delete this product?"
+      />
     </Box>
   );
 };

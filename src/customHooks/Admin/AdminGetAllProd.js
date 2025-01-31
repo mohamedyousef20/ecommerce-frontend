@@ -13,7 +13,7 @@ const AdminGetAllProd = () => {
 
     }, [dispatch])
 
-    const allProduct = useSelector((state) => state.productReducer.allProduct);
+    const allProduct = useSelector((state) => state.productReducer.allProduct || []);
     // if error occur just make products = []
 
     let products = [];
@@ -27,7 +27,7 @@ const AdminGetAllProd = () => {
             products = [];
         }
     } catch (e) {
-        console.log(e)
+        // console.log(e)
     }
     return [products];
 

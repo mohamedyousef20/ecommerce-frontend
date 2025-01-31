@@ -1,17 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import {
   AppBar, Toolbar, IconButton, Typography, InputBase, Box, Avatar,
-  Menu, MenuItem, Button, Badge
+  Menu, MenuItem, Button, Badge, Drawer
 } from '@mui/material';
 import {
   Menu as MenuIcon, Search as SearchIcon, ShoppingCart as ShoppingCartIcon,
-  FavoriteRounded,
-  MenuBook,
-  MenuOpen,
-  CategorySharp
+  FavoriteRounded
 } from '@mui/icons-material';
+import { alpha, styled } from '@mui/system';
 import { useNavigate } from 'react-router-dom';
-import { alpha, Stack, styled } from '@mui/system';
 import GetUserCartHook from '../../customHooks/Cart/get-user-cart-hook';
 import WarningModal from './WarningModal';
 import GetProductSearchHook from '../../customHooks/Product/GetProductSearchHook';
@@ -115,6 +112,22 @@ const NavbarLogged = () => {
     window.location.href = '/login';
   }
 
+  const toggleMobileMenu = () => {
+    setMobileMenuOpen(!mobileMenuOpen);
+  };
+
+  const menuItems = (
+    <Box sx={{ width: 250 }}>
+      <Button sx={{ width: '100%', justifyContent: 'flex-start' }} onClick={() => handleNavigate('/')}>Home</Button>
+      <Button sx={{ width: '100%', justifyContent: 'flex-start' }} onClick={() => handleNavigate('/product')}>Products</Button>
+      <Button sx={{ width: '100%', justifyContent: 'flex-start' }} onClick={() => handleNavigate('/brand')}>Brands</Button>
+      <Button sx={{ width: '100%', justifyContent: 'flex-start' }} onClick={() => handleNavigate('/category')}>Categories</Button>
+      {user.role === 'admin' && (
+        <Button sx={{ width: '100%', justifyContent: 'flex-start' }} onClick={() => handleNavigate('/dashboard/overview')}>Dashboard</Button>
+      )}
+    </Box>
+  );
+
   return (
     <AppBar position="sticky" sx={{ backgroundColor: primaryColor, boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>
       <StyledToolbar>
@@ -186,7 +199,7 @@ const NavbarLogged = () => {
 
             <IconButton
               color="inherit"
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              onClick={toggleMobileMenu}
               sx={{
                 ml: 1,
                 '&:hover': { backgroundColor: secondaryColor }

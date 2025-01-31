@@ -22,8 +22,8 @@ const AdminGetAllSubcategoryHook = () => {
 
     try {
         if (allSubCategory.data) {
-            console.log(allSubCategory)
-            console.log(allSubCategory.data)
+            // console.log(allSubCategory)
+            // console.log(allSubCategory.data)
             subcategory = allSubCategory.data;
 
         }

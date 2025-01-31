@@ -1,152 +1,205 @@
-import React from "react";
-import { Box, Button, Checkbox, CircularProgress, Divider, Grid, IconButton, Paper, Typography } from "@mui/material";
-import { Link } from "react-router-dom";
-import { Add, Delete, Edit, Visibility } from "@mui/icons-material";
-import PaginationTabs from "../../Utils/Pagination";
-import AdminGetAllBrandHook from "../../../customHooks/Admin/Brand/AdminGetAllBrandHook";
-import AdminDeleteBrandHook from "../../../customHooks/Admin/Brand/AdminDeleteBrandHook";
-import WarningModal from "../../Utils/WarningModal";
+import { useEffect, useState, useMemo } from 'react';
+import {
+  Box,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  TablePagination,
+  Paper,
+  Typography,
+  IconButton,
+  Menu,
+  MenuItem,
+  InputAdornment,
+  TextField,
+  TableSortLabel,
+  CircularProgress,
+  Button,
+} from '@mui/material';
+import { MoreVert, Search, Edit, Delete, Add } from '@mui/icons-material';
+import { Link } from 'react-router-dom';
+import AdminDeleteBrandHook from '../../../customHooks/Admin/Brand/AdminDeleteBrandHook';
+import AdminGetAllBrandHook from '../../../customHooks/Admin/Brand/AdminGetAllBrandHook';
+import WarningModal from '../../Utils/WarningModal';
 
-const Brand = () => {
+const Brands = () => {
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [orderBy, setOrderBy] = useState('name');
+  const [order, setOrder] = useState('asc');
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [selectedRow, setSelectedRow] = useState(null);
+
+  // Fetch brands data
   const [brands] = AdminGetAllBrandHook();
-  const [open, setOpen, itemId, setItemId, isModalOpen, setIsModalOpen, handleConfirmDelete, handleCancelDelete] =
+  const [open,
+    setOpen,
+    itemId,
+    setItemId,
+    isModalOpen,
+    setIsModalOpen,
+    handleConfirmDelete, 
+    handleCancelDelete] =
     AdminDeleteBrandHook();
 
+  const handleRequestSort = (property) => {
+    const isAsc = orderBy === property && order === 'asc';
+    setOrder(isAsc ? 'desc' : 'asc');
+    setOrderBy(property);
+  };
+
+  const handleMenuOpen = (event, row) => {
+    setAnchorEl(event.currentTarget);
+    setSelectedRow(row);
+  };
+
+
+
+
+  // Filter and sort logic
+  const filteredRows = useMemo(() => {
+    if (!brands || !brands.data || !Array.isArray(brands.data)) return []; // Ensure it's an array
+    return brands.data
+      .filter((row) =>
+        Object.values(row).join(' ').toLowerCase().includes(searchQuery.toLowerCase())
+      )
+      .sort((a, b) =>
+        order === 'asc' ? (a[orderBy] < b[orderBy] ? -1 : 1) : (a[orderBy] > b[orderBy] ? -1 : 1)
+      );
+  }, [brands, searchQuery, order, orderBy]);
+
   return (
-    <Box sx={{ padding: { xs: 2, sm: 3 }, flex: 1, bgcolor: "#F5F5F5", minHeight: "100vh" }}>
-      {/* Title */}
-      <Typography variant="h4" sx={{ fontSize: { xs: "1.5rem", sm: "2rem" }, color: "#FF5722" }} gutterBottom>
-        Brands
-      </Typography>
-      <Divider sx={{ marginBottom: 2 }} />
+    <Box sx={{ width: '100%' }}>
+      <Paper sx={{ width: '100%', mb: 2, borderRadius: 2 }}>
+        <Box sx={{ p: 2 }}>
+          <Typography variant="h6" sx={{ mb: 2 }}>
+            Brands
+          </Typography>
+          <Button
+            sx={{ m: 1 }}
 
-      {/* Add New Brand Button */}
-      <Link to={"/dashboard/brand/create"}>
-        <Button
-          variant="contained"
-          startIcon={<Add />}
-          sx={{
-            bgcolor: "#1976D2",
-            "&:hover": { bgcolor: "#1259A5" },
-            display: "flex",
-            justifyContent: "flex-start",
-            mb: 3,
-            width: { xs: "100%", sm: "auto" },
-          }}
-        >
-          Add New Brand
-        </Button>
-      </Link>
-
-      {/* Brand List */}
-      <Paper sx={{ padding: 2, bgcolor: "#f5f5f5", overflowX: "auto" }}>
-        <Grid container spacing={2}>
-          {/* Header Row */}
-          <Grid container item xs={12} sx={{ bgcolor: "#E0E0E0", py: 1, px: 2, borderRadius: 1 }}>
-            <Grid item xs={2}>
-              <Typography fontWeight="bold">Select</Typography>
-            </Grid>
-            <Grid item xs={3}>
-              <Typography fontWeight="bold">Image</Typography>
-            </Grid>
-            <Grid item xs={4}>
-              <Typography fontWeight="bold">Name</Typography>
-            </Grid>
-            <Grid item xs={3} sx={{ textAlign: "center" }}>
-              <Typography fontWeight="bold">Actions</Typography>
-            </Grid>
-          </Grid>
-
-          {/* Brand Rows */}
-          {!brands.data ? (
-            <Box sx={{ display: "flex", justifyContent: "center", width: "100%", mt: 3 }}>
-              <CircularProgress />
-            </Box>
-          ) : (
-            brands.data.map((brand) => (
-              <Grid
-                container
-                item
-                xs={12}
-                key={brand._id}
-                sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  padding: { xs: 1, sm: 2 },
-                  bgcolor: "#fff",
-                  borderBottom: "1px solid #ddd",
-                  borderRadius: 1,
-                  transition: "all 0.3s ease",
-                  "&:hover": { bgcolor: "#f9f9f9" },
-                }}
-              >
-                {/* Checkbox */}
-                <Grid item xs={2}>
-                  <Checkbox />
-                </Grid>
-
-                {/* Image */}
-                <Grid item xs={3}>
-                  <img
-                    src={brand.image}
-                    alt={brand.name}
-                    style={{
-                      width: "50px",
-                      height: "50px",
-                      borderRadius: "10px",
-                      objectFit: "cover",
-                    }}
-                  />
-                </Grid>
-
-                {/* Name */}
-                <Grid item xs={4}>
-                  <Typography sx={{ fontWeight: "500" }}>{brand.name}</Typography>
-                </Grid>
-
-                {/* Actions */}
-                <Grid item xs={3} sx={{ textAlign: "center" }}>
-                  {/* View Button */}
-                  <Link to={`/brand/${brand._id}`}>
-                    <IconButton sx={{ color: "#1976D2" }}>
-                      <Visibility />
-                    </IconButton>
-                  </Link>
-
-                  {/* Edit Button */}
-                  <Link to={`/dashboard/brand/update/${brand._id}`}>
-                    <IconButton sx={{ color: "#FF5722" }}>
-                      <Edit />
-                    </IconButton>
-                  </Link>
-
-                  {/* Delete Button */}
-                  <IconButton
-                    sx={{ color: "red" }}
-                    onClick={() => {
-                      setItemId(brand._id);
-                      setIsModalOpen(true);
-                    }}
-                  >
-                    <Delete />
-                  </IconButton>
-                </Grid>
-              </Grid>
-            ))
-          )}
-        </Grid>
+            variant="contained"
+            color="primary"
+            component={Link}
+            to="/dashboard/order/create"
+            startIcon={<Add />}
+          >
+            Add New  Brand
+          </Button>
+          <TextField
+            fullWidth
+            variant="outlined"
+            placeholder="Search..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <Search />
+                </InputAdornment>
+              ),
+            }}
+            sx={{ mb: 2 }}
+          />
+          <TableContainer>
+            <Table sx={{ minWidth: 750 }}>
+              <TableHead>
+                <TableRow>
+                  <TableCell>Logo</TableCell>
+                  <TableCell>
+                    <TableSortLabel
+                      active={orderBy === 'name'}
+                      direction={orderBy === 'name' ? order : 'asc'}
+                      onClick={() => handleRequestSort('name')}
+                    >
+                      Name
+                    </TableSortLabel>
+                  </TableCell>
+                  <TableCell>Country</TableCell>
+                  <TableCell>Actions</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {!brands || !brands.data ? (
+                  <TableRow>
+                    <TableCell colSpan={4} align="center">
+                      <CircularProgress />
+                    </TableCell>
+                  </TableRow>
+                ) : filteredRows.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={4} align="center">
+                      No brands found.
+                    </TableCell>
+                  </TableRow>
+                ) : (
+                  filteredRows
+                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                    .map((brand) => (
+                      <TableRow hover key={brand._id}>
+                        <TableCell>
+                          <img
+                            src={brand.logo}
+                            alt={brand.name}
+                            style={{
+                              width: '50px',
+                              height: '50px',
+                              borderRadius: '10px',
+                              objectFit: 'cover',
+                            }}
+                          />
+                        </TableCell>
+                        <TableCell>{brand.name}</TableCell>
+                        <TableCell>{brand.country || 'N/A'}</TableCell>
+                        <TableCell>
+                          <IconButton onClick={(event) => handleMenuOpen(event, brand)}>
+                            <MoreVert />
+                          </IconButton>
+                        </TableCell>
+                      </TableRow>
+                    ))
+                )}
+              </TableBody>
+            </Table>
+          </TableContainer>
+          <TablePagination
+            rowsPerPageOptions={[5, 10, 25]}
+            component="div"
+            count={filteredRows.length}
+            rowsPerPage={rowsPerPage}
+            page={page}
+            onPageChange={(event, newPage) => setPage(newPage)}
+            onRowsPerPageChange={(event) => {
+              setRowsPerPage(parseInt(event.target.value, 10));
+              setPage(0);
+            }}
+          />
+        </Box>
       </Paper>
-
-      {/* Pagination */}
-      <PaginationTabs paginationResult={brands.paginationResult} />
-
-      {/* Delete Confirmation Modal */}
-      <WarningModal isOpen={isModalOpen}
-       onConfirm={handleConfirmDelete}
+      <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleCancelDelete}>
+        <MenuItem component={Link} to={`/dashboard/brand/update/${selectedRow?._id}`}>
+          <Edit sx={{ mr: 1 }} /> Edit
+        </MenuItem>
+        <MenuItem onClick={() => {
+          setItemId(selectedRow?._id);
+          setIsModalOpen(true);
+        }} sx={{ color: 'error.main' }}>
+          <Delete sx={{ mr: 1 }} /> Delete
+        </MenuItem>
+       
+      </Menu>
+      <WarningModal
+        isOpen={isModalOpen}
+        onConfirm={handleConfirmDelete}
         onCancel={handleCancelDelete}
-         message="Are you sure you want to delete this Brand?" />
+        message="Are you sure you want to delete this brand?"
+      />
     </Box>
   );
 };
 
-export default Brand;
+export default Brands;

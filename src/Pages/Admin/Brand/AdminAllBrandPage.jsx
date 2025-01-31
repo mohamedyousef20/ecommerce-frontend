@@ -43,14 +43,7 @@ const AdminAllBrandPage = () => {
               borderRadius: 2,
               boxShadow: '0px 4px 16px rgba(43, 52, 69, 0.1)'
             }}>
-              <Typography
-                variant="h5"
-                fontWeight={600}
-                color="#1976D2"
-                mb={3}
-              >
-               All Brands
-              </Typography>
+         
               <Brand />
             </Paper>
           </Box>

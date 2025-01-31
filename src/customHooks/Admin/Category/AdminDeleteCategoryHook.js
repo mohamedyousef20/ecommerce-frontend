@@ -5,22 +5,22 @@ import { deleteCategory } from '../../../redux/action/categoryAction';
 const AdminDeleteCategoryHook = () => {
 
     const dispatch = useDispatch();
-    const [open, setOpen] = useState(false);
+    const [isModalOpen, setIsModalOpen] = useState(false);
     const [categoryIdToDelete, setCategoryIdToDelete] = useState(null);
 
     // Modal Handlers
     const handleOpenModal = (id) => {
         setCategoryIdToDelete(id);
-        setOpen(true);
+        setIsModalOpen(true);
     };
 
     const handleCloseModal = () => {
-        setOpen(false);
+        setIsModalOpen(false);
         setCategoryIdToDelete(null);
     };
 
 
-    const handleDelete = async () => {
+    const handleConfirmDelete = async () => {
 
 
         await dispatch(deleteCategory(categoryIdToDelete))
@@ -30,13 +30,13 @@ const AdminDeleteCategoryHook = () => {
         window.location.reload(true)
     };
     return [
-        open,
-        setOpen,
+        isModalOpen,
+        setIsModalOpen,
         categoryIdToDelete,
         setCategoryIdToDelete,
         handleOpenModal,
         handleCloseModal,
-        handleDelete
+        handleConfirmDelete
     ]
 }
 

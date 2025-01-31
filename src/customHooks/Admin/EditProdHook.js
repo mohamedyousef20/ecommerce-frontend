@@ -71,7 +71,7 @@ const EditProdHook = (id) => {
     const brand = useSelector(state => state.brandReducer.allBrand);
     // get all category
 
-    console.log('product comeing ', product)
+    // console.log('product comeing ', product)
     // set loading
     const [loading, setLoading] = useState();
 
@@ -91,7 +91,7 @@ const EditProdHook = (id) => {
 
     // to store color selected 
     const [colors, setColors] = useState([])
-    console.log('productimages ', productImages)
+    // console.log('productimages ', productImages)
     useEffect(() => {
         if (product) {
             
@@ -107,13 +107,13 @@ const EditProdHook = (id) => {
             setCateID(product.category || '');
             setColors(product.colors || []);
             setBrandID(product.brand || '');
-            console.log('existingImages', existingImages)
+            // console.log('existingImages', existingImages)
             
 
         }
     }, [product]);
 
-    console.log('productImages',productImages)
+    // console.log('productImages',productImages)
     // Handle Product Name
     const handelName = (e) => {
         setProdName(e.target.value);
@@ -245,7 +245,7 @@ const EditProdHook = (id) => {
         }
     };
 
-    console.log('####', brandID)
+    // console.log('####', brandID)
 
 
     const handleSubmit = async (e) => {

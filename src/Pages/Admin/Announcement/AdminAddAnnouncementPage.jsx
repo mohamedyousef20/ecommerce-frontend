@@ -3,6 +3,7 @@ import AddAnnouncementHook from '../../../customHooks/Admin/Announcement/AddAnno
 import { Box, Stack, TextField, Typography, Grid, Button } from '@mui/material';
 import SingleImageInput from '../../../Components/Admin/AdminAllProduct/SingleImageInput';
 import LoadingProgress from '../../../Components/LoadingProgress';
+import AdminSideBar from '../../../Components/Admin/AdminSideBar';
 
 const AdminAddAnnouncementPage = () => {
     const [
@@ -21,6 +22,7 @@ const AdminAddAnnouncementPage = () => {
         <>
 
             <LoadingProgress loading={loading} />
+            <AdminSideBar />
             <Box sx={{ flex: 2, padding: { xs: 2, sm: 3, md: 5 }, minHeight: '100vh' }}>
                 {/* Announcement Header */}
                 <Box mb={3}>

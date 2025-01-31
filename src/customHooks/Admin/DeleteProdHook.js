@@ -14,7 +14,7 @@ const DeleteProdHook = () => {
     }, [])
 
     const deleteOne = useSelector((state) => state.productReducer.deleteProduct);
-    console.log(deleteOne)
+    // console.log(deleteOne)
     let products = [];
     if (deleteOne.data) {
         products = deleteOne.data;
@@ -24,7 +24,7 @@ const DeleteProdHook = () => {
     else {
         products = [];
     }
-    console.log(products)
+    // console.log(products)
     return [products];
 
 }

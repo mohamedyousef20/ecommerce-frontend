@@ -76,7 +76,6 @@ const theme = createTheme({
             backgroundColor: 'transparent', // Remove hover background
             color: 'inherit', // Keep the default color
             transform: 'none', // Remove any transform effect on hover
-
           },
         },
       },
@@ -94,7 +93,7 @@ function App() {
   useEffect(() => {
 
     if (localStorage.getItem("user") != null) {
-      
+
       setUser(JSON.parse(localStorage.getItem("user")))
     }
 
@@ -117,8 +116,8 @@ function App() {
 
             <Route exact path='/' element={<HomePage />} />
 
-            {/* <Route exact path='/navbar' element={<Navbar />} /> */}
             <Route exact path='/profile' element={<ProfilePage />} />
+            {/* <Route exact path='/DashboardTable' element={<DashboardTable />} /> */}
 
             <Route exact path='/category' element={<CategoryPage />} />
             <Route exact path='/brand' element={<BrandPage />} />
@@ -151,27 +150,30 @@ function App() {
             <Route exact path='/admin/product/update/:id' element={<AdminEditProductPage />} />
             {/* <Route exact path='/admin/add-coupon' element={<AdminAddCouponsPage />} /> */}
             <Route exact path='/dashboard/overview' element={<Dashboard />} />
-            <Route exact path='/dashboard/category/create' element={<AdminAddCategoryPage />} />
             <Route exact path='/dashboard/products' element={<AdminProductPage />} />
             <Route exact path='/dashboard/orders' element={<AdminOrderPage />} />
             TODO<Route exact path='/dashboard/subcategory' element={<AdminSubcategoryPage />} />
             <Route exact path='/dashboard/users' element={<AdminUserPage />} />
             <Route exact path='/dashboard/categories' element={<AdminCategoryPage />} />
-            <Route exact path='/dashboard/coupon' element={<AdminCouponPage />} />
             <Route exact path='/dashboard/announcement' element={<AdminAnnouncementPage />} />
             <Route exact path='/dashboard/update/announcement/:id' element={<AdminEditAnnouncementPage />} />
-            <Route exact path='/dashboard/announcement/create' element={<AdminAddAnnouncementPage />} />
             <Route exact path='/dashboard/product/create' element={<AdminAddProductPage />} />
             <Route exact path='/dashboard/category/update/:id' element={<AdminEditCategoryPage />} />
             <Route exact path='/dashboard/brand/create' element={<AdminAddBrandPage />} />
             <Route exact path='/dashboard/brand/update/:id' element={<AdminEditBrand />} />
             <Route exact path='/dashboard/brands' element={<AdminAllBrandPage />} />
             <Route exact path='/dashboard/subcategory/create' element={<AdminAddSubcategoryPage />} />
-            <Route exact path='/dashboard/coupon/create' element={<AdminAddCouponsPage />} />
-            <Route exact path='/admin/coupon/update/:id' element={<AdminEditCouponPage />} />
             <Route exact path='/dashboard/subcategory/update/:id' element={<AdminEditSubcategoryPage />} />
             <Route exact path='/dashboard/user/create' element={<AddUserPage />} />
             <Route exact path='/dashboard/order/:id/details' element={<AdminOrderDetailsPage />} />
+           // category
+            <Route exact path='/dashboard/category/create' element={<AdminAddCategoryPage />} />
+           // coupon
+            <Route exact path='/dashboard/coupon' element={<AdminCouponPage />} />
+            <Route exact path='/dashboard/coupon/create' element={<AdminAddCouponsPage />} />
+            <Route exact path='/admin/coupon/update/:id' element={<AdminEditCouponPage />} />
+          // Announcement
+            <Route exact path='/dashboard/announcement/create' element={<AdminAddAnnouncementPage />} />
 
 
           </Routes>

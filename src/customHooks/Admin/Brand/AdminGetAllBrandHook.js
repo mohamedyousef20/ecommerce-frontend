@@ -29,7 +29,7 @@ const [loading,setLoading] = useState(true)
             brands = [];
         }
     } catch (e) {
-        console.log(e)
+        // console.log(e)
     }
 
     return [brands,loading]

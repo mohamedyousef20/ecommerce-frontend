@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { Box, Button, Container, TextField, Stack, Typography } from '@mui/material';
-
 import { createCoupon } from '../../../redux/action/couponAction';
 import Joi from 'joi';
 import Notification from '../../../customHooks/useNotification';
 import { useDispatch, useSelector } from 'react-redux/lib/exports';
+import AddCouponValidation from '../../../Validation/AddCouponValidation';
 
 const CouponContainer = () => {
     const dispatch = useDispatch();
@@ -14,26 +14,7 @@ const CouponContainer = () => {
     const [loading, setLoading] = useState(true);
     const [errors, setErrors] = useState({});
 
-    // Joi Schema for Validation
-    const schema = Joi.object({
-        couponName: Joi.string().min(2).max(50).required().messages({
-            'string.empty': 'Coupon name is required',
-            'string.min': 'Coupon name must be at least 2 characters',
-            'string.max': 'Coupon name must be less than 50 characters',
-        }),
-        couponValue: Joi.number().min(1).max(100).required().messages({
-            'number.base': 'Coupon value must be a valid number',
-            'number.min': 'Coupon discount must be at least 1%',
-            'number.max': 'Coupon discount must be at most 100%',
-            'any.required': 'Coupon discount is required',
-        }),
-        couponExpireDate: Joi.date().min(new Date().toISOString().split("T")[0]).required().messages({
-            'date.base': 'Invalid date format',
-            'date.min': 'Expiration date must be in the future',
-            'any.required': 'Expiration date is required',
-        }),
-    });
-
+  
     // Handle Input Changes
     const handleCouponName = (e) => setCouponName(e.target.value);
     const handleCouponValue = (e) => setCouponValue(e.target.value);
@@ -42,7 +23,7 @@ const CouponContainer = () => {
     // Handle Submit with Joi Validation
     const handleSubmit = async () => {
         const formData = { couponName, couponValue, couponExpireDate };
-        const { error } = schema.validate(formData, { abortEarly: false });
+        const { error } = AddCouponValidation.validate(formData, { abortEarly: false });
 
         if (error) {
             const errorMessages = {};
@@ -92,44 +73,67 @@ const CouponContainer = () => {
                 alignItems: 'stretch',
                 justifyContent: 'center',
                 my: 4,
-                padding: 3,
-                backgroundColor: 'white',
-                borderRadius: 2,
-                boxShadow: 3,
+                padding: 4,
+                backgroundColor: '#FFFFFF',
+                borderRadius: 3,
+                boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.1)',
             }}
         >
-            <Box mb={3}>
-                <Typography fontSize={'1.5rem'} fontWeight={600} color="red" textAlign="center">
+            {/* Title */}
+            <Box mb={3} textAlign="center">
+                <Typography
+                    fontSize="1.75rem"
+                    fontWeight={700}
+                    color="#1976D2" // Royal Blue
+                >
                     Add New Coupon
+                </Typography>
+                <Typography
+                    fontSize="0.875rem"
+                    color="text.secondary"
+                    mt={1}
+                >
+                    Fill in the details to create a new coupon.
                 </Typography>
             </Box>
 
-            <Stack direction="column" alignItems="stretch" spacing={2}>
+            {/* Form Fields */}
+            <Stack direction="column" spacing={3}>
                 <TextField
                     fullWidth
-                    label="Enter Coupon Name"
+                    label="Coupon Name"
                     variant="outlined"
                     value={couponName}
                     onChange={handleCouponName}
                     error={!!errors.couponName}
                     helperText={errors.couponName}
-                    sx={{ '& .MuiInputBase-root': { borderRadius: 2, backgroundColor: '#fafafa' } }}
+                    sx={{
+                        '& .MuiOutlinedInput-root': {
+                            borderRadius: 2,
+                            backgroundColor: '#F5F5F5', // Light Gray
+                        },
+                    }}
                 />
 
                 <TextField
                     fullWidth
-                    label="Enter Coupon Discount Percentage"
+                    label="Discount Percentage"
                     variant="outlined"
                     type="number"
                     value={couponValue}
                     onChange={handleCouponValue}
                     error={!!errors.couponValue}
                     helperText={errors.couponValue}
-                    sx={{ '& .MuiInputBase-root': { borderRadius: 2, backgroundColor: '#fafafa' } }}
+                    sx={{
+                        '& .MuiOutlinedInput-root': {
+                            borderRadius: 2,
+                            backgroundColor: '#F5F5F5', // Light Gray
+                        },
+                    }}
                 />
 
                 <TextField
-                    label="Enter Coupon Expire Date"
+                    label="Expiration Date"
                     type="date"
                     value={couponExpireDate}
                     onChange={handleCouponExpireDate}
@@ -137,26 +141,39 @@ const CouponContainer = () => {
                     helperText={errors.couponExpireDate}
                     InputLabelProps={{ shrink: true }}
                     fullWidth
-                    sx={{ '& .MuiInputBase-root': { borderRadius: 2, backgroundColor: '#fafafa' } }}
+                    sx={{
+                        '& .MuiOutlinedInput-root': {
+                            borderRadius: 2,
+                            backgroundColor: '#F5F5F5', // Light Gray
+                        },
+                    }}
                 />
             </Stack>
 
+            {/* Submit Button */}
             <Button
                 variant="contained"
                 onClick={handleSubmit}
                 sx={{
-                    px: 2,
+                    mt: 4,
                     py: 1.5,
-                    mt: 3,
-                    backgroundColor: "#0295db",
-                    fontWeight: '600',
-                    color: "#fff",
-                    borderRadius: "5px",
-                    '&:hover': { bgcolor: "#151515", boxShadow: "0px 4px 16px rgba(43, 52, 69, 0.1)" },
-                    '&:active': { bgcolor: "#0277a6" },
+                    backgroundColor: '#1976D2', // Royal Blue
+                    color: '#FFFFFF',
+                    borderRadius: 2,
+                    fontWeight: 600,
+                    fontSize: '1rem',
+                    textTransform: 'none',
+                    boxShadow: '0px 4px 6px rgba(25, 118, 210, 0.2)',
+                    '&:hover': {
+                        backgroundColor: '#1565C0', // Darker Royal Blue
+                        boxShadow: '0px 6px 8px rgba(25, 118, 210, 0.3)',
+                    },
+                    '&:active': {
+                        backgroundColor: '#0D47A1', // Even Darker Royal Blue
+                    },
                 }}
             >
-                ADD COUPON
+                Create Coupon
             </Button>
         </Container>
     );
