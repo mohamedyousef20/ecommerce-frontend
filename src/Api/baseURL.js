@@ -3,10 +3,13 @@ import axios from "axios"
 // base URL by axios
 
 
-// https://ecommerce-backend-750z2uu1r-mohamedyousefs-projects.vercel.app
+// const baseURL = axios.create({
+//     baseURL: 'https://ecommerce-backend-750z2uu1r-mohamedyousefs-projects.vercel.app'
+// });
+
 
 const baseURL = axios.create({
-    baseURL: 'https://ecommerce-backend-750z2uu1r-mohamedyousefs-projects.vercel.app'
+    baseURL: 'http://localhost:2222'
 });
 
 // export const PulicRequest = axios.create({

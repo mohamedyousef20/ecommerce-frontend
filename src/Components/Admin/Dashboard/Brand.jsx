@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   Box,
   Table,
@@ -15,50 +15,74 @@ import {
   MenuItem,
   InputAdornment,
   TextField,
-  TableSortLabel,
   CircularProgress,
   Button,
+  FormControl,
+  InputLabel,
+  Select,
+  Grid,
 } from '@mui/material';
 import { MoreVert, Search, Edit, Delete, Add } from '@mui/icons-material';
 import { Link } from 'react-router-dom';
 import AdminDeleteBrandHook from '../../../customHooks/Admin/Brand/AdminDeleteBrandHook';
 import AdminGetAllBrandHook from '../../../customHooks/Admin/Brand/AdminGetAllBrandHook';
 import WarningModal from '../../Utils/WarningModal';
+import PaginationTabs from '../../Utils/Pagination';
 
 const Brands = () => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [searchQuery, setSearchQuery] = useState('');
-  const [orderBy, setOrderBy] = useState('name');
-  const [order, setOrder] = useState('asc');
+  const [sortField, setSortField] = useState('name'); // Default sort field
+  const [sortOrder, setSortOrder] = useState('asc'); // Default sort order
   const [anchorEl, setAnchorEl] = useState(null);
   const [selectedRow, setSelectedRow] = useState(null);
 
   // Fetch brands data
-  const [brands] = AdminGetAllBrandHook();
-  const [open,
-    setOpen,
-    itemId,
-    setItemId,
-    isModalOpen,
-    setIsModalOpen,
-    handleConfirmDelete, 
-    handleCancelDelete] =
+  const [brands, paginationResult, onPageChange, onSearch, onSort, setFilters] = AdminGetAllBrandHook();
+  const [open, setOpen, itemId, setItemId, isModalOpen, setIsModalOpen, handleConfirmDelete, handleCancelDelete] =
     AdminDeleteBrandHook();
 
-  const handleRequestSort = (property) => {
-    const isAsc = orderBy === property && order === 'asc';
-    setOrder(isAsc ? 'desc' : 'asc');
-    setOrderBy(property);
+  // Handle search
+  const handleSearch = (e) => {
+    const keyword = e.target.value;
+    setSearchQuery(keyword);
+    onSearch(keyword); // Update search filter in the hook
   };
 
+  // Handle sort field change
+  const handleSortFieldChange = (field) => {
+    setSortField(field);
+    const sortString = sortOrder === 'asc' ? field : `-${field}`;
+    onSort(sortString); // Update sort filter in the hook
+  };
+
+  // Handle sort order change
+  const handleSortOrderChange = (order) => {
+    setSortOrder(order);
+    const sortString = order === 'asc' ? sortField : `-${sortField}`;
+    onSort(sortString); // Update sort filter in the hook
+  };
+
+  // Handle rows per page change
+  const handleRowsPerPageChange = (event) => {
+    const newRowsPerPage = parseInt(event.target.value, 10);
+    setRowsPerPage(newRowsPerPage); // Update the state
+    setFilters((prevFilters) => ({ ...prevFilters, limit: newRowsPerPage }));
+    setPage(0); // Reset to the first page
+  };
+
+  // Handle menu open
   const handleMenuOpen = (event, row) => {
     setAnchorEl(event.currentTarget);
     setSelectedRow(row);
   };
 
-
-
+  // Handle menu close
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+    setSelectedRow(null);
+  };
 
   // Filter and sort logic
   const filteredRows = useMemo(() => {
@@ -68,9 +92,11 @@ const Brands = () => {
         Object.values(row).join(' ').toLowerCase().includes(searchQuery.toLowerCase())
       )
       .sort((a, b) =>
-        order === 'asc' ? (a[orderBy] < b[orderBy] ? -1 : 1) : (a[orderBy] > b[orderBy] ? -1 : 1)
+        sortOrder === 'asc'
+          ? a[sortField] < b[sortField] ? -1 : 1
+          : a[sortField] > b[sortField] ? -1 : 1
       );
-  }, [brands, searchQuery, order, orderBy]);
+  }, [brands, searchQuery, sortField, sortOrder]);
 
   return (
     <Box sx={{ width: '100%' }}>
@@ -79,23 +105,57 @@ const Brands = () => {
           <Typography variant="h6" sx={{ mb: 2 }}>
             Brands
           </Typography>
-          <Button
-            sx={{ m: 1 }}
-
-            variant="contained"
-            color="primary"
-            component={Link}
-            to="/dashboard/order/create"
-            startIcon={<Add />}
-          >
-            Add New  Brand
-          </Button>
+          {/* Add New Brand Button and Sort Controls */}
+          <Grid container spacing={2} alignItems="center" sx={{ mb: 2 }}>
+            <Grid item>
+              <Button
+                variant="contained"
+                color="primary"
+                component={Link}
+                to="/dashboard/brand/create"
+                startIcon={<Add />}
+              >
+                Add New Brand
+              </Button>
+            </Grid>
+            {/* Sort Field Dropdown */}
+            <Grid item>
+              <FormControl sx={{ minWidth: 120, backgroundColor: '#f5f5f5', borderRadius: 1 }}>
+                <InputLabel sx={{ color: '#333' }}>Sort By</InputLabel>
+                <Select
+                  value={sortField}
+                  onChange={(e) => handleSortFieldChange(e.target.value)}
+                  label="Sort By"
+                  sx={{ height: 40 }}
+                >
+                  <MenuItem value="name">Name</MenuItem>
+                  <MenuItem value="createdAt">Created At</MenuItem>
+                </Select>
+              </FormControl>
+            </Grid>
+            {/* Sort Order Dropdown */}
+            <Grid item>
+              <FormControl sx={{ minWidth: 120, backgroundColor: '#f5f5f5', borderRadius: 1 }}>
+                <InputLabel sx={{ color: '#333' }}>Order</InputLabel>
+                <Select
+                  value={sortOrder}
+                  onChange={(e) => handleSortOrderChange(e.target.value)}
+                  label="Order"
+                  sx={{ height: 40 }}
+                >
+                  <MenuItem value="asc">Ascending</MenuItem>
+                  <MenuItem value="desc">Descending</MenuItem>
+                </Select>
+              </FormControl>
+            </Grid>
+          </Grid>
+          {/* Search Bar */}
           <TextField
             fullWidth
             variant="outlined"
             placeholder="Search..."
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            onChange={handleSearch}
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
@@ -105,34 +165,26 @@ const Brands = () => {
             }}
             sx={{ mb: 2 }}
           />
+          {/* Brands Table */}
           <TableContainer>
             <Table sx={{ minWidth: 750 }}>
               <TableHead>
                 <TableRow>
-                  <TableCell>Logo</TableCell>
-                  <TableCell>
-                    <TableSortLabel
-                      active={orderBy === 'name'}
-                      direction={orderBy === 'name' ? order : 'asc'}
-                      onClick={() => handleRequestSort('name')}
-                    >
-                      Name
-                    </TableSortLabel>
-                  </TableCell>
-                  <TableCell>Country</TableCell>
+                  <TableCell>Image</TableCell>
+                  <TableCell>Name</TableCell>
                   <TableCell>Actions</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
                 {!brands || !brands.data ? (
                   <TableRow>
-                    <TableCell colSpan={4} align="center">
+                    <TableCell colSpan={3} align="center">
                       <CircularProgress />
                     </TableCell>
                   </TableRow>
                 ) : filteredRows.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={4} align="center">
+                    <TableCell colSpan={3} align="center">
                       No brands found.
                     </TableCell>
                   </TableRow>
@@ -143,7 +195,7 @@ const Brands = () => {
                       <TableRow hover key={brand._id}>
                         <TableCell>
                           <img
-                            src={brand.logo}
+                            src={brand.image}
                             alt={brand.name}
                             style={{
                               width: '50px',
@@ -154,7 +206,6 @@ const Brands = () => {
                           />
                         </TableCell>
                         <TableCell>{brand.name}</TableCell>
-                        <TableCell>{brand.country || 'N/A'}</TableCell>
                         <TableCell>
                           <IconButton onClick={(event) => handleMenuOpen(event, brand)}>
                             <MoreVert />
@@ -166,32 +217,31 @@ const Brands = () => {
               </TableBody>
             </Table>
           </TableContainer>
-          <TablePagination
-            rowsPerPageOptions={[5, 10, 25]}
-            component="div"
-            count={filteredRows.length}
-            rowsPerPage={rowsPerPage}
-            page={page}
-            onPageChange={(event, newPage) => setPage(newPage)}
-            onRowsPerPageChange={(event) => {
-              setRowsPerPage(parseInt(event.target.value, 10));
-              setPage(0);
-            }}
-          />
         </Box>
+        {/* Pagination */}
+        <PaginationTabs
+          paginationResult={paginationResult}
+          onPageChange={onPageChange}
+          rowsPerPage={rowsPerPage}
+          onRowsPerPageChange={handleRowsPerPageChange}
+        />
       </Paper>
-      <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleCancelDelete}>
+      {/* Actions Menu */}
+      <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleMenuClose}>
         <MenuItem component={Link} to={`/dashboard/brand/update/${selectedRow?._id}`}>
           <Edit sx={{ mr: 1 }} /> Edit
         </MenuItem>
-        <MenuItem onClick={() => {
-          setItemId(selectedRow?._id);
-          setIsModalOpen(true);
-        }} sx={{ color: 'error.main' }}>
+        <MenuItem
+          onClick={() => {
+            setItemId(selectedRow?._id);
+            setIsModalOpen(true);
+          }}
+          sx={{ color: 'error.main' }}
+        >
           <Delete sx={{ mr: 1 }} /> Delete
         </MenuItem>
-       
       </Menu>
+      {/* Delete Confirmation Modal */}
       <WarningModal
         isOpen={isModalOpen}
         onConfirm={handleConfirmDelete}

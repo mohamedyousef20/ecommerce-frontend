@@ -16,7 +16,7 @@ const AdminSideBar = ({ toggleSidebar, isSidebarOpen }) => {
         { text: 'Orders', icon: ShoppingCart, path: '/dashboard/orders' },
         { text: 'Users', icon: People, path: '/dashboard/users' },
         { text: 'Categories', icon: Category, path: '/dashboard/categories' },
-        { text: 'Subcategories', icon: Subscriptions, path: '/dashboard/subcategory' },
+        // { text: 'Subcategories', icon: Subscriptions, path: '/dashboard/subcategory' },
         { text: 'Brands', icon: Business, path: '/dashboard/brands' },
         { text: 'Coupons', icon: Discount, path: '/dashboard/coupon' },
         { text: 'Announcements', icon: Announcement, path: '/dashboard/announcement' },

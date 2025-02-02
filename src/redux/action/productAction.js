@@ -41,11 +41,10 @@ export const createProduct = (formatData) => async (dispatch) => {
 }
 
 // ------------------------ get all product action------------------------------
-export const getAllProduct = () => async (dispatch) => {
-
+export const getAllProduct = (page = 1,limit='', keyword = '', sort = '', fields = '') => async (dispatch) => {
 
     try {
-        const response = await useGetData("/api/vi/product");
+        const response = await useGetData(`/api/vi/product?page=${page}&limit=${limit}&keyword=${keyword}&sort=${sort}&fields=${fields}`);
         dispatch({
             type: GET_ALL_PRODUCT,
             payload: response,
@@ -55,7 +54,7 @@ export const getAllProduct = () => async (dispatch) => {
 
     catch (err) {
         dispatch({
-            type: GET_ERROR,
+            type: GET_ALL_PRODUCT,
             payload: err.response ? err.response.data : { message: 'An error occurred' },
         })
     }

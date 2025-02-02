@@ -19,11 +19,11 @@ const RegisterHook = () => {
 
     // Redux response and user token
     const response = useSelector((state) => state.authReducer.register);
-
+console.log(response)
     // Handle navigate
 
-    const handleNavigate = ()=>{
-      navigate('/login')
+    const handleNavigate = () => {
+        navigate('/login')
     }
 
 
@@ -54,39 +54,56 @@ const RegisterHook = () => {
 
     // Handle response from the registration API
     useEffect(() => {
-        if (response?.data) {
-            // console.log(response)
-            if (response.msg === 'success') {
-                Notification('You Registered Successfully...', 'success');
+        if (!response) return;
+
+        if (response.msg === 'success') {
+            Notification('You Registered Successfully...', 'success');
+            setTimeout(() => {
                 navigate('/login');
-            } else {
-                // console.log(errors)
-                Notification(response?.message || 'Error sign up', 'error');
-            }
-            setLoading(false); // Stop loading after receiving response
+            }, 1000);
         }
-    }, [response.data]);
+        else if (response.status === 400) {
+            // Handle validation errors from the backend
+            if (response.errors && response.errors.length > 0) {
+                response.errors.forEach(error => {
+                    Notification(error.msg, 'error'); // Display each validation error
+                });
+            } else {
+                Notification('Validation failed. Please check your inputs.', 'error');
+            }
+        }
+       
+        else if (response.status === 403) {
+            Notification('Your account is not authorized. Contact support.', 'error');
+        }
+        else if (response.status === 500) {
+            Notification('Server error. Please try again later.', 'error');
+        }
 
+        else {
+            Notification('An unknown error occurred. Please try again.', 'error');
+        }
+  }, [response])
 
-    return [
-        
-        handleRegister,
-        handleNavigate,
-        name, setName,
-        email, setEmail,
-        phone,
-        setPhone,
-        password,
-        setPassword,
-        passwordConfirm,
-        setPasswordConfirm,
-        showPassword,
-        setShowPassword,
-        errors,
-        setErrors,
-        loading,
-        setLoading
-    ]
+return [
+
+    handleRegister,
+    handleNavigate,
+    name, setName,
+    email, setEmail,
+    phone,
+    setPhone,
+    password,
+    setPassword,
+    passwordConfirm,
+    setPasswordConfirm,
+    showPassword,
+    setShowPassword,
+    errors,
+    setErrors,
+    loading,
+    setLoading
+]
 }
 
 export default RegisterHook

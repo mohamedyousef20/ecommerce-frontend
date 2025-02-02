@@ -1,6 +1,6 @@
 import React from 'react';
 import AddAnnouncementHook from '../../../customHooks/Admin/Announcement/AddAnnouncementHook';
-import { Box, Stack, TextField, Typography, Grid, Button } from '@mui/material';
+import { Box, TextField, Typography, Stack, Button, Container } from '@mui/material';
 import SingleImageInput from '../../../Components/Admin/AdminAllProduct/SingleImageInput';
 import LoadingProgress from '../../../Components/LoadingProgress';
 import AdminSideBar from '../../../Components/Admin/AdminSideBar';
@@ -20,14 +20,38 @@ const AdminAddAnnouncementPage = () => {
 
     return (
         <>
-
             <LoadingProgress loading={loading} />
             <AdminSideBar />
-            <Box sx={{ flex: 2, padding: { xs: 2, sm: 3, md: 5 }, minHeight: '100vh' }}>
+            <Container
+                component="main"
+                maxWidth="sm"
+                sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'stretch',
+                    justifyContent: 'center',
+                    my: 4,
+                    padding: 4,
+                    backgroundColor: '#FFFFFF',
+                    borderRadius: 3,
+                    boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.1)',
+                }}
+            >
                 {/* Announcement Header */}
-                <Box mb={3}>
-                    <Typography fontSize={'1.5rem'} fontWeight={600} color='red'>
-                        Announcement
+                <Box mb={3} textAlign="center">
+                    <Typography
+                        fontSize="1.75rem"
+                        fontWeight={700}
+                        color="#1976D2" // Royal Blue
+                    >
+                        Add New Announcement
+                    </Typography>
+                    <Typography
+                        fontSize="0.875rem"
+                        color="text.secondary"
+                        mt={1}
+                    >
+                        Fill in the details to create a new announcement.
                     </Typography>
                 </Box>
 
@@ -35,68 +59,71 @@ const AdminAddAnnouncementPage = () => {
                 <SingleImageInput
                     image={announcementImage}
                     setImage={setAnnouncementImage}
-
                 />
 
                 {/* Form Fields */}
-                <Grid container spacing={3} sx={{ mt: 3 }}>
-                    <Grid item xs={12} sm={6}>
-                        <TextField
-                            fullWidth
-                            label="Enter Announcement Name"
-                            variant="outlined"
-                            value={announcementTitle}
-                            onChange={handelTitle}
-                            sx={{
-                                mb: 3,
-                                '& .MuiInputBase-root': {
-                                    borderRadius: 2,
-                                    backgroundColor: '#fafafa',
-                                },
-                            }}
-                        />
-                    </Grid>
+                <Stack direction="column" spacing={3} sx={{ mt: 3 }}>
+                    <TextField
+                        fullWidth
+                        label="Announcement Title"
+                        variant="outlined"
+                        value={announcementTitle}
+                        onChange={handelTitle}
+                        error={!!errors.title}
+                        helperText={errors.title}
+                        sx={{
+                            '& .MuiOutlinedInput-root': {
+                                borderRadius: 2,
+                                backgroundColor: '#F5F5F5', // Light Gray
+                            },
+                        }}
+                    />
 
-                    <Grid item xs={12} sm={6}>
-                        <TextField
-                            fullWidth
-                            label="Enter Announcement Desc"
-                            variant="outlined"
-                            value={announcementDesc}
-                            onChange={handelDesc}
-                            sx={{
-                                mb: 3,
-                                '& .MuiInputBase-root': {
-                                    borderRadius: 2,
-                                    backgroundColor: '#fafafa',
-                                },
-                            }}
-                        />
-                    </Grid>
-                </Grid>
+                    <TextField
+                        fullWidth
+                        label="Announcement Description"
+                        variant="outlined"
+                        value={announcementDesc}
+                        onChange={handelDesc}
+                        error={!!errors.description}
+                        helperText={errors.description}
+                        multiline
+                        rows={4}
+                        sx={{
+                            '& .MuiOutlinedInput-root': {
+                                borderRadius: 2,
+                                backgroundColor: '#F5F5F5', // Light Gray
+                            },
+                        }}
+                    />
+                </Stack>
 
                 {/* Submit Button */}
-                <Box sx={{ textAlign: 'center', mt: 2 }}>
-                    <Button
-                        variant="contained"
-                        onClick={handleSubmit}
-                        sx={{
-                            px: 4,
-                            py: 1.5,
-                            backgroundColor: "#0295db",
-                            fontWeight: '600',
-                            borderRadius: "10px",
-                            "&:hover": {
-                                color: '#fff',
-                                bgcolor: "#151515",
-                                boxShadow: "0px 4px 16px rgba(43, 52, 69, 0.1)",
-                            }
-                        }}
-                    >
-                        ADD Announcement
-                    </Button>
-                </Box>
-            </Box>
+                <Button
+                    variant="contained"
+                    onClick={handleSubmit}
+                    sx={{
+                        mt: 4,
+                        py: 1.5,
+                        backgroundColor: '#1976D2', // Royal Blue
+                        color: '#FFFFFF',
+                        borderRadius: 2,
+                        fontWeight: 600,
+                        fontSize: '1rem',
+                        textTransform: 'none',
+                        boxShadow: '0px 4px 6px rgba(25, 118, 210, 0.2)',
+                        '&:hover': {
+                            backgroundColor: '#1565C0', // Darker Royal Blue
+                            boxShadow: '0px 6px 8px rgba(25, 118, 210, 0.3)',
+                        },
+                        '&:active': {
+                            backgroundColor: '#0D47A1', // Even Darker Royal Blue
+                        },
+                    }}
+                >
+                    Add Announcement
+                </Button>
+            </Container>
         </>
     );
 };

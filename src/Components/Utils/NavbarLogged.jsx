@@ -16,9 +16,9 @@ import Notification from '../../customHooks/useNotification';
 import GetAllWishListProduct from '../../customHooks/Wishlist/GetAllWishListProduct';
 
 // Updated colors for better visual hierarchy
-const primaryColor = '#2563eb'; // Rich blue
+const primaryColor = '#1976D2'; // Rich blue
 const secondaryColor = '#1e40af'; // Darker blue for depth
-const accentColor = '#f97316'; // Warm orange
+const accentColor = '#FF5722'; // Warm orange
 const backgroundColor = '#f8fafc'; // Light gray background
 const textColor = '#ffffff'; // White text
 
@@ -70,6 +70,7 @@ const NavbarLogged = () => {
   const [user, setUser] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [cartItems, setCartItems] = useState(0); // Initialize cartItems state
   const navigate = useNavigate();
 
   const [
@@ -84,7 +85,7 @@ const NavbarLogged = () => {
     handleSearch,
     searchedProducts
   ] = GetProductSearchHook();
-  const [itemsNum] = GetUserCartHook();
+  const [itemsNum, refreshCart] = GetUserCartHook(); // Use refreshCart to force re-fetch
   const [prodInWishlist] = GetAllWishListProduct();
 
   useEffect(() => {
@@ -92,6 +93,11 @@ const NavbarLogged = () => {
       setUser(JSON.parse(localStorage.getItem('user')));
     }
   }, []);
+
+  // Update cartItems whenever itemsNum changes
+  useEffect(() => {
+    setCartItems(itemsNum);
+  }, [itemsNum]);
 
   const handleMenuClick = (event) => { setAnchorEl(event.currentTarget); };
   const handleMenuClose = () => { setAnchorEl(null); };
@@ -108,7 +114,7 @@ const NavbarLogged = () => {
   };
 
   if (!localStorage.getItem('userToken')) {
-    Notification('Session Expired Please Login Again ', 'info')
+    Notification('Session Expired Please Login Again ', 'info');
     window.location.href = '/login';
   }
 
@@ -181,7 +187,7 @@ const NavbarLogged = () => {
               onClick={() => handleNavigate('/cart')}
               sx={{ '&:hover': { backgroundColor: secondaryColor } }}
             >
-              <Badge badgeContent={itemsNum || '0'} color="error">
+              <Badge badgeContent={cartItems || '0'} color="error">
                 <ShoppingCartIcon sx={{ color: textColor }} />
               </Badge>
             </IconButton>
@@ -300,7 +306,7 @@ const NavbarLogged = () => {
             onClick={() => handleNavigate('/cart')}
             sx={{ '&:hover': { backgroundColor: secondaryColor } }}
           >
-            <Badge badgeContent={itemsNum || '0'} color="error">
+            <Badge badgeContent={cartItems || '0'} color="error">
               <ShoppingCartIcon sx={{ color: textColor }} />
             </Badge>
           </IconButton>

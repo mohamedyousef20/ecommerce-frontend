@@ -7,7 +7,14 @@ import LoadingProgress from '../../Components/LoadingProgress'
 
 const CategoryPage = () => {
 
-  const [category, loading, onPageChange, paginationResult] = AllCatePageHook();
+  const [
+    category,
+    loading,
+    onPageChange,
+    paginationResult,
+    onSearch,
+    onSort
+  ] = AllCatePageHook();
   return (
     <div>
       <LoadingProgress loading={loading} />

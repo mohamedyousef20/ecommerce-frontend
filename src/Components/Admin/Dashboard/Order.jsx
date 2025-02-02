@@ -7,18 +7,20 @@ import {
     TableContainer,
     TableHead,
     TableRow,
-    TablePagination,
     Paper,
     TextField,
     IconButton,
     Typography,
-    Chip,
     Menu,
     MenuItem,
     InputAdornment,
     TableSortLabel,
     CircularProgress,
     Button,
+    FormControl,
+    InputLabel,
+    Select,
+    Grid,
 } from '@mui/material';
 import { MoreVert, Search, Edit, Delete, Visibility } from '@mui/icons-material';
 import { Link } from 'react-router-dom';
@@ -29,6 +31,7 @@ import AdminUpdateOrderPayment from '../../../customHooks/Admin/Order/AdminUpdat
 import LoadingProgress from '../../LoadingProgress';
 import { useDispatch } from 'react-redux/lib/exports';
 import Notification from '../../../customHooks/useNotification';
+import PaginationTabs from '../../Utils/Pagination';
 
 // Helper function to format the date
 const formatDate = (dateString) => {
@@ -49,7 +52,7 @@ const ProductOrderManagement = () => {
     const [loading, setLoading] = useState(false);
 
     // Fetch orders data
-    const [orders] = AdminGetAllOrderHook();
+    const [orders, paginationResult, onPageChange, onSearch, onSort, onRowsPerPageChange] = AdminGetAllOrderHook();
     const dispatch = useDispatch();
     const [handleUpdatePayment] = AdminUpdateOrderPayment(itemId);
 
@@ -58,6 +61,22 @@ const ProductOrderManagement = () => {
         const isAsc = orderBy === property && order === 'asc';
         setOrder(isAsc ? 'desc' : 'asc');
         setOrderBy(property);
+        onSort(isAsc ? `-${property}` : property); // Update sort in the hook
+    };
+
+    // Handle search
+    const handleSearch = (e) => {
+        const keyword = e.target.value;
+        setSearchQuery(keyword);
+        onSearch(keyword); // Update search in the hook
+    };
+
+    // Handle rows per page change
+    const handleRowsPerPageChange = (event) => {
+        const newRowsPerPage = parseInt(event.target.value, 10);
+        setRowsPerPage(newRowsPerPage);
+        onRowsPerPageChange(newRowsPerPage); // Update rows per page in the hook
+        setPage(0); // Reset to the first page
     };
 
     // Handle menu open
@@ -74,20 +93,18 @@ const ProductOrderManagement = () => {
 
     // Handle update delivery status
     const handleUpdateDeliver = (id) => {
-        setLoading(true)
+        setLoading(true);
         dispatch(updateOrderDeliver(id));
         setLoading(false);
-        window.location.reload(true)
-
+        window.location.reload(true);
     };
 
     // Handle delete confirmation
     const handleConfirmDelete = async () => {
-
         setLoading(true);
-        await dispatch(deleteOrder(itemId))
-        setLoading(false)
-        Notification('Deleting order successfully....')
+        await dispatch(deleteOrder(itemId));
+        setLoading(false);
+        Notification('Deleting order successfully....');
         setIsModalOpen(false);
         window.location.reload(true);
     };
@@ -96,24 +113,6 @@ const ProductOrderManagement = () => {
     const handleCancelDelete = () => {
         setIsModalOpen(false);
     };
-
-    // Filter and sort data
-    const filteredRows = orders && orders.data
-        ? orders.data
-            .filter((row) =>
-                Object.values(row)
-                    .join(' ')
-                    .toLowerCase()
-                    .includes(searchQuery.toLowerCase())
-            )
-            .sort((a, b) => {
-                if (order === 'asc') {
-                    return a[orderBy] < b[orderBy] ? -1 : 1;
-                } else {
-                    return a[orderBy] > b[orderBy] ? -1 : 1;
-                }
-            })
-        : [];
 
     return (
         <Box sx={{ width: '100%' }}>
@@ -124,22 +123,55 @@ const ProductOrderManagement = () => {
                         Order Management
                     </Typography>
 
-                    
-                    <TextField
-                        fullWidth
-                        variant="outlined"
-                        placeholder="Search..."
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        InputProps={{
-                            startAdornment: (
-                                <InputAdornment position="start">
-                                    <Search />
-                                </InputAdornment>
-                            ),
-                        }}
-                        sx={{ mb: 2 }}
-                    />
+                    {/* Search Bar and Sort Controls */}
+                    <Grid container spacing={2} alignItems="center" sx={{ mb: 2 }}>
+                        <Grid item>
+                            <TextField
+                                fullWidth
+                                variant="outlined"
+                                placeholder="Search..."
+                                value={searchQuery}
+                                onChange={handleSearch}
+                                InputProps={{
+                                    startAdornment: (
+                                        <InputAdornment position="start">
+                                            <Search />
+                                        </InputAdornment>
+                                    ),
+                                }}
+                            />
+                        </Grid>
+                        <Grid item>
+                            <FormControl sx={{ minWidth: 120, backgroundColor: '#f5f5f5', borderRadius: 1 }}>
+                                <InputLabel sx={{ color: '#333' }}>Sort By</InputLabel>
+                                <Select
+                                    value={orderBy}
+                                    onChange={(e) => setOrderBy(e.target.value)}
+                                    label="Sort By"
+                                    sx={{ height: 40 }}
+                                >
+                                    <MenuItem value="totalOrderPrice">Total</MenuItem>
+                                    <MenuItem value="updatedAt">Date</MenuItem>
+                                </Select>
+                            </FormControl>
+                        </Grid>
+                        <Grid item>
+                            <FormControl sx={{ minWidth: 120, backgroundColor: '#f5f5f5', borderRadius: 1 }}>
+                                <InputLabel sx={{ color: '#333' }}>Order</InputLabel>
+                                <Select
+                                    value={order}
+                                    onChange={(e) => setOrder(e.target.value)}
+                                    label="Order"
+                                    sx={{ height: 40 }}
+                                >
+                                    <MenuItem value="asc">Ascending</MenuItem>
+                                    <MenuItem value="desc">Descending</MenuItem>
+                                </Select>
+                            </FormControl>
+                        </Grid>
+                    </Grid>
+
+                    {/* Orders Table */}
                     <TableContainer>
                         <Table sx={{ minWidth: 750 }} aria-labelledby="tableTitle">
                             <TableHead>
@@ -153,7 +185,15 @@ const ProductOrderManagement = () => {
                                             Total
                                         </TableSortLabel>
                                     </TableCell>
-                                    <TableCell>Date</TableCell>
+                                    <TableCell>
+                                        <TableSortLabel
+                                            active={orderBy === 'updatedAt'}
+                                            direction={orderBy === 'updatedAt' ? order : 'asc'}
+                                            onClick={() => handleRequestSort('updatedAt')}
+                                        >
+                                            Date
+                                        </TableSortLabel>
+                                    </TableCell>
                                     <TableCell>Paid</TableCell>
                                     <TableCell>Delivered</TableCell>
                                     <TableCell>Actions</TableCell>
@@ -166,14 +206,14 @@ const ProductOrderManagement = () => {
                                             <CircularProgress />
                                         </TableCell>
                                     </TableRow>
-                                ) : filteredRows.length === 0 ? (
+                                ) : orders.data.length === 0 ? (
                                     <TableRow>
                                         <TableCell colSpan={5} align="center">
                                             No orders found.
                                         </TableCell>
                                     </TableRow>
                                 ) : (
-                                    filteredRows
+                                    orders.data
                                         .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                                         .map((order) => (
                                             <TableRow hover key={order._id}>
@@ -211,17 +251,13 @@ const ProductOrderManagement = () => {
                             </TableBody>
                         </Table>
                     </TableContainer>
-                    <TablePagination
-                        rowsPerPageOptions={[5, 10, 25]}
-                        component="div"
-                        count={filteredRows.length}
+
+                    {/* Pagination */}
+                    <PaginationTabs
+                        paginationResult={paginationResult}
+                        onPageChange={onPageChange}
                         rowsPerPage={rowsPerPage}
-                        page={page}
-                        onPageChange={(event, newPage) => setPage(newPage)}
-                        onRowsPerPageChange={(event) => {
-                            setRowsPerPage(parseInt(event.target.value, 10));
-                            setPage(0);
-                        }}
+                        onRowsPerPageChange={handleRowsPerPageChange}
                     />
                 </Box>
             </Paper>

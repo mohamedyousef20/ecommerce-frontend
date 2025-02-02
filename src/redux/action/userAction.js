@@ -39,11 +39,11 @@ export const createUser = (data) => async (dispatch) => {
     }
 }
 // ------------------------ get all  user action------------------------------
-export const getAllUser = () => async (dispatch) => {
+export const getAllUser = (page = 1, limit = '', keyword = '', sort = '', fields = '') => async (dispatch) => {
 
 
     try {
-        const response = await useGetDataToken("/api/vi/user");
+        const response = await useGetDataToken(`/api/vi/user?page=${page}&limit=${limit}&keyword=${keyword}&sort=${sort}&fields=${fields}`);
         console.log(response)
         dispatch({
             type: GET_ALL_USER,

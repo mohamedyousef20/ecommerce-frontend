@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { TextField, Button, Stack, Typography, Box, Alert } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux/lib/exports'
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { sendPasswordResetCode } from '../../redux/action/authAction';
 
 const ForgotPasswordPage = () => {
@@ -87,7 +87,7 @@ const ForgotPasswordPage = () => {
             {/* Footer or additional information */}
             <Box mt={3} textAlign="center">
                 <Typography variant="body2">
-                    Remember your password? <Button color="primary">Login</Button>
+                    Remember your password? <Link to={'/login'}><Button color="primary">Login</Button></Link>
                 </Typography>
             </Box>
         </Box>

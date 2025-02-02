@@ -18,7 +18,7 @@ export const getAllCategory = () => async (dispatch) => {
 
     try {
         const response = await useGetData('/api/vi/category')
-console.log('the response of category',response)
+        console.log('the response of category', response)
         dispatch({
             type: GET_ALL_CATEGORY,
             payload: response,
@@ -36,11 +36,16 @@ console.log('the response of category',response)
 // get all category action with pagination
 
 // get all category action
-export const getAllCategoryWithPagination = (page) => async (dispatch) => {
+export const getAllCategoryWithPagination = (
+    page = 1,
+    limit= '',
+    keyword = '',
+    sort = '',
+    fields = ''
+) => async (dispatch) => {
 
     try {
-        const response = await useGetData(`/api/vi/category?page=${page}`)
-
+        const response = await useGetData(`/api/vi/category?page=${page}&limit=${limit}&keyword=${keyword}&sort=${sort}&fields=${fields}`)
         dispatch({
             type: GET_ALL_CATEGORY,
             payload: response,

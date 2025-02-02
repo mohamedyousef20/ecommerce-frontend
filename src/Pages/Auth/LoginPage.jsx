@@ -12,7 +12,7 @@ const LoginPage = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [errors, setErrors] = useState({});
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(null);
     const [showPassword, setShowPassword] = useState(false);
     const [rememberMe, setRememberMe] = useState(true);
     const dispatch = useDispatch();
@@ -58,24 +58,51 @@ const LoginPage = () => {
     const handleForgotPassword = () => navigate('/user/forgetPassword');
 
     // Handle Create New Account
-    const handleCreateNewAccount = () =>navigate('/register');
+    const handleCreateNewAccount = () => navigate('/register');
 
     // Get response from server
     const response = useSelector((state) => state.authReducer.login);
-  
+
     useEffect(() => {
-        if (response) {
+        if (!response) return;
+
+        if(loading === false){
             if (response.message === 'success' && response.userToken) {
                 localStorage.setItem("userToken", response.userToken);
                 localStorage.setItem("user", JSON.stringify(response.data));
 
-                Notification('You Logged In Successfully', 'success');
-                window.location.href = '/';
-            } else {
-                Notification(response.message, 'error');
+                Notification('You Logged In Successfully!', 'success');
+
+                setTimeout(() => {
+                    window.location.href = '/';
+                }, 1000);
+            }
+            else if (response.status === 400) {
+                // Handle validation errors from the backend
+                if (response.errors && response.errors.length > 0) {
+                    response.errors.forEach(error => {
+                        Notification(error.msg, 'error'); // Display each validation error
+                    });
+                } else {
+                    Notification('Validation failed. Please check your inputs.', 'error');
+                }
+            }
+            else if (response.status === 401) {
+                Notification('Wrong email or password. Please try again.', 'error');
+            }
+            else if (response.status === 403) {
+                Notification('Your account is not authorized. Contact support.', 'error');
+            }
+            else if (response.status === 500) {
+                Notification('Server error. Please try again later.', 'error');
+            }
+
+            else {
+                Notification('An unknown error occurred. Please try again.', 'error');
             }
         }
-    }, [response.data]);
+    }, [response]);
+
     return (
         <Container component="main" maxWidth="xs">
             <LoadingProgress loading={loading} />

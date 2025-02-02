@@ -21,12 +21,11 @@ const AdminUpdateOrderPayment = (id) => {
 
     useEffect(() => {
         if (res && res.data ) {
-            // console.log('============',res.data)
             if (res) {
                 Notification('Order is paid successfully', 'success')
             }
         }
-    }, [res.data])
+    }, [loading])
 
     return [handleUpdatePayment, loading]
 }

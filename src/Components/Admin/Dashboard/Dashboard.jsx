@@ -38,7 +38,6 @@ const Dashboard = () => {
         brands: 0,
         categories: 0,
         coupons: 0,
-        subcategories: 30, // Static value
     });
     // Update state when data is available
     useEffect(() => {
@@ -50,9 +49,9 @@ const Dashboard = () => {
             brands: brands?.numberOfDocuments || dashboardData.brands,
             categories: category?.numberOfDocuments || dashboardData.categories,
             coupons: coupons?.numberOfDocuments || dashboardData.coupons,
-            subcategories: dashboardData.subcategories, // Keep static value
+            // subcategories: dashboardData.subcategories, // Keep static value
         });
-    }, [users]);
+    }, [users, products, orders, announcements, brands, coupons, category]);
 
 
     // Example data
@@ -69,7 +68,7 @@ const Dashboard = () => {
         { title: 'Brands', value: dashboardData.brands, icon: <BrandingWatermark sx={{ fontSize: 40, color: '#3B82F6' }} />, bgColor: '#F3E5F5' },
         { title: 'Categories', value: dashboardData.categories, icon: <Category sx={{ fontSize: 40, color: '#3B82F6' }} />, bgColor: '#E8F5E9' },
         { title: 'Coupons', value: dashboardData.coupons, icon: <Discount sx={{ fontSize: 40, color: '#3B82F6' }} />, bgColor: '#FFF3E0' },
-        { title: 'Subcategories', value: dashboardData.subcategories, icon: <Subtitles sx={{ fontSize: 40, color: '#3B82F6' }} />, bgColor: '#E3F2FD' },
+        // { title: 'Subcategories', value: dashboardData.subcategories, icon: <Subtitles sx={{ fontSize: 40, color: '#3B82F6' }} />, bgColor: '#E3F2FD' },
     ];
 
     return (

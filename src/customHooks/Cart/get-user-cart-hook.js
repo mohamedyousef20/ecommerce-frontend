@@ -20,7 +20,7 @@ const GetUserCartHook = () => {
             setLoading(false)
         };
         getCart();
-    }, []);
+    }, [dispatch]);
 
     const response = useSelector((state) => state.cartReducer.userCart);
 useEffect(()=>{

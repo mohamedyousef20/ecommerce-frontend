@@ -28,10 +28,10 @@ export const registerUser = (data) => async (dispatch) => {
             loading: true
         })
 
-    } catch (e) {
+    } catch (err) {
         dispatch({
-            type: GET_ERROR,
-            payload: e.response,
+            type: REGISTER_USER,
+            payload: err.response ? err.response.data : { message: 'An error occurred' },
         })
     }
 }

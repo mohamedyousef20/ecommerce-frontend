@@ -8,7 +8,7 @@ import {
 
 const initial = {
     createReview: [],
-    getALLReview: [],
+    getAllReview: [],
     updateReview: [],
     deleteReview: [],
     ProductYouLike: [],
@@ -28,7 +28,7 @@ const reviewReducer = (state = initial, action) => {
         case GET_ALL_REVIEW:
             return {
                 ...state,
-                getALLReview: action.payload,
+                getAllReview: action.payload,
                 loading: false,
             }
         case UPDATE_USER_REVIEW:

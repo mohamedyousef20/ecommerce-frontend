@@ -33,15 +33,14 @@ const ReviewSection = () => {
     const [reviewToDelete, setReviewToDelete] = useState(null); // Track which review to delete
     const [user, setUser] = useState(""); // Track the logged-in user
 
-    const review = useSelector((state) => state.reviewReducer.getALLReview);
+    const review = useSelector((state) => state.reviewReducer.getAllReview);
     const [loading, setLoading] = useState(true);
-
+    console.log('review', review)
     useEffect(() => {
         if (localStorage.getItem("user") != null) {
             setUser(JSON.parse(localStorage.getItem("user")));
         }
     }, []);
-
     useEffect(() => {
         const get = async () => {
             setLoading(true);
@@ -198,7 +197,7 @@ const ReviewSection = () => {
                         ) : (
                             <Box sx={{ display: 'flex', alignItems: 'center', flex: 1 }}>
                                 <Avatar
-                                    src={rev.user.profileImage}
+                                    src={rev?.user ? rev.user.profileImage : null}
                                     alt={rev.user.name}
                                     sx={{
                                         width: 40,

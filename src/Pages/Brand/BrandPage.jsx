@@ -4,9 +4,10 @@ import AdminGetAllBrandHook from '../../customHooks/Admin/Brand/AdminGetAllBrand
 import BrandCard from '../../Components/Brand/BrandCard';
 import { CircularProgress, Container, Grid, Stack } from '@mui/material';
 import NotFound from '../../Components/Utils/NotFound';
+import PaginationTabs from '../../Components/Utils/Pagination';
 
 const BrandPage = () => {
-  const [brands, loading] = AdminGetAllBrandHook();
+  const [brands, loading, paginationResult, onPageChange, onSearch, onSort] = AdminGetAllBrandHook();
   return (
     <Container maxWidth="lg"> {/* Added Container for responsiveness */}
       <Stack gap={0.5} direction="row" justifyContent="space-around" flexWrap="wrap" mt="2rem">
@@ -17,6 +18,8 @@ const BrandPage = () => {
               {brands.data.map((brand, index) => (
                 <Grid item xs={6} sm={4} md={3} key={index}>
                   <BrandCard brand={brand} />
+                  <PaginationTabs paginationResult={paginationResult} onPageChange={onPageChange} />
+
                 </Grid>
               ))}
             </Grid>

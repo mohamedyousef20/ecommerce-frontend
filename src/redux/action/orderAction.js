@@ -13,9 +13,9 @@ import {
 } from '../type'
 
 
-export const getAllOrders = () => async (dispatch) => {
+export const getAllOrders = (page = 1, limit = '', keyword = '', sort = '', fields = '') => async (dispatch) => {
     try {
-        const response = await useGetDataToken(`/api/vi/order`);
+        const response = await useGetDataToken(`/api/vi/order?page=${page}&limit=${limit}&keyword=${keyword}&sort=${sort}&fields=${fields}`);
         dispatch({
             type: GET_ALL_ORDER,
             payload: response,

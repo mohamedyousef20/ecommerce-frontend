@@ -83,9 +83,15 @@ export const createAnnouncement = (formData) => async (dispatch) => {
 
 // crate category action
 
-export const getAllAnnouncement = () => async (dispatch) => {
+export const getAllAnnouncement = (
+    page = 1,
+    limit = '',
+    keyword = '',
+    sort = '',
+    fields = ''
+) => async (dispatch) => {
     try {
-        const response = await useGetDataToken('/api/vi/announcement');
+        const response = await useGetDataToken(`/api/vi/announcement?page=${page}&limit=${limit}&keyword=${keyword}&sort=${sort}&fields=${fields}`);
         console.log("response of ann ", response)
         dispatch({
             type: GET_ALL_ANNOUNCEMENT,

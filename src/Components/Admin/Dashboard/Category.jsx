@@ -1,26 +1,10 @@
 import React, { useState } from 'react';
 import {
-  Box,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  TablePagination,
-  Paper,
-  TextField,
-  IconButton,
-  Typography,
-  Chip,
-  Menu,
-  MenuItem,
-  InputAdornment,
-  TableSortLabel,
-  CircularProgress,
-  Button,
+  Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
+  TablePagination, Paper, Typography, IconButton, Menu, MenuItem,
+  InputAdornment, TextField, CircularProgress, Button, Select, FormControl, InputLabel, Grid
 } from '@mui/material';
-import { MoreVert, Search, Edit, Delete, Visibility, Add } from '@mui/icons-material';
+import { MoreVert, Search, Edit, Delete, Add } from '@mui/icons-material';
 import { Link } from 'react-router-dom';
 import PaginationTabs from '../../Utils/Pagination';
 import AdminDeleteCategoryHook from '../../../customHooks/Admin/Category/AdminDeleteCategoryHook';
@@ -31,13 +15,13 @@ const Categories = () => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [searchQuery, setSearchQuery] = useState('');
-  const [orderBy, setOrderBy] = useState('name');
-  const [order, setOrder] = useState('asc');
+  const [sortField, setSortField] = useState('name'); // Default sort field
+  const [sortOrder, setSortOrder] = useState('asc'); // Default sort order
   const [anchorEl, setAnchorEl] = useState(null);
   const [selectedRow, setSelectedRow] = useState(null);
 
   // Fetch categories data
-  const [category, loading, pagination] = AdminGetAllCategoryHook();
+  const [category, loading, onPageChange, paginationResult, onSearch, onSort, setFilters] = AdminGetAllCategoryHook();
 
   const [
     isModalOpen,
@@ -49,11 +33,33 @@ const Categories = () => {
     handleConfirmDelete
   ] = AdminDeleteCategoryHook();
 
-  // Handle sorting
-  const handleRequestSort = (property) => {
-    const isAsc = orderBy === property && order === 'asc';
-    setOrder(isAsc ? 'desc' : 'asc');
-    setOrderBy(property);
+  // Handle search
+  const handleSearch = (e) => {
+    const keyword = e.target.value;
+    setSearchQuery(keyword);
+    onSearch(keyword); // Update search filter in the hook
+  };
+
+  // Handle sort field change
+  const handleSortFieldChange = (field) => {
+    setSortField(field);
+    const sortString = sortOrder === 'asc' ? field : `-${field}`;
+    onSort(sortString); // Update sort filter in the hook
+  };
+
+  // Handle sort order change
+  const handleSortOrderChange = (order) => {
+    setSortOrder(order);
+    const sortString = order === 'asc' ? sortField : `-${sortField}`;
+    onSort(sortString); // Update sort filter in the hook
+  };
+
+  // Handle rows per page change
+  const handleRowsPerPageChange = (event) => {
+    const newRowsPerPage = parseInt(event.target.value, 10);
+    setRowsPerPage(newRowsPerPage); // Update the state
+    setFilters((prevFilters) => ({ ...prevFilters, limit: newRowsPerPage }));
+    setPage(0); // Reset to the first page
   };
 
   // Handle menu open
@@ -68,24 +74,24 @@ const Categories = () => {
     setSelectedRow(null);
   };
 
+  // Filter and sort logic
+  const filteredRows =
+    category && category.data
+      ? category.data
+        .filter((row) =>
+          Object.values(row).join(' ').toLowerCase().includes(searchQuery.toLowerCase())
+        )
+        .sort((a, b) =>
+          sortOrder === 'asc'
+            ? a[sortField] < b[sortField] ? -1 : 1
+            : a[sortField] > b[sortField] ? -1 : 1
+        )
+      : [];
 
-  // Filter and sort data
-  const filteredRows = category && category.data
-    ? category.data
-      .filter((row) =>
-        Object.values(row)
-          .join(' ')
-          .toLowerCase()
-          .includes(searchQuery.toLowerCase())
-      )
-      .sort((a, b) => {
-        if (order === 'asc') {
-          return a[orderBy] < b[orderBy] ? -1 : 1;
-        } else {
-          return a[orderBy] > b[orderBy] ? -1 : 1;
-        }
-      })
-    : [];
+  // Loading state
+  if (!category || !category.data) {
+    return <CircularProgress />;
+  }
 
   return (
     <Box sx={{ width: '100%' }}>
@@ -94,23 +100,56 @@ const Categories = () => {
           <Typography variant="h6" component="div" sx={{ mb: 2 }}>
             Categories
           </Typography>
-          <Button
-            sx={{ m: 1 }}
-
-            variant="contained"
-            color="primary"
-            component={Link}
-            to="/dashboard/order/create"
-            startIcon={<Add />}
-          >
-            Add New Category
-          </Button>
+          {/* Add New Category Button and Sort Controls */}
+          <Grid container spacing={2} alignItems="center" sx={{ mb: 2 }}>
+            <Grid item>
+              <Button
+                variant="contained"
+                color="primary"
+                component={Link}
+                to="/dashboard/category/create"
+                startIcon={<Add />}
+              >
+                Add New Category
+              </Button>
+            </Grid>
+            {/* Sort Field Dropdown */}
+            <Grid item>
+              <FormControl sx={{ minWidth: 120, backgroundColor: '#f5f5f5', borderRadius: 1 }}>
+                <InputLabel sx={{ color: '#333' }}>Sort By</InputLabel>
+                <Select
+                  value={sortField}
+                  onChange={(e) => handleSortFieldChange(e.target.value)}
+                  label="Sort By"
+                  sx={{ height: 40 }}
+                >
+                  <MenuItem value="name">Name</MenuItem>
+                </Select>
+              </FormControl>
+            </Grid>
+            {/* Sort Order Dropdown */}
+            <Grid item>
+              <FormControl sx={{ minWidth: 120, backgroundColor: '#f5f5f5', borderRadius: 1 }}>
+                <InputLabel sx={{ color: '#333' }}>Order</InputLabel>
+                <Select
+                  value={sortOrder}
+                  onChange={(e) => handleSortOrderChange(e.target.value)}
+                  label="Order"
+                  sx={{ height: 40 }}
+                >
+                  <MenuItem value="asc">Ascending</MenuItem>
+                  <MenuItem value="desc">Descending</MenuItem>
+                </Select>
+              </FormControl>
+            </Grid>
+          </Grid>
+          {/* Search Bar */}
           <TextField
             fullWidth
             variant="outlined"
             placeholder="Search..."
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            onChange={handleSearch}
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
@@ -120,37 +159,18 @@ const Categories = () => {
             }}
             sx={{ mb: 2 }}
           />
+          {/* Categories Table */}
           <TableContainer>
-            <Table sx={{ minWidth: 750 }} aria-labelledby="tableTitle">
+            <Table sx={{ minWidth: 750 }}>
               <TableHead>
                 <TableRow>
-                  <TableCell>
-                    <TableSortLabel
-                      active={orderBy === 'name'}
-                      direction={orderBy === 'name' ? order : 'asc'}
-                      onClick={() => handleRequestSort('name')}
-                    >
-                      Name
-                    </TableSortLabel>
-                  </TableCell>
+                  <TableCell>Name</TableCell>
                   <TableCell>Image</TableCell>
                   <TableCell>Actions</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
-                {!category || !category.data ? (
-                  <TableRow>
-                    <TableCell colSpan={3} align="center">
-                      <CircularProgress />
-                    </TableCell>
-                  </TableRow>
-                ) : filteredRows.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={3} align="center">
-                      No categories found.
-                    </TableCell>
-                  </TableRow>
-                ) : (
+                {filteredRows.length > 0 ? (
                   filteredRows
                     .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                     .map((category) => (
@@ -169,56 +189,53 @@ const Categories = () => {
                           />
                         </TableCell>
                         <TableCell>
-                          <IconButton
-                            size="small"
-                            onClick={(event) => handleMenuOpen(event, category)}
-                          >
+                          <IconButton onClick={(event) => handleMenuOpen(event, category)}>
                             <MoreVert />
                           </IconButton>
                         </TableCell>
                       </TableRow>
                     ))
+                ) : (
+                  <TableRow>
+                    <TableCell colSpan={3} align="center">
+                      No categories found.
+                    </TableCell>
+                  </TableRow>
                 )}
               </TableBody>
             </Table>
           </TableContainer>
-          <TablePagination
-            rowsPerPageOptions={[5, 10, 25]}
-            component="div"
-            count={filteredRows.length}
-            rowsPerPage={rowsPerPage}
-            page={page}
-            onPageChange={(event, newPage) => setPage(newPage)}
-            onRowsPerPageChange={(event) => {
-              setRowsPerPage(parseInt(event.target.value, 10));
-              setPage(0);
-            }}
-          />
         </Box>
+        {/* Pagination */}
+        <PaginationTabs
+          paginationResult={paginationResult}
+          onPageChange={onPageChange}
+          rowsPerPage={rowsPerPage}
+          onRowsPerPageChange={handleRowsPerPageChange}
+        />
       </Paper>
-
       {/* Actions Menu */}
       <Menu
         anchorEl={anchorEl}
         open={Boolean(anchorEl)}
         onClose={handleMenuClose}
-        transformOrigin={{ horizontal: 'right', vertical: 'top' }}
-        anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
       >
         <MenuItem component={Link} to={`/dashboard/category/update/${selectedRow?._id}`}>
           <Edit sx={{ mr: 1 }} /> Edit
         </MenuItem>
-        <MenuItem onClick={() => { setCategoryIdToDelete(selectedRow?._id); setIsModalOpen(true) }} sx={{ color: 'error.main' }}>
+        <MenuItem onClick={() => {
+          setCategoryIdToDelete(selectedRow?._id);
+          setIsModalOpen(true);
+        }} sx={{ color: 'error.main' }}>
           <Delete sx={{ mr: 1 }} /> Delete
         </MenuItem>
       </Menu>
-
       {/* Delete Confirmation Modal */}
       <WarningModal
         isOpen={isModalOpen}
         onConfirm={handleConfirmDelete}
         onCancel={() => setIsModalOpen(false)}
-        message="Are you sure you want to delete this product?"
+        message="Are you sure you want to delete this category?"
       />
     </Box>
   );

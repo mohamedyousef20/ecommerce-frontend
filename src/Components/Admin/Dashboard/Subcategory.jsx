@@ -1,108 +1,148 @@
-// src/components/category.js
-import { useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux/lib/exports';
-// src/components/categorys.js
 import React, { useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux/lib/exports';
 import {
-  Grid, Box, Checkbox, Button, Modal,
-  IconButton, Typography, Divider, Paper, CircularProgress
+  Grid, Box, Button, Modal, IconButton, Typography, Divider, Paper, CircularProgress, Stack
 } from '@mui/material';
 import { Add, Delete, Edit, Visibility } from "@mui/icons-material";
 import { Link } from 'react-router-dom';
-
+import AdminAddSubcategoryHook from '../../../customHooks/Subcategory/AdminAddSubcategoryHook';
 
 const Subcategory = () => {
+  const [open, setOpen] = useState(false);
+  const [selectedCategoryId, setSelectedCategoryId] = useState(null);
+  const [subcategory] = AdminAddSubcategoryHook();
+  const dispatch = useDispatch();
 
-  const 
+  // Handle modal open
+  const handleOpenModal = (id) => {
+    setSelectedCategoryId(id);
+    setOpen(true);
+  };
 
+  // Handle modal close
+  const handleCloseModal = () => {
+    setOpen(false);
+    setSelectedCategoryId(null);
+  };
+
+  // Handle delete category
+  const handleDelete = () => {
+    if (selectedCategoryId) {
+      // Dispatch delete action here
+      // dispatch(deleteCategory(selectedCategoryId));
+      handleCloseModal();
+    }
+  };
 
   return (
-    <Box sx={{ padding: 2, flex: 1, bgcolor: '#d0d0d238' }}>
-      <Typography variant="h4">category</Typography>
-      <Divider sx={{ marginBottom: 2 }} />
+    <Box
+      component="main"
+      sx={{
+        flex: 1,
+        padding: 4,
+        backgroundColor: '#FFFFFF',
+        borderRadius: 3,
+        boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.1)',
+        mx: 'auto', // Center the container
+        maxWidth: '1200px', // Adjust as needed
+      }}
+    >
+      {/* Header */}
+      <Box mb={3} textAlign="center">
+        <Typography
+          fontSize="1.75rem"
+          fontWeight={700}
+          color="#1976D2" // Royal Blue
+        >
+          Subcategories
+        </Typography>
+        <Typography
+          fontSize="0.875rem"
+          color="text.secondary"
+          mt={1}
+        >
+          Manage your subcategories here.
+        </Typography>
+      </Box>
 
-      {/* Add New Category Button */}
-      <Button variant="contained"
+      {/* Add New Subcategory Button */}
+      <Button
+        variant="contained"
         startIcon={<Add />}
-        color="primary" sx={{
-          display: 'flex',
-          justifyContent: 'flex-start', mb: 5
-        }}>
+        color="primary"
+        sx={{
+          mb: 4,
+          py: 1.5,
+          backgroundColor: '#1976D2', // Royal Blue
+          color: '#FFFFFF',
+          borderRadius: 2,
+          fontWeight: 600,
+          fontSize: '1rem',
+          textTransform: 'none',
+          boxShadow: '0px 4px 6px rgba(25, 118, 210, 0.2)',
+          '&:hover': {
+            backgroundColor: '#1565C0', // Darker Royal Blue
+            boxShadow: '0px 6px 8px rgba(25, 118, 210, 0.3)',
+          },
+          '&:active': {
+            backgroundColor: '#0D47A1', // Even Darker Royal Blue
+          },
+        }}
+      >
         Add New Subcategory
       </Button>
-      {/* Category Grid: This mimics the "table" layout */}
-      <Paper>
 
-        <Grid container spacing={3} sx={{ marginBottom: 2 }}>
+      {/* Subcategory Grid */}
+      <Paper sx={{ padding: 2, borderRadius: 2 }}>
+        <Grid container spacing={2} sx={{ marginBottom: 2 }}>
           {/* Header row */}
-          <Grid container item xs={12}
-            sx={{
-              display: 'flex',
-              alignItems: 'center',
-              color: '#161616',
-              justifyContent: 'flex-start',
-              bgcolor: '#d0d0d238'
-            }}>
-
-
-            <Grid item xs={2}>
+          <Grid container item xs={12} sx={{ bgcolor: '#F5F5F5', borderRadius: 2, padding: 2 }}>
+            <Grid item xs={4}>
               <Typography fontWeight="bold">Name</Typography>
             </Grid>
-            <Divider orientation="vertical" flexItem sx={{ height: 'auto' }} />
-
-            <Grid item xs={2} >
+            <Grid item xs={4}>
               <Typography fontWeight="bold">Category</Typography>
             </Grid>
-            <Divider orientation="vertical" flexItem sx={{ height: 'auto' }} />
-
-            <Grid item xs={2}>
+            <Grid item xs={4}>
               <Typography fontWeight="bold">Actions</Typography>
             </Grid>
           </Grid>
 
-
-          {/* Category Rows */}
-          {category.data ? category.data.map((category, index) => (
-            <Grid container item xs={12} key={category._id}
-
-              sx={{
-                display: 'flex', alignItems: 'center',
-                padding: 1, borderRadius: 1,
-                justifyContent: 'flex-start',
-                maxWidth: "10px",
-                overflow: 'hidden'
-              }}>
-
-              <Grid item xs={2}>
-                {/* <Typography>{category.name}</Typography> */}
-              </Grid>
-
-              <Grid item xs={1}>
-                <Typography>{category.image}</Typography>
-              </Grid>
-
-              <Grid item xs={2} sx={{ textAlign: 'center' }}>
-                <IconButton sx={{ color: 'black' }}>
-                  <Visibility sx={{ color: 'black' }} />
-                </IconButton >
-                <Link to={`/admin/update-category/${category._id}}`}>
-                  <IconButton sx={{ color: 'blue' }} >
-                    <Edit sx={{ color: 'blue' }} />
+          {/* Subcategory Rows */}
+          {subcategory && subcategory.data ? (
+            subcategory.data.map((subcategory) => (
+              <Grid container item xs={12} key={subcategory._id} sx={{ padding: 2, alignItems: 'center' }}>
+                <Grid item xs={4}>
+                  <Typography>{subcategory.name}</Typography>
+                </Grid>
+                <Grid item xs={4}>
+                  <Typography>{subcategory.category}</Typography>
+                </Grid>
+                <Grid item xs={4} sx={{ display: 'flex', gap: 1 }}>
+                  <IconButton sx={{ color: 'black' }}>
+                    <Visibility />
                   </IconButton>
-                </Link>
-                {/* <IconButton sx={{ color: 'red' }} key={category._id} onClick={() => handleOpenModal(category._id)} >
-                  <Delete sx={{ color: 'red' }} />
-                </IconButton> */}
+                  <Link to={`/admin/update-subcategory/${subcategory._id}`}>
+                    <IconButton sx={{ color: 'blue' }}>
+                      <Edit />
+                    </IconButton>
+                  </Link>
+                  <IconButton sx={{ color: 'red' }} onClick={() => handleOpenModal(subcategory._id)}>
+                    <Delete />
+                  </IconButton>
+                </Grid>
               </Grid>
-            </Grid>
-          )) : <CircularProgress />}
+            ))
+          ) : (
+            <CircularProgress sx={{ margin: 'auto', mt: 4 }} />
+          )}
         </Grid>
-
       </Paper>
 
-      {/* <Modal
+      {/* Delete Confirmation Modal */}
+      <Modal
         open={open}
-        // onClose={onClose}
+        onClose={handleCloseModal}
         aria-labelledby="delete-modal-title"
         aria-describedby="delete-modal-description"
       >
@@ -114,23 +154,28 @@ const Subcategory = () => {
             transform: 'translate(-50%, -50%)',
             width: 400,
             bgcolor: 'background.paper',
-            boxShadow: 18,
+            boxShadow: 24,
             p: 4,
-            outline: 'none'
+            borderRadius: 2,
+            outline: 'none',
           }}
         >
           <Typography id="delete-modal-title" variant="h6" component="h2">
-            are you ure
+            Are you sure?
           </Typography>
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 2 }}>
+          <Typography id="delete-modal-description" sx={{ mt: 2 }}>
+            This action cannot be undone.
+          </Typography>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 3 }}>
             <Button
-              // onClick={handleDelete}
+              onClick={handleDelete}
               sx={{
+                backgroundColor: '#ff0000',
+                color: '#FFFFFF',
+                borderRadius: 2,
                 fontWeight: 600,
-                boxShadow: "0px 4px 16px rgba(43, 52, 69, 0.1)",
                 '&:hover': {
-                  backgroundColor: '#ff0000',
-                  color: '#fff',
+                  backgroundColor: '#cc0000',
                 },
               }}
             >
@@ -139,13 +184,12 @@ const Subcategory = () => {
             <Button
               onClick={handleCloseModal}
               sx={{
+                backgroundColor: '#1976D2',
+                color: '#FFFFFF',
+                borderRadius: 2,
                 fontWeight: 600,
-                boxShadow: "0px 4px 16px rgba(43, 52, 69, 0.1)",
-                color: '#',
                 '&:hover': {
-                  backgroundColor: 'green',
-                  color: '#fff',
-
+                  backgroundColor: '#1565C0',
                 },
               }}
             >
@@ -153,12 +197,9 @@ const Subcategory = () => {
             </Button>
           </Box>
         </Box>
-      </Modal> */}
+      </Modal>
     </Box>
-  )
-}
+  );
+};
 
-export default Subcategory
-
-
-
+export default Subcategory;

@@ -18,7 +18,7 @@ const BrandCard = ({ brand }) => {
             >
                 {/* Brand Image */}
                 <img
-                    src={image}
+                    src={brand.image}
                     alt={brand.name}
                     style={{ width: '100%', height: '150px', objectFit: 'cover' }}
                 />

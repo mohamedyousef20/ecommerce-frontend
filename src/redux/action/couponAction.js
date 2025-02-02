@@ -7,10 +7,16 @@ import { useUpdateData } from "../../Hooks/useUpdateData";
 import { GET_ALL_COUPON, CREATE_COUPON, GET_ERROR, UPDATE_COUPON, GET_COUPON, DELETE_COUPON } from "../type";
 
 // get all coupons action
-export const getAllCoupon = () => async (dispatch) => {
+export const getAllCoupon = (
+    page = 1,
+    limit = '',
+    keyword = '',
+    sort = '',
+    fields = ''
+) => async (dispatch) => {
 
     try {
-        const response = await useGetData('/api/vi/coupon')
+        const response = await useGetData(`/api/vi/coupon?page=${page}&limit=${limit}&keyword=${keyword}&sort=${sort}&fields=${fields}`)
 
         dispatch({
             type: GET_ALL_COUPON,

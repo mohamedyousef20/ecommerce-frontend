@@ -3,22 +3,22 @@ import { useSelector, useDispatch } from 'react-redux';
 import {
     Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
     TablePagination, Paper, Typography, IconButton, Menu, MenuItem,
-    InputAdornment, TextField, TableSortLabel, CircularProgress,
-    Button
+    InputAdornment, TextField, CircularProgress, Button, Select, FormControl, InputLabel, Grid
 } from '@mui/material';
-import { MoreVert, Search, Edit, Delete, Add } from '@mui/icons-material';
+import { MoreVert, Search, Edit, Delete, Add, KeyboardArrowLeft, KeyboardArrowRight } from '@mui/icons-material';
 import { Link } from 'react-router-dom';
 import { deleteProduct, getAllProducts } from '../../../redux/action/productAction';
 import WarningModal from '../../Utils/WarningModal';
 import AdminDeleteProdHook from '../../../customHooks/Admin/AdminDeleteProdHook';
 import AdminGetAllProd from '../../../customHooks/Admin/AdminGetAllProd';
+import PaginationTabs from '../../Utils/Pagination';
 
 const Products = () => {
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(5);
     const [searchQuery, setSearchQuery] = useState('');
-    const [orderBy, setOrderBy] = useState('name');
-    const [order, setOrder] = useState('asc');
+    const [sortField, setSortField] = useState('name'); // Default sort field
+    const [sortOrder, setSortOrder] = useState('asc'); // Default sort order
     const [anchorEl, setAnchorEl] = useState(null);
     const [selectedRow, setSelectedRow] = useState(null);
 
@@ -32,21 +32,51 @@ const Products = () => {
         handleCancelDelete
     ] = AdminDeleteProdHook();
 
-    const [products] = AdminGetAllProd();
+    const [
+        products,
+        paginationResult,
+        onPageChange,
+        onSearch,
+        onSort,
+        setFilters
+    ] = AdminGetAllProd();
 
-    console.log('Products:', products); // Debugging: Check the structure of products
-
-    const handleRequestSort = (property) => {
-        const isAsc = orderBy === property && order === 'asc';
-        setOrder(isAsc ? 'desc' : 'asc');
-        setOrderBy(property);
+    // Handle search
+    const handleSearch = (e) => {
+        const keyword = e.target.value;
+        setSearchQuery(keyword);
+        onSearch(keyword); // Update search filter in the hook
     };
 
+    // Handle sort field change
+    const handleSortFieldChange = (field) => {
+        setSortField(field);
+        const sortString = sortOrder === 'asc' ? field : `-${field}`;
+        onSort(sortString); // Update sort filter in the hook
+    };
+
+    // Handle sort order change
+    const handleSortOrderChange = (order) => {
+        setSortOrder(order);
+        const sortString = order === 'asc' ? sortField : `-${sortField}`;
+        onSort(sortString); // Update sort filter in the hook
+    };
+
+    // Handle rows per page change
+    const handleRowsPerPageChange = (event) => {
+        const newRowsPerPage = parseInt(event.target.value, 10);
+        setRowsPerPage(newRowsPerPage); // Update the state
+        setFilters((prevFilters) => ({ ...prevFilters, limit: newRowsPerPage }));
+        setPage(0); // Reset to the first page
+    };
+
+    // Handle menu open
     const handleMenuOpen = (event, row) => {
         setAnchorEl(event.currentTarget);
         setSelectedRow(row);
     };
 
+    // Handle menu close
     const handleMenuClose = () => {
         setAnchorEl(null);
         setSelectedRow(null);
@@ -60,9 +90,9 @@ const Products = () => {
                     Object.values(row).join(' ').toLowerCase().includes(searchQuery.toLowerCase())
                 )
                 .sort((a, b) =>
-                    order === 'asc'
-                        ? a[orderBy] < b[orderBy] ? -1 : 1
-                        : a[orderBy] > b[orderBy] ? -1 : 1
+                    sortOrder === 'asc'
+                        ? a[sortField] < b[sortField] ? -1 : 1
+                        : a[sortField] > b[sortField] ? -1 : 1
                 )
             : [];
 
@@ -78,23 +108,60 @@ const Products = () => {
                     <Typography variant="h6" component="div" sx={{ mb: 2 }}>
                         Products
                     </Typography>
-                    <Button
-                        sx={{ m: 1 }}
-
-                        variant="contained"
-                        color="primary"
-                        component={Link}
-                        to="/dashboard/order/create"
-                        startIcon={<Add />}
-                    >
-                        Add New Product
-                    </Button>
+                    {/* Add New Product Button and Sort Controls */}
+                    <Grid container spacing={2} alignItems="center" sx={{ mb: 2 }}>
+                        <Grid item>
+                            <Button
+                                variant="contained"
+                                color="primary"
+                                component={Link}
+                                to="/dashboard/order/create"
+                                startIcon={<Add />}
+                            >
+                                Add New Product
+                            </Button>
+                        </Grid>
+                        {/* Sort Field Dropdown */}
+                        <Grid item>
+                            <FormControl sx={{ minWidth: 120, backgroundColor: '#f5f5f5', borderRadius: 1 }}>
+                                <InputLabel sx={{ color: '#333' }}>Sort By</InputLabel>
+                                <Select
+                                    value={sortField}
+                                    onChange={(e) => handleSortFieldChange(e.target.value)}
+                                    label="Sort By"
+                                    sx={{ height: 40 }}
+                                >
+                                    <MenuItem value="name">Name</MenuItem>
+                                    <MenuItem value="price">Price</MenuItem>
+                                    <MenuItem value="quantity">Quantity</MenuItem>
+                                    <MenuItem value="category">Category</MenuItem>
+                                    <MenuItem value="createdAt">Created At</MenuItem>
+                                </Select>
+                            </FormControl>
+                        </Grid>
+                        {/* Sort Order Dropdown */}
+                        <Grid item>
+                            <FormControl sx={{ minWidth: 120, backgroundColor: '#f5f5f5', borderRadius: 1 }}>
+                                <InputLabel sx={{ color: '#333' }}>Order</InputLabel>
+                                <Select
+                                    value={sortOrder}
+                                    onChange={(e) => handleSortOrderChange(e.target.value)}
+                                    label="Order"
+                                    sx={{ height: 40 }}
+                                >
+                                    <MenuItem value="asc">Ascending</MenuItem>
+                                    <MenuItem value="desc">Descending</MenuItem>
+                                </Select>
+                            </FormControl>
+                        </Grid>
+                    </Grid>
+                    {/* Search Bar */}
                     <TextField
                         fullWidth
                         variant="outlined"
                         placeholder="Search..."
                         value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
+                        onChange={handleSearch}
                         InputProps={{
                             startAdornment: (
                                 <InputAdornment position="start">
@@ -104,20 +171,13 @@ const Products = () => {
                         }}
                         sx={{ mb: 2 }}
                     />
+                    {/* Products Table */}
                     <TableContainer>
                         <Table sx={{ minWidth: 750 }}>
                             <TableHead>
                                 <TableRow>
                                     <TableCell>Image</TableCell>
-                                    <TableCell>
-                                        <TableSortLabel
-                                            active={orderBy === 'name'}
-                                            direction={orderBy === 'name' ? order : 'asc'}
-                                            onClick={() => handleRequestSort('name')}
-                                        >
-                                            Name
-                                        </TableSortLabel>
-                                    </TableCell>
+                                    <TableCell>Name</TableCell>
                                     <TableCell>Category</TableCell>
                                     <TableCell>Price</TableCell>
                                     <TableCell>Quantity</TableCell>
@@ -163,20 +223,16 @@ const Products = () => {
                             </TableBody>
                         </Table>
                     </TableContainer>
-                    <TablePagination
-                        rowsPerPageOptions={[5, 10, 25]}
-                        component="div"
-                        count={filteredRows.length}
-                        rowsPerPage={rowsPerPage}
-                        page={page}
-                        onPageChange={(event, newPage) => setPage(newPage)}
-                        onRowsPerPageChange={(event) => {
-                            setRowsPerPage(parseInt(event.target.value, 10));
-                            setPage(0);
-                        }}
-                    />
                 </Box>
+                {/* Pagination */}
+                <PaginationTabs
+                    paginationResult={paginationResult}
+                    onPageChange={onPageChange}
+                    rowsPerPage={rowsPerPage}
+                    onRowsPerPageChange={handleRowsPerPageChange}
+                />
             </Paper>
+            {/* Actions Menu */}
             <Menu
                 anchorEl={anchorEl}
                 open={Boolean(anchorEl)}
@@ -192,6 +248,7 @@ const Products = () => {
                     <Delete sx={{ mr: 1 }} /> Delete
                 </MenuItem>
             </Menu>
+            {/* Delete Confirmation Modal */}
             <WarningModal
                 isOpen={isModalOpen}
                 onConfirm={handleConfirmDelete}

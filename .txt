@@ -1,12 +1,18 @@
 
 TODO 
 ##########################
-1-make un logged nav bar is responsive
-2-pagination
+
 3-check product and brand and announcement
+3- in useEffect change res.data in dependency of array 
+
+7- profile image in nav bar 
 - push 15 item for all modal in you data base after upload it to server
--if update order payment to card navigate to payment page
-- if add same product with same color update quantity
+
+9-if update order payment to card navigate to payment page
+
+==========================
+every notification must be like the login page
+==========================
 ##########################
 
 
@@ -361,3 +367,112 @@ const AdminListPage = () => {
 export default AdminListPage;
 
 
+
+
+import React, { useEffect, useState } from 'react';
+import {
+  AppBar, Toolbar, IconButton, Typography, InputBase, Box, Avatar,
+  Menu, MenuItem, Button, Badge
+} from '@mui/material';
+import {
+  Menu as MenuIcon, Search as SearchIcon, ShoppingCart as ShoppingCartIcon,
+  FavoriteRounded
+} from '@mui/icons-material';
+import { alpha, styled } from '@mui/system';
+import { useNavigate } from 'react-router-dom';
+import GetUserCartHook from '../../customHooks/Cart/get-user-cart-hook';
+import WarningModal from './WarningModal';
+import GetProductSearchHook from '../../customHooks/Product/GetProductSearchHook';
+import Notification from '../../customHooks/useNotification';
+import GetAllWishListProduct from '../../customHooks/Wishlist/GetAllWishListProduct';
+
+const primaryColor = '#2563eb';
+const secondaryColor = '#1e40af';
+const textColor = '#ffffff';
+
+const Search = styled('div')({
+  position: 'relative',
+  borderRadius: '8px',
+  backgroundColor: alpha('#f8fafc', 0.15),
+  '&:hover': {
+    backgroundColor: alpha('#f8fafc', 0.25),
+    transition: 'all 0.3s ease'
+  },
+  marginLeft: 0,
+  width: '100%',
+  display: 'flex',
+  alignItems: 'center',
+  padding: '8px 16px',
+  color: textColor,
+  boxShadow: '0 1px 2px rgba(0,0,0,0.1)'
+});
+
+const NavbarLogged = () => {
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [user, setUser] = useState('');
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const navigate = useNavigate();
+  const [itemsNum] = GetUserCartHook();
+  const [prodInWishlist] = GetAllWishListProduct();
+  
+  useEffect(() => {
+    if (localStorage.getItem('user')) {
+      setUser(JSON.parse(localStorage.getItem('user')));
+    }
+  }, []);
+  
+  const handleNavigate = (path) => {
+    navigate(path);
+    setMobileMenuOpen(false);
+  };
+
+  return (
+    <AppBar position="sticky" sx={{ backgroundColor: primaryColor, boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>
+      <Toolbar sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1 }}>
+        {/* Top Section - Logo */}
+        <Box sx={{ width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <Typography
+            variant="h5"
+            sx={{ fontWeight: 'bold', cursor: 'pointer', color: textColor }}
+            onClick={() => handleNavigate('/')}
+          >
+            AZARM.
+          </Typography>
+          {/* Middle Section - Cart, Wishlist, Avatar */}
+          <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
+            <IconButton color="inherit" onClick={() => handleNavigate('/wishlist')}>
+              <Badge badgeContent={prodInWishlist?.numberOfLikedProduct || '0'} color="error">
+                <FavoriteRounded sx={{ color: textColor }} />
+              </Badge>
+            </IconButton>
+            <IconButton color="inherit" onClick={() => handleNavigate('/cart')}>
+              <Badge badgeContent={itemsNum || '0'} color="error">
+                <ShoppingCartIcon sx={{ color: textColor }} />
+              </Badge>
+            </IconButton>
+            <IconButton onClick={() => setAnchorEl(true)}>
+              <Avatar src={user?.profileImage || '/default-avatar.png'} alt={user?.name || 'User'} sx={{ width: 32, height: 32 }} />
+            </IconButton>
+          </Box>
+        </Box>
+
+        {/* Search Bar */}
+        <Search>
+          <SearchIcon sx={{ color: textColor, marginRight: 1 }} />
+          <InputBase placeholder="Search products..." inputProps={{ 'aria-label': 'search' }} />
+        </Search>
+
+        {/* Bottom Section - Navigation Menu */}
+        <Box sx={{ display: 'flex', gap: 2, justifyContent: 'center', width: '100%' }}>
+          <Button sx={{ color: textColor }} onClick={() => handleNavigate('/')}>Home</Button>
+          <Button sx={{ color: textColor }} onClick={() => handleNavigate('/product')}>Products</Button>
+          <Button sx={{ color: textColor }} onClick={() => handleNavigate('/brand')}>Brands</Button>
+          <Button sx={{ color: textColor }} onClick={() => handleNavigate('/category')}>Categories</Button>
+        </Box>
+      </Toolbar>
+    </AppBar>
+  );
+};
+
+export default NavbarLogged;
+mobile 

@@ -4,15 +4,40 @@ import { getAllProductInWishList } from '../../redux/action/wishlistAction';
 
 const GetAllWishListProduct = () => {
     const dispatch = useDispatch();
-    const prodInWishlist = useSelector((state) => state.wishListReducer.allProductInWishList);
     const [isLoading, setIsLoading] = useState(true);
-    // Fetch wishlist products on component mount
+    const [filters, setFilters] = useState({ page: 1, limit: '', keyword: '', sort: '', fields: '' });
+
+    // Fetch wishlist products on component mount]
+
+
+
     useEffect(() => {
-        dispatch(getAllProductInWishList()).then(() => setIsLoading(false));
+        dispatch(getAllProductInWishList(filters.page, 
+            filters.limit, 
+            filters.keyword, 
+            filters.sort,
+             filters.fields))
+             .then(() => setIsLoading(false));
 
-    },[dispatch]);
+    }, [dispatch]);
 
-    return [prodInWishlist, isLoading, setIsLoading]
+    const prodInWishlist = useSelector((state) => state.wishListReducer.allProductInWishList);
+    let paginationResult = prodInWishlist?.paginationResult || {};
+
+    const onPageChange = (newPage) => {
+        setFilters((prev) => ({ ...prev, page: newPage }));
+    };
+
+    const onSearch = (keyword) => {
+        setFilters((prev) => ({ ...prev, keyword, page: 1 }));
+    };
+
+    const onSort = (sort) => {
+        setFilters((prev) => ({ ...prev, sort }));
+    };
+
+
+    return [prodInWishlist, isLoading, setIsLoading, paginationResult, onPageChange]
 }
- 
+
 export default GetAllWishListProduct

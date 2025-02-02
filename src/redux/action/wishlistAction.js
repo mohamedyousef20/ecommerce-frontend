@@ -68,10 +68,16 @@ export const updateProductWishListStatus = (productId) => async (dispatch) => {
 
 
 // add Product TO WishList action
-export const getAllProductInWishList = () => async (dispatch) => {
+export const getAllProductInWishList = (
+    page = 1,
+    limit = '',
+    keyword = '',
+    sort = '',
+    fields = ''
+) => async (dispatch) => {
 
     try {
-        const response = await useGetDataToken('/api/vi/wishlist')
+        const response = await useGetDataToken(`/api/vi/wishlist?page=${page}&keyword=${keyword}&sort=${sort}&fields=${fields}`)
 
         dispatch({
             type: GET_ALL_PRODUCT_IN_WHISH_LIST,

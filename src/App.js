@@ -36,7 +36,7 @@ import VerifyResetCode from './Pages/Auth/VerifyResetCode';
 import AdminEditCouponPage from './Pages/Admin/Coupon/AdminEditCouponPage';
 import AdminAddCategoryPage from './Pages/Admin/Category/AdminAddCategoryPage';
 import AdminAddProductPage from './Pages/Admin/Product/AdminAddProductPage';
-import AddUserPage from './Pages/Admin/User/AdminCreateUserPage';
+import AddUserPage from './Pages/Admin/User/AdminAddUserPage';
 import ReviewSection from './Components/Review/UserAddReview';
 import ProfilePage from './Pages/User/ProfilePage';
 import WhishListPage from './Pages/Wishlist/WhishListPage';

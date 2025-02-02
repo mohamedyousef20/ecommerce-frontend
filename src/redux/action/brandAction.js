@@ -13,10 +13,16 @@ import {
 
 
 // get all category action
-export const getAllBrand = () => async (dispatch) => {
+export const getAllBrand = (
+    page = 1,
+    
+    keyword = '',
+    sort = '',
+    fields = ''
+) => async (dispatch) => {
 
     try {
-        const response = await useGetData('/api/vi/brand')
+        const response = await useGetData(`/api/vi/brand?page=${page}&keyword=${keyword}&sort=${sort}&fields=${fields}`)
 
         dispatch({
             type: GET_ALL_BRAND,

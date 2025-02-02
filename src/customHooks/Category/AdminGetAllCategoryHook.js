@@ -1,34 +1,39 @@
-import { useEffect, useState } from 'react'
-import { getAllCategory, getAllCategoryWithPagination } from '../../redux/action/categoryAction';
+import { useEffect, useState } from 'react';
+import { getAllCategoryWithPagination } from '../../redux/action/categoryAction';
 import { useDispatch, useSelector } from 'react-redux/lib/exports';
-const AdminGetAllCategoryHook = () => {
 
-    const [loading,setLoading] = useState(false)
+const AdminGetAllCategoryHook = () => {
+    const [loading, setLoading] = useState(false);
+    const [filters, setFilters] = useState({ page: 1, limit: 5, keyword: '', sort: '', fields: '' });
 
     const dispatch = useDispatch();
 
     useEffect(() => {
-        dispatch(getAllCategory());
-    }, []
-    )
-    // get last category from redux
-    const category = useSelector(state => state.categoryReducer.allCategory);
-    // get last loading from redux
+        dispatch(getAllCategoryWithPagination(
+            filters.page,
+            filters.limit,
+            filters.keyword,
+            filters.sort,
+            filters.fields
+        ));
+    }, [filters, dispatch]);
 
-    let paginationResult = 0;
-    try {
-        if (category.paginationResult) { paginationResult = category.paginationResult };
+    const category = useSelector((state) => state.categoryReducer.allCategory);
+    let paginationResult = category?.paginationResult || {};
 
+    const onPageChange = (newPage) => {
+        setFilters((prev) => ({ ...prev, page: newPage }));
+    };
 
-    } catch (err) { }
+    const onSearch = (keyword) => {
+        setFilters((prev) => ({ ...prev, keyword, page: 1 }));
+    };
 
+    const onSort = (sort) => {
+        setFilters((prev) => ({ ...prev, sort }));
+    };
 
-    const onPageChange = (paginationResult) => {
-        setLoading(true)
-        dispatch(getAllCategoryWithPagination(paginationResult))
-        setLoading(false)
-    }
-    return [category, loading, onPageChange, paginationResult];
-}
+    return [category, loading, onPageChange, paginationResult, onSearch, onSort, setFilters];
+};
 
-export default AdminGetAllCategoryHook
+export default AdminGetAllCategoryHook;

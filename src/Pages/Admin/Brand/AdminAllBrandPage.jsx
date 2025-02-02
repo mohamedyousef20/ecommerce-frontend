@@ -6,50 +6,22 @@ import NavbarLogged from '../../../Components/Utils/NavbarLogged'
 
 const AdminAllBrandPage = () => {
   return (
-    <Box sx={{
-      backgroundColor: '#F5F5F5', // Neutral Color
-      minHeight: '100vh'
-    }}>
-      <Box sx={{
-        display: 'flex',
-        flexDirection: 'column'
-      }}>
-        <Box sx={{
-          display: 'flex',
-          flex: 1,
-        }}>
-          {/* Sidebar */}
-          <Box sx={{
-            width: 240,
-            backgroundColor: '#1976D2', // Primary Color
-            color: 'white',
-            minHeight: 'calc(100vh - 64px)',
-            position: 'fixed',
-            left: 0,
-            top: 64,
-            zIndex: 1
-          }}>
-            <AdminSideBar />
-          </Box>
-          {/* Main content */}
-          <Box sx={{
-            flex: 1,
-            ml: '240px',
-            p: 3
-          }}>
-            <Paper sx={{
-              p: 3,
-              backgroundColor: 'white',
-              borderRadius: 2,
-              boxShadow: '0px 4px 16px rgba(43, 52, 69, 0.1)'
-            }}>
-         
-              <Brand />
-            </Paper>
-          </Box>
-        </Box>
+    <Box sx={{ display: 'flex', background: '#d0d0d238', gap: 1 }}>
+      {/* Sidebar */}
+      <AdminSideBar />
+      {/* Main Content */}
+      <Box
+        sx={{
+          flexGrow: 1,
+          padding: '20px',
+          transition: 'margin 0.3s ease',
+        }}
+      >
+        <Brand />
+
       </Box>
     </Box>
+
   );
 }
 

@@ -1,26 +1,27 @@
 import { Box, Grid, Card, CardMedia, CardContent, Typography, IconButton, CircularProgress, Alert } from '@mui/material';
 import FavoriteIcon from '@mui/icons-material/Favorite';
-import {  updateProductWishListStatus, getAllProductInWishList } from '../../redux/action/wishlistAction';
+import { updateProductWishListStatus, getAllProductInWishList } from '../../redux/action/wishlistAction';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux/lib/exports';
 import { Link } from "react-router-dom";
 import GetAllWishListProduct from '../../customHooks/Wishlist/GetAllWishListProduct';
+import PaginationTabs from '../../Components/Utils/Pagination';
 
 const WishListPage = () => {
   const dispatch = useDispatch();
 
-  const [prodInWishlist, isLoading, setIsLoading] = GetAllWishListProduct();
+  const [prodInWishlist, isLoading, setIsLoading, paginationResult, onPageChange] = GetAllWishListProduct();
 
   console.log(prodInWishlist)
 
   const handleWishlistClick = async (productId) => {
-    console.log('id',productId)
+    console.log('id', productId)
     setIsLoading(true);
-    await dispatch(updateProductWishListStatus({productId}));
+    await dispatch(updateProductWishListStatus({ productId }));
     setIsLoading(false);
     window.location.reload(true)
   };
-  console.log('prodInWishlist' ,prodInWishlist)
+  console.log('prodInWishlist', prodInWishlist)
   return (
     <Box sx={{ padding: 3 }}>
       {isLoading ? (
@@ -67,6 +68,7 @@ const WishListPage = () => {
           ))}
         </Grid>
       )}
+      <PaginationTabs paginationResult={paginationResult} onPageChange={onPageChange} />
     </Box>
 
   );
