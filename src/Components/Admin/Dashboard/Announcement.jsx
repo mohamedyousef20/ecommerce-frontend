@@ -2,11 +2,11 @@ import { useEffect, useState } from 'react';
 import {
     Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
     TablePagination, Paper, Typography, IconButton, Chip, Menu, MenuItem,
-    InputAdornment, TextField, TableSortLabel, Button, Select, FormControl, InputLabel, Grid
+    InputAdornment, TextField, TableSortLabel, Button, Select, FormControl, InputLabel, Grid, Switch
 } from '@mui/material';
 import { MoreVert, Search, Edit, Delete, Add } from '@mui/icons-material';
 import { Link } from 'react-router-dom';
-import { deleteAnnouncement, getAllAnnouncement } from '../../../redux/action/announcementAction';
+import { deleteAnnouncement, getAllAnnouncement, activeAnnouncement } from '../../../redux/action/announcementAction';
 import WarningModal from '../../Utils/WarningModal';
 import PaginationTabs from '../../Utils/Pagination';
 import { useDispatch, useSelector } from 'react-redux/lib/exports';
@@ -95,6 +95,20 @@ const Announcement = () => {
         setIsModalOpen(false);
         await dispatch(deleteAnnouncement(itemId));
         window.location.reload(true);
+    };
+
+    // Handle toggle active status
+    const handleToggleActive = async (announcement) => {
+        const updatedStatus = !announcement.isActive;
+        await dispatch(activeAnnouncement(announcement._id, { isActive: updatedStatus }));
+        // Refresh the data after updating the status
+        dispatch(getAllAnnouncement(
+            filters.page,
+            filters.limit,
+            filters.keyword,
+            filters.sort,
+            filters.fields
+        ));
     };
 
     // Filter and sort logic
@@ -208,10 +222,10 @@ const Announcement = () => {
                                                 <TableCell>{announcement.title}</TableCell>
                                                 <TableCell>{announcement.desc}</TableCell>
                                                 <TableCell>
-                                                    <Chip
-                                                        label={announcement.isActive ? 'Yes' : 'No'}
-                                                        color={announcement.isActive ? 'success' : 'default'}
-                                                        size="small"
+                                                    <Switch
+                                                        checked={announcement.isActive}
+                                                        onChange={() => handleToggleActive(announcement)}
+                                                        color="primary"
                                                     />
                                                 </TableCell>
                                                 <TableCell>

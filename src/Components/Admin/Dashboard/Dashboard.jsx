@@ -21,7 +21,7 @@ import AdminGetAllBrandHook from '../../../customHooks/Admin/Brand/AdminGetAllBr
 import AdminSideBar from '../AdminSideBar';
 
 const Dashboard = () => {
-    const [products] = AdminGetAllProd();//TODO make all like this 
+    const [products] = AdminGetAllProd();
     const [announcements] = GetAllAnnouncementHook();
     const [category] = AdminGetAllCategoryHook();
     const [coupons] = AdminGetAllCouponHook();
@@ -41,7 +41,8 @@ const Dashboard = () => {
     });
     // Update state when data is available
     useEffect(() => {
-        setDashboardData({
+        // Only update state if data actually changes
+        const newData = {
             users: users?.numberOfDocuments || dashboardData.users,
             products: products?.numberOfDocuments || dashboardData.products,
             orders: orders?.numberOfDocuments || dashboardData.orders,
@@ -49,9 +50,21 @@ const Dashboard = () => {
             brands: brands?.numberOfDocuments || dashboardData.brands,
             categories: category?.numberOfDocuments || dashboardData.categories,
             coupons: coupons?.numberOfDocuments || dashboardData.coupons,
-            // subcategories: dashboardData.subcategories, // Keep static value
-        });
-    }, [users, products, orders, announcements, brands, coupons, category]);
+        };
+
+        // Compare old and new data to prevent unnecessary updates
+        if (
+            newData.users !== dashboardData.users ||
+            newData.products !== dashboardData.products ||
+            newData.orders !== dashboardData.orders ||
+            newData.announcements !== dashboardData.announcements ||
+            newData.brands !== dashboardData.brands ||
+            newData.categories !== dashboardData.categories ||
+            newData.coupons !== dashboardData.coupons
+        ) {
+            setDashboardData(newData);
+        }
+    }, [users, products, orders, announcements, brands, coupons, category, dashboardData]);
 
 
     // Example data

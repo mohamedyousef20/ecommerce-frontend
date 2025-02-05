@@ -87,7 +87,7 @@ const GetProductList = () => {
         onCategoryChange,
         onBrandChange,
         onPriceRangeChange,
-        filters, // Return filters for use in the UI
+        filters, 
     ];
 };
 

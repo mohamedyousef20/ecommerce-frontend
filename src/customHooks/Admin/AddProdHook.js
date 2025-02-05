@@ -52,10 +52,10 @@ const AddProdHook = () => {
 
     // Joi Schema for Validation
     const schema = Joi.object({
-        prodName: Joi.string().min(2).max(50).required().messages({
+        prodName: Joi.string().min(2).max(150).required().messages({
             'string.empty': 'Product name is required',
             'string.min': 'Product name must be at least 2 characters',
-            'string.max': 'Product name must be less than 50 characters',
+            'string.max': 'Product name must be less than 150 characters',
         }),
         desc: Joi.string().min(10).required().messages({
             'string.empty': 'Description is required',

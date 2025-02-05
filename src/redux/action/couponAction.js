@@ -16,8 +16,8 @@ export const getAllCoupon = (
 ) => async (dispatch) => {
 
     try {
-        const response = await useGetData(`/api/vi/coupon?page=${page}&limit=${limit}&keyword=${keyword}&sort=${sort}&fields=${fields}`)
-
+        const response = await useGetDataToken(`/api/vi/coupon?page=${page}&limit=${limit}&keyword=${keyword}&sort=${sort}&fields=${fields}`)
+console.log(response)
         dispatch({
             type: GET_ALL_COUPON,
             payload: response,

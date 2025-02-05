@@ -117,7 +117,6 @@ function App() {
             <Route exact path='/' element={<HomePage />} />
 
             <Route exact path='/profile' element={<ProfilePage />} />
-            {/* <Route exact path='/DashboardTable' element={<DashboardTable />} /> */}
 
             <Route exact path='/category' element={<CategoryPage />} />
             <Route exact path='/brand' element={<BrandPage />} />

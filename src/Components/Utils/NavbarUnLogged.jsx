@@ -63,7 +63,7 @@ const NavbarUnLogged = () => {
                     sx={{ fontWeight: 'bold', cursor: 'pointer', color: '#fff' }}
                     onClick={() => handleNavigate('/')}
                 >
-                    AZARM.
+                    Heruko.
                 </Typography>
 
                 {/* Search Bar */}

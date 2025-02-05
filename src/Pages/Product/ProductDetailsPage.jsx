@@ -3,14 +3,11 @@ import {
     Box,
     Button,
     Container,
-    CardMedia,
     TextField,
     IconButton,
     Stack,
     Typography,
-    Snackbar,
     useTheme,
-
     CircularProgress,
 } from "@mui/material";
 import Navbar from "../../Components/Utils/NavbarLogged";
@@ -26,113 +23,128 @@ import ReviewSection from "../../Components/Review/UserAddReview";
 import { useDispatch } from "react-redux/lib/exports";
 import { AddProductToCart } from "../../redux/action/cartAction";
 import 'swiper/css/pagination';
-import '../../Pages/Admin/Utils/swiper.css'
-import { Pagination } from 'swiper/modules';
+import 'swiper/css/navigation';
+import '../../Pages/Admin/Utils/swiper.css';
+import { Pagination, Navigation, Autoplay } from 'swiper/modules';
 
 const ProductDetailsPage = () => {
     const theme = useTheme();
-
     const navigate = useNavigate();
-
-    const { id } = useParams(); // Get product ID from URL params
-    const [item] = GetProdDetails(id); // Fetch product details using custom hook
-    const [colors, setColors] = useState([]); // Update state variable name to 'colors'
+    const { id } = useParams();
+    const [item] = GetProdDetails(id);
+    const [colors, setColors] = useState([]);
     const [quantity, setQuantity] = useState(1);
-    const [loading, setLoading] = useState();
+    const [loading, setLoading] = useState(false);
     const dispatch = useDispatch();
-    console.log(item) // Update console log to 'colors'
 
     const handleColorClick = (color) => {
-        setColors((prevColors) => {
-            if (prevColors.includes(color)) {
-                return prevColors.filter(c => c !== color); // Remove color if already selected
-            } else {
-                return [...prevColors, color]; // Add color if not selected
-            }
-        });
+        setColors((prevColors) =>
+            prevColors.includes(color)
+                ? prevColors.filter(c => c !== color)
+                : [...prevColors, color]
+        );
     };
 
     const handleSubmit = async () => {
-        if (item.colors && item.colors.length >= 1) {
-            if (colors.length === 0) {
-                Notification("Please choose a color", "warn");
-                return;
-            }
+        if (item.colors?.length >= 1 && colors.length === 0) {
+            Notification("Please choose a color", "warn");
+            return;
         }
 
-        setLoading(true); // Start loading animation
-        dispatch(AddProductToCart({
+        setLoading(true);
+         await dispatch(AddProductToCart({
             productId: id,
             color: colors,
             quantity: quantity
-        }))
-
-        setLoading(false); // Stop loading animation
+        }));
+        setLoading(false);
 
         Notification("Product added to cart", "success");
-        navigate('/product')
+        navigate('/product');
     };
 
-    const handleIncrease = () => {
-        setQuantity((prevQuantity) => prevQuantity + 1);
-    };
-
-    const handleDecrease = () => {
-        setQuantity((prevQuantity) => (prevQuantity > 1 ? prevQuantity - 1 : 1));
-    };
+    const handleIncrease = () => setQuantity((prev) => prev + 1);
+    const handleDecrease = () => setQuantity((prev) => (prev > 1 ? prev - 1 : 1));
 
     return (
         <>
-            <Container maxWidth="lg" sx={{ paddingY: 3, bgcolor: "#f5f5f5" }}>
+            <Container maxWidth="lg" sx={{ paddingY: 3, bgcolor: theme.palette.background.default }}>
                 <Stack
-                    direction={{ xs: "column", md: "row" }} // Make it column on small screens
+                    direction={{ xs: "column", md: "row" }}
                     spacing={3}
                     justifyContent="space-between"
                 >
                     {/* Product Image Section */}
+                    {/* Product Image Section */}
                     <Box
-                        bgcolor="#f5f5f5"
-                        p={2}
-                        flex={2}
-                        width="100%" // Make it full width on small screens
-                        display="flex"
-                        justifyContent="center"
-                        alignItems="center"
-                        sx={{ height: { xs: 400, md: 500 }, overflow: 'hidden' }} // Adjust height
+                        sx={{
+                            width: { xs: '100%', md: '600px' },  // Increased width
+                            height: { xs: '400px', md: '650px' }, // Adjusted height
+                            borderRadius: 2,
+                            overflow: 'hidden',
+                            boxShadow: 3,
+                            position: 'relative', // For absolute positioning of nav buttons
+                        }}
                     >
                         <Swiper
-                            direction={'vertical'}
                             pagination={{
                                 clickable: true,
+                                dynamicBullets: true,
+                                renderBullet: (index, className) => {
+                                    return `<span class="${className}" 
+                    style="background-color: ${theme.palette.primary.main};
+                    width: 12px; 
+                    height: 12px;
+                    margin: 0 8px !important;
+                    opacity: 0.5;
+                    transition: all 0.3s ease;">`;
+                                },
                             }}
-                            disabled={true}
-                            loop={true}
-                            modules={[Pagination]}
-                            className="mySwiper"
-
+                            navigation={{
+                                nextEl: '.swiper-button-next',
+                                prevEl: '.swiper-button-prev',
+                            }}
+                            autoplay={false}
+                            loop
+                            modules={[Pagination, Navigation, Autoplay]}
+                            style={{
+                                width: '100%',
+                                height: '100%',
+                                '--swiper-navigation-size': '32px', // Larger nav arrows
+                                '--swiper-navigation-color': theme.palette.primary.main,
+                            }}
                         >
                             {item.images?.map((image, index) => (
-                                <SwiperSlide key={index}>
-                                    <img src={image.url} alt={`Product Image ${index + 1}`} style={{ width: '100%', height: '98%', borderRadius: '2px' }} />
+                                <SwiperSlide key={index} style={{ width: '100%', height: '100%' }}>
+                                    <img
+                                        src={image.url}
+                                        alt={`Product Image ${index + 1}`}
+                                        style={{
+                                            width: '100%',
+                                            height: '100%',
+                                            objectFit: 'contain', // Changed to contain for better image display
+                                            padding: '20px', // Add some spacing around images
+                                        }}
+                                    />
                                 </SwiperSlide>
                             ))}
 
+                            {/* Custom Navigation Buttons */}
+                            <div className="swiper-button-prev"
+                                style={{ left: '10px', padding: '20px' }}></div>
+                            <div className="swiper-button-next"
+                                style={{ right: '10px', padding: '20px' }}></div>
                         </Swiper>
                     </Box>
-
                     {/* Product Details Section */}
                     <Box
-                        display="flex"
-                        flexDirection="column"
-                        bgcolor="#fff"
                         flex={1}
-                        lineHeight={2}
+                        bgcolor={theme.palette.background.paper}
                         p={3}
                         borderRadius={2}
-                        boxShadow={2}
-                        alignItems={'center'}
+                        boxShadow={3}
                     >
-                        <Typography variant="h5" fontWeight={600} gutterBottom>
+                        <Typography variant="h4" fontWeight={700} gutterBottom>
                             {item.name}
                         </Typography>
                         <Typography variant="body1" color="textSecondary" paragraph>
@@ -140,81 +152,76 @@ const ProductDetailsPage = () => {
                         </Typography>
 
                         {/* Price Section */}
-                        <Stack
-                            direction="row"
-                            alignItems="center"
-                            justifyContent="flex-start"
-                            gap={1}
-                            mb={2}
-                        >
-                            <Typography variant="h6" fontWeight={600} color="#0A7DFF">
-                                {item.price}
-                            </Typography>
-                            <Typography variant="subtitle2" color="textSecondary">
-                                EGP
-                            </Typography>
+                        <Stack direction="row" alignItems="center" spacing={1} mb={2}>
+                            {item.priceAfterDiscount ? (
+                                <>
+                                    <Typography variant="h5" fontWeight={700} color="primary">
+                                        {item.priceAfterDiscount} EGP
+                                    </Typography>
+                                    <Typography
+                                        variant="body1"
+                                        color="text.secondary"
+                                        sx={{ textDecoration: 'line-through' }}
+                                    >
+                                        {item.price} EGP
+                                    </Typography>
+                                </>
+                            ) : (
+                                <Typography variant="h5" fontWeight={700} color="primary">
+                                    {item.price} EGP
+                                </Typography>
+                            )}
                         </Stack>
 
                         {/* Available Colors */}
-
-                        <Stack direction="row" spacing={2} mb={2}
-                            justifyContent={'flex-start'}
-                            alignItems={'center'}
-                        >
-                            {item.colors && item.colors.length > 0 && (
-                                <Typography variant="h6" fontWeight={600} mb={2}>
+                        {item.colors?.length > 0 && (
+                            <Stack direction="row" spacing={2} mb={2} alignItems="center">
+                                <Typography variant="h6" fontWeight={600}>
                                     Colors:
                                 </Typography>
-                            )}
-                            {item.colors && item.colors.map((col, index) => (
-                                <Box
-                                    key={index}
-                                    onClick={() => handleColorClick(col)}
-                                    height={25}
-                                    width={25}
-                                    borderRadius="50%"
-                                    bgcolor={col}
-                                    sx={{
-                                        cursor: "pointer",
-                                        border: colors.includes(col) ? "3px solid #0A7DFF" : "none",
-                                        transition: "border 0.3s ease",
-                                    }}
-                                />
-                            ))}
-                        </Stack>
+                                {item.colors.map((col, index) => (
+                                    <Box
+                                        key={index}
+                                        onClick={() => handleColorClick(col)}
+                                        sx={{
+                                            height: 30,
+                                            width: 30,
+                                            borderRadius: '50%',
+                                            bgcolor: col,
+                                            cursor: 'pointer',
+                                            border: colors.includes(col) ? '3px solid #0A7DFF' : 'none',
+                                            transition: 'border 0.3s ease',
+                                            '&:hover': { transform: 'scale(1.1)' },
+                                        }}
+                                    />
+                                ))}
+                            </Stack>
+                        )}
 
                         {/* Quantity Selection */}
-                        <Typography variant="body1" fontWeight={600} mb={1}>
-                            Quantity:
-                        </Typography>
+                       
                         <Stack direction="row" spacing={2} alignItems="center" mb={2}>
-                            <IconButton onClick={handleDecrease} color="primary">
+                            <IconButton onClick={handleDecrease} color="primary" sx={{ border: '1px solid #ddd' }}>
                                 <RemoveIcon />
                             </IconButton>
                             <TextField
                                 value={quantity}
                                 type="number"
-                                inputProps={{
-                                    min: 1,
-                                    style: { textAlign: "center", fontSize: "1rem" },
-                                }}
+                                inputProps={{ min: 1, style: { textAlign: 'center' } }}
                                 variant="outlined"
                                 size="small"
-                                sx={{ width: 60 }}
+                                sx={{ width: 80 }}
                             />
-                            <IconButton onClick={handleIncrease} color="primary">
+                            <IconButton onClick={handleIncrease} color="primary" sx={{ border: '1px solid #ddd' }}>
                                 <AddIcon />
                             </IconButton>
                         </Stack>
 
                         {/* Rating Section */}
                         <Stack direction="row" alignItems="center" spacing={1} mb={2}>
+                            <StarOutlinedIcon sx={{ color: '#fbc500' }} />
                             <Typography variant="h6" fontWeight={600}>
-                                {item.ratingsAverage}
-                            </Typography>
-                            <StarOutlinedIcon sx={{ color: "#fbc500" }} />
-                            <Typography variant="body2" color="textSecondary">
-                                ({item.numberOfRating} Reviews)
+                                {item.ratingsAverage} ({item.numberOfRating} Reviews)
                             </Typography>
                         </Stack>
 
@@ -225,20 +232,22 @@ const ProductDetailsPage = () => {
                             color="primary"
                             fullWidth
                             sx={{
-                                fontWeight: 600,
-                                padding: "12px",
-                                "&:hover": { bgcolor: "#0056b3", boxShadow: 2 },
+                                fontWeight: 700,
+                                padding: '12px',
+                                borderRadius: '8px',
+                                '&:hover': { bgcolor: '#0056b3', transform: 'scale(1.02)' },
+                                transition: 'all 0.3s ease',
                             }}
                             disabled={loading}
                         >
-                            {loading ? "Adding..." : "Add to Cart"}
+                            {loading ? <CircularProgress size={24} /> : "Add to Cart"}
                         </Button>
                     </Box>
                 </Stack>
 
+                {/* Review Section */}
                 <ReviewSection />
             </Container>
-
             <Footer />
         </>
     );

@@ -46,7 +46,6 @@ const AdminGetAllBrandHook = () => {
         // console.log(e)
     }
 
-    return [brands, paginationResult, onPageChange, onSearch, onSort, setFilters]
+    return [brands, loading, paginationResult, onPageChange, onSearch, onSort, setFilters]
 }
-
 export default AdminGetAllBrandHook

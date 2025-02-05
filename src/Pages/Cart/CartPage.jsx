@@ -25,10 +25,9 @@ const CartPage = () => {
         handleCancelDelete,
         handleConfirmDelete
     ] = GetUserCartHook();
-
     // Check if cart is empty
     const isCartEmpty = !response.data?.cartItem || response.data.cartItem.length === 0;
-
+console.log(response)
     return (
         <Box>
             <Stack direction={{ xs: 'column', md: 'row' }} m={2} gap={2} justifyContent={'center'} alignItems={'center'}>
@@ -68,17 +67,17 @@ const CartPage = () => {
                                 <Grid item xs={12} md={3} display="flex" justifyContent="center" alignItems="center">
                                     <CardMedia
                                         component="img"
-                                        image={item.imageCover}
+                                        image={item?.product?.imageCover}
                                         sx={{
-                                            width: '80%',
+                                            width: '60%',
                                             height: '80%',
                                             objectFit: 'cover',
                                             borderRadius: 1,
+                                            bgcolor:'#151515',
                                             maxWidth: 200,
                                         }}
                                     />
                                 </Grid>
-
                                 <Grid item xs={12} md={7}>
                                     <Stack direction="column" spacing={1} sx={{ padding: { xs: 2, md: 3 }, fontSize: '0.9rem' }}>
                                         <Stack direction="column" spacing={1}>
@@ -87,7 +86,7 @@ const CartPage = () => {
                                                     Product:
                                                 </Typography>
                                                 <Typography variant="body1" color="#0009" fontWeight={500}>
-                                                    {item.product}
+                                                    {item.product.name}
                                                 </Typography>
                                             </Stack>
 

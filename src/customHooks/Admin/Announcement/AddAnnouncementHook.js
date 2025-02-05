@@ -11,7 +11,7 @@ const AddAnnouncementHook = () => {
     const [announcementImage, setAnnouncementImage] = useState([]);
     const [announcementTitle, setAnnouncementTitle] = useState('');
     const [announcementDesc, setAnnouncementDesc] = useState('');
-    const [loading, setLoading] = useState();
+    const [loading, setLoading] = useState(null);
 
     // Validation Errors
     const [errors, setErrors] = useState({});
@@ -119,6 +119,7 @@ const AddAnnouncementHook = () => {
         formData.append('image', imageFile);
 
         setLoading(true);
+        setLoading(true)
         await dispatch(createAnnouncement(formData));
         setLoading(false);
     };

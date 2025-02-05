@@ -11,7 +11,7 @@ const CategoryContainer = ({ category }) => {
           category ? (
             // Use Grid to create a responsive layout for the categories
             <Grid container spacing={2} justifyContent="center">
-              {category.map((item, index) => (
+              {category.map((category, index) => (
                 <Grid item xs={6} sm={4} md={3} key={index}>
                   <CategoryCard category={category} />
                 </Grid>

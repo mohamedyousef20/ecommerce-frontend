@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux/lib/exports';
 
 const AdminGetAllCategoryHook = () => {
     const [loading, setLoading] = useState(false);
-    const [filters, setFilters] = useState({ page: 1, limit: 5, keyword: '', sort: '', fields: '' });
+    const [filters, setFilters] = useState({ page: 1, limit: 8, keyword: '', sort: '', fields: '' });
 
     const dispatch = useDispatch();
 

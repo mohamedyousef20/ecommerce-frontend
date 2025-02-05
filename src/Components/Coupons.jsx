@@ -1,73 +1,90 @@
-import React, { useState } from "react";
-import { TextField, Button, Typography, Box, Paper } from "@mui/material";
+import React, { useEffect, useState } from "react";
+import { TextField, Button, Typography, Box } from "@mui/material";
 import { applyCouponToCart } from "../redux/action/cartAction";
-import { useDispatch } from "react-redux/lib/exports";
+import { useDispatch, useSelector } from "react-redux/lib/exports";
+import Notification from "../customHooks/useNotification";
 
 function Coupons() {
-
     const dispatch = useDispatch();
-
     const [coupon, setCoupon] = useState("");
     const [message, setMessage] = useState("");
-    const [loading, setLoading] = useState("");
+    const [loading, setLoading] = useState(null);
     const [valid, setValid] = useState(null);
 
+    const response = useSelector((state) => state.cartReducer.coupon);
+    console.log('ths ii', response)
     const handleCouponChange = (event) => {
         setCoupon(event.target.value);
     };
 
+    useEffect(() => {
+        if (!response) return;
 
-    // apply coupon to cart 
+        if (loading === false) {
+            if (response.msg === 'success') {
+             
+                Notification('Coupon Applied Successfully!', 'success');
+                setValid(true);
+                window.location.reload(true)
+            }
 
-    const handleApplyCoupon = () => {
-        // Example logic for coupon validation (you can replace this with real logic)
+            else {
+                Notification('Invalid Coupon.', 'error');
+                setValid(false)
+
+            }
+        }
+    }, [response]);
+
+
+    const handleApplyCoupon = async () => {
         setLoading(true);
-        dispatch(applyCouponToCart({
-            name: coupon
-
-        }))
-        setLoading(true);
-        // const validCoupons = ["DISCOUNT10", "SAVE20", "OFFER30"];
-        // if (validCoupons.includes(coupon)) {
-        //     setMessage("Coupon applied successfully!");
-        //     setValid(true);
-        // } else {
-        //     setMessage("Invalid coupon code.");
-        //     setValid(false);
-        // }
-        // window.location.reload(true)
+        setMessage("");
+        try {
+            await dispatch(applyCouponToCart({ name: coupon }));
+        } catch (error) {
+            setMessage("Failed to apply coupon. Please try again.");
+            setValid(false);
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
-        <Box >
-
-
+        <Box>
             <Typography fontWeight={600}>Apply Coupons</Typography>
             <TextField
                 fullWidth
                 value={coupon}
                 placeholder="Enter Coupon"
                 size="small"
-                defaultValue={'small'}
                 onChange={handleCouponChange}
-                sx={{ mb: 2, }}
+                sx={{ mb: 2 }}
             />
             <Button
                 variant="contained"
                 onClick={handleApplyCoupon}
-
-
+                disabled={loading}
                 sx={{
-                    bgcolor: '#0295db', color: "#fff", fontWeight: 600
+                    bgcolor: '#0295db',
+                    color: "#fff",
+                    fontWeight: 600,
+                    '&:disabled': {
+                        bgcolor: '#cccccc'
+                    }
                 }}
             >
-                Apply Coupon
+                {loading ? 'Applying...' : 'Apply Coupon'}
             </Button>
+
             {message && (
                 <Typography
                     variant="body2"
-                    color={valid ? "green" : "red"}
-                    sx={{ mt: 2 }}
+                    sx={{
+                        mt: 2,
+                        color: valid ? 'success.main' : 'error.main',
+                        fontWeight: valid ? 600 : 400
+                    }}
                 >
                     {message}
                 </Typography>

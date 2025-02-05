@@ -70,7 +70,7 @@ const LoginPage = () => {
             if (response.message === 'success' && response.userToken) {
                 localStorage.setItem("userToken", response.userToken);
                 localStorage.setItem("user", JSON.stringify(response.data));
-
+console.log(localStorage.getItem("user"))
                 Notification('You Logged In Successfully!', 'success');
 
                 setTimeout(() => {
@@ -102,7 +102,7 @@ const LoginPage = () => {
             }
         }
     }, [response]);
-
+console.log(localStorage.getItem('userToken'))
     return (
         <Container component="main" maxWidth="xs">
             <LoadingProgress loading={loading} />

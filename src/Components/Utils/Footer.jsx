@@ -24,7 +24,7 @@ const Footer = () => {
                     {/* Brand Section */}
                     <Box>
                         <Typography variant="h4" sx={{ fontWeight: 'bold', mb: 2 }}>
-                            AZARM.
+                            Heruko.
                         </Typography>
                         <Typography variant="body1" sx={{ mb: 2 }}>
                             Your online store for the latest fashion and accessories.
@@ -40,31 +40,31 @@ const Footer = () => {
                                 <TwitterIcon />
                             </IconButton>
                         </Box>
-                           {/*  Payment Methods Section */}
-            <Box sx={{ mt: 5, textAlign: 'center' }}>
-                <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#fff', mb: 2 }}>
-                    We Accept Payments With
-                </Typography>
-                <Box display="flex" justifyContent="center" gap={4}>
-                    {/* PayPal Icon (using Wallet as representative) */}
-                    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        <AccountBalanceWalletIcon sx={{ fontSize: 50, color: '#fff' }} />
-                        <Typography variant="body2" sx={{ color: '#fff' }}>PayPal</Typography>
-                    </Box>
+                        {/*  Payment Methods Section */}
+                        <Box sx={{ mt: 5, textAlign: 'center' }}>
+                            <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#fff', mb: 2 }}>
+                                We Accept Payments With
+                            </Typography>
+                            <Box display="flex" justifyContent="center" gap={4}>
+                                {/* PayPal Icon (using Wallet as representative) */}
+                                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                    <AccountBalanceWalletIcon sx={{ fontSize: 50, color: '#fff' }} />
+                                    <Typography variant="body2" sx={{ color: '#fff' }}>PayPal</Typography>
+                                </Box>
 
-                    {/* Vodafone Cash Icon (using Wallet as representative) */}
-                    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        <AccountBalanceWalletIcon sx={{ fontSize: 50, color: '#fff' }} />
-                        <Typography variant="body2" sx={{ color: '#fff' }}>Vodafone Cash</Typography>
-                    </Box>
+                                {/* Vodafone Cash Icon (using Wallet as representative) */}
+                                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                    <AccountBalanceWalletIcon sx={{ fontSize: 50, color: '#fff' }} />
+                                    <Typography variant="body2" sx={{ color: '#fff' }}>Vodafone Cash</Typography>
+                                </Box>
 
-                    {/* Visa Icon (using CreditCard as representative) */}
-                    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        <CreditCardIcon sx={{ fontSize: 50, color: '#fff' }} />
-                        <Typography variant="body2" sx={{ color: '#fff' }}>Visa</Typography>
-                    </Box>
-                </Box>
-            </Box>
+                                {/* Visa Icon (using CreditCard as representative) */}
+                                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                    <CreditCardIcon sx={{ fontSize: 50, color: '#fff' }} />
+                                    <Typography variant="body2" sx={{ color: '#fff' }}>Visa</Typography>
+                                </Box>
+                            </Box>
+                        </Box>
 
                     </Box>
 
@@ -98,18 +98,18 @@ const Footer = () => {
                             </ListItem>
                             <ListItem>
                                 <EmailIcon sx={{ color: '#fff' }} />
-                                <ListItemText primary="azarm@gmail.com" />
+                                <ListItemText primary="Heruko@gmail.com" />
                             </ListItem>
                         </List>
                     </Box>
                 </Stack>
             </Container>
 
-         
+
             {/* Footer Bottom Section */}
             <Box sx={{ mt: 5, textAlign: 'center', fontSize: '0.875rem', color: '#b0b0b0' }}>
                 <Typography variant="body2">
-                    © 2025 AZARM. All rights reserved.
+                    © 2025 Heruko. All rights reserved.
                 </Typography>
             </Box>
         </Box>

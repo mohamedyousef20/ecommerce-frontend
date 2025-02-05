@@ -41,7 +41,7 @@ const Coupon = () => {
     handleCancelDelete,
     handleConfirmDelete,
   ] = AdminDeleteCouponHook();
-
+console.log(coupons)
   // Handle search
   const handleSearch = (e) => {
     const keyword = e.target.value;

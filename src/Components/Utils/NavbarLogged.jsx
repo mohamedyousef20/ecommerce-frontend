@@ -162,7 +162,7 @@ const NavbarLogged = () => {
               }}
               onClick={() => handleNavigate('/')}
             >
-              AZARM.
+              Heruko.
             </Typography>
           </Box>
 

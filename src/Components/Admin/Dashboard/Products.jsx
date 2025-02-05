@@ -115,7 +115,7 @@ const Products = () => {
                                 variant="contained"
                                 color="primary"
                                 component={Link}
-                                to="/dashboard/order/create"
+                                to="/dashboard/product/create"
                                 startIcon={<Add />}
                             >
                                 Add New Product

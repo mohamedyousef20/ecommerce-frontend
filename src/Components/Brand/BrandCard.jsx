@@ -4,6 +4,7 @@ import image from '../../Pages/image.jpg'
 import { Link } from 'react-router-dom';
 
 const BrandCard = ({ brand }) => {
+    console.log(brand)
     return (
         < Link to={`/brand/${brand._id}/product`}>
             <Box

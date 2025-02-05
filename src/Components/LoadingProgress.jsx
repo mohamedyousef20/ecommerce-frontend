@@ -2,7 +2,7 @@ import { Box, CircularProgress, Typography } from '@mui/material'
 import React from 'react'
 
 const LoadingProgress = ({ loading }) => {
-    
+
     return (
         <>
             {loading && (
@@ -22,7 +22,7 @@ const LoadingProgress = ({ loading }) => {
                         gap: 2
                     }}
                 >
-                    <CircularProgress 
+                    <CircularProgress
                         size={60}
                         thickness={4}
                         sx={{
@@ -46,7 +46,7 @@ const LoadingProgress = ({ loading }) => {
                             }
                         }}
                     >
-                        AZARM...
+                        Heruko...
                     </Typography>
                 </Box>
             )}

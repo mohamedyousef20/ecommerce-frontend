@@ -5,10 +5,10 @@ import { useDispatch, useSelector } from 'react-redux/lib/exports';
 const AdminGetAllCouponHook = () => {
 
     const dispatch = useDispatch();
-    const [filters, setFilters] = useState({ page: 1, limit:5, keyword: '', sort: '', fields: '' });
+    const [filters, setFilters] = useState({ page: 1, limit:8, keyword: '', sort: '', fields: '' });
     const [loading, setLoading] = useState(false);
 
-
+    
     useEffect(() => {
         setLoading(true)
         dispatch(getAllCoupon(
@@ -48,7 +48,6 @@ const AdminGetAllCouponHook = () => {
     } catch (e) {
         console.log(e)
     }
-
     return [coupons, loading, onPageChange, paginationResult, onSearch, onSort, setFilters];
 }
 
